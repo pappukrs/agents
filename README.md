@@ -5,6 +5,7 @@
 - **Start:** 2026-10-13
 - **Hackathon:** ~2026-10-23 (end of Day 10)
 - **Format:** 3 blocks every day — Learn → Build → Test/Deliver
+- **LLM:** Google Gemini (`@google/genai`, key in `GEMINI_API_KEY`)
 - **Stack:** TypeScript + Node.js (agent backend), Python (ML / fine-tuning), PostgreSQL + pgvector (retrieval), React/Next.js (dashboard)
 
 ## Layout

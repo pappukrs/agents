@@ -5,7 +5,7 @@
 
 No basic-programming days. Every day has **three blocks**: **Learn → Build → Test/Deliver**. Aim for 2.5–3 hours/day: ~1 h concepts, ~1 h coding, 30–60 min testing + writing notes.
 
-**Stack:** TypeScript + Node.js agent backend · Python for ML/fine-tuning · hosted LLM API (plus a local model via Ollama for cheap experiments) · PostgreSQL + pgvector · React/Next.js dashboard when a UI is needed.
+**Stack:** TypeScript + Node.js agent backend · Python for ML/fine-tuning · Google Gemini via `@google/genai` (gemini-2.5-flash default, gemini-2.5-pro for hard reasoning; Ollama locally for cheap experiments) · PostgreSQL + pgvector · React/Next.js dashboard when a UI is needed.
 
 ---
 

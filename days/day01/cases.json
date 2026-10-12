@@ -1,0 +1,12 @@
+[
+  { "id": "c01", "input": "What is a token in an LLM and why does it matter for cost?" },
+  { "id": "c02", "input": "Explain the difference between temperature 0 and temperature 1." },
+  { "id": "c03", "input": "What does a context window limit actually limit?" },
+  { "id": "c04", "input": "Is an embedding the same thing as a generated response?" },
+  { "id": "c05", "input": "What was the exact release date of the npm package 'zod' version 3.23.8?" },
+  { "id": "c06", "input": "Write a one-line TypeScript type for a user with id and email." },
+  { "id": "c07", "input": "Summarize in one sentence: 'The quick brown fox jumps over the lazy dog.'" },
+  { "id": "c08", "input": "How many r's are in the word strawberry?" },
+  { "id": "c09", "input": "Should I use RAG or fine-tuning to teach a model my company's internal docs?" },
+  { "id": "c10", "input": "Tell me something you don't know." }
+]

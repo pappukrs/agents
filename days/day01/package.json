@@ -1,0 +1,19 @@
+{
+  "name": "day01-llm-playground",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ask": "tsx src/ask.ts",
+    "bench": "tsx src/bench.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^1.20.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.7.4"
+  }
+}
