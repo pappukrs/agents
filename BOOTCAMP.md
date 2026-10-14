@@ -26,7 +26,7 @@ So every day has a 4th block: **practice building with Claude Code from a writte
 
 | Block | Time | Output |
 |-------|------|--------|
-| Learn | 45 min | `bootcamp/dayNN/notes.md` — concepts in your own words |
+| Learn | 45 min | open `bootcamp/dayNN/concepts.html`, then write answers in `notes.md` |
 | Build | 90 min | working code in `bootcamp/dayNN/` |
 | Test | 30 min | pytest / eval run, results in notes |
 | Harvest | 15 min | move the reusable part into `starter/` |

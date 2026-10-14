@@ -1,6 +1,6 @@
 # Day 1 — Thu 15 Oct · LLM fundamentals in Python + structured output
 
-## Learn (45 min) — write the answers in your own words
+## Learn (45 min) — open `concepts.html` in a browser first, then write the answers in your own words
 
 1. **Tokens** — what is a token, roughly how many per English word, why do input and output tokens cost different amounts?
 2. **Context window** — what happens when prompt + history + output exceed it? What fills it fastest in an agent? (Hint: tool results.)
