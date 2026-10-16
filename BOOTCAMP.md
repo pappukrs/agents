@@ -53,7 +53,7 @@ So every day has a 4th block: **practice building with Claude Code from a writte
 - Hard caps: max steps, max tool-result length, per-tool timeout.
 
 **Done when:** “What's the average revenue per region in data/sales.csv, and which file mentions refunds?” is answered correctly via tools.
-**Harvest:** `starter/agent/tools.py`, `starter/agent/loop.py`, `starter/agent/trace.py`.
+**Harvest:** `starter/agent/tools.py`, `starter/agent/loop.py`, `starter/agent/tracing.py`.
 
 ## Day 3 — Sat 17 Oct · RAG over supplied documents
 
@@ -137,7 +137,7 @@ starter/
     tools.py              @tool decorator + registry
     loop.py               bounded agent loop
     rag.py                ingest + search_docs tool
-    trace.py              step logging
+    tracing.py            step logging
   evals/
     cases.jsonl
     run_eval.py

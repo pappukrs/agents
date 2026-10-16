@@ -11,3 +11,5 @@ venv/
 *.log
 .next/
 coverage/
+
+bootcamp/*/traces/*.json
