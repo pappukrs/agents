@@ -22,7 +22,7 @@
 | `llm.py` | Day 1 wrapper + new `chat()` for multi-turn calls with tool declarations (automatic function calling off). |
 | `agent.py` | CLI: one question, `--file questions.jsonl` (keyword check), or `--tools` to print the schemas. |
 | `data/` | The agent's sandbox: `sales.csv`, `docs/*.md`, `notes.txt`. |
-| `tests/` | 23 offline tests: schemas, sandbox, timeouts, and the loop driven by a scripted fake model. |
+| `tests/` | 24 offline tests: schemas, sandbox, timeouts, and the loop driven by a scripted fake model. |
 
 ## Run
 
@@ -31,7 +31,7 @@ cd bootcamp/day02
 cp .env.example .env                  # add GEMINI_API_KEY
 source ../../.venv/bin/activate
 pip install -r requirements.txt       # adds pandas
-pytest -q                             # 23 offline tests
+pytest -q                             # 24 offline tests
 python agent.py --tools               # see exactly what the model sees
 python agent.py "What's the average revenue per region in sales.csv, and which file mentions refunds?"
 python agent.py --file questions.jsonl
