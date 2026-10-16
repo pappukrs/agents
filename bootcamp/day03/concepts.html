@@ -1,0 +1,1005 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 3 Concepts</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --surface-2: #f0eee8; --text: #1d1d1f; --muted: #5f5e5a;
+  --border: #e2dfd6; --accent: #2f6fde; --accent-soft: #e5eefc; --good: #1f8a4c; --good-soft: #e3f4ea;
+  --warn: #b26a00; --warn-soft: #fbf0dc; --bad: #c0392b; --bad-soft: #fbe6e3;
+  --js: #b8860b; --py: #2f6fde; --code-bg: #f3f1ec;
+  --role-user: #2f6fde; --role-model: #7a4cc2; --role-tool: #1f8a4c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+    --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+    --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+    --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+    --role-user: #6ea0ff; --role-model: #b48cf2; --role-tool: #4cc783;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+  --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+  --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+  --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+  --role-user: #6ea0ff; --role-model: #b48cf2; --role-tool: #4cc783;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+:not(pre) > code { background: var(--surface-2); padding: 1px 6px; border-radius: 5px; }
+a { color: var(--accent); }
+
+.layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); max-width: 1180px; margin: 0 auto; gap: 32px; padding: 0 24px; }
+nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 28px 0; }
+nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+nav.toc .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+nav.toc li a { display: flex; gap: 10px; padding: 6px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; }
+nav.toc li a::before { counter-increment: s; content: counter(s); font-variant-numeric: tabular-nums; min-width: 18px; color: var(--muted); opacity: .7; }
+nav.toc li a:hover { background: var(--surface-2); color: var(--text); }
+nav.toc li a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav.toc .part { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 10px 4px; }
+.theme-btn { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+
+main { padding: 28px 0 120px; min-width: 0; }
+header.hero { padding: 24px 0 8px; }
+.eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+h1 { font-size: 34px; line-height: 1.15; margin: 6px 0 12px; }
+h2 { font-size: 24px; margin: 0 0 6px; }
+h3 { font-size: 17px; margin: 22px 0 8px; }
+.lead { font-size: 18px; color: var(--muted); max-width: 680px; }
+section { padding-top: 56px; scroll-margin-top: 12px; }
+.sec-num { color: var(--muted); font-size: 13px; font-weight: 600; }
+.why { color: var(--muted); margin: 0 0 18px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin: 16px 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+.callout.js { border-color: var(--js); background: var(--warn-soft); }
+.callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+.callout.good { border-color: var(--good); background: var(--good-soft); }
+.callout b:first-child { display: block; margin-bottom: 2px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; }
+.tag.js { background: var(--warn-soft); color: var(--js); }
+.tag.py { background: var(--accent-soft); color: var(--py); }
+
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 8px 0; line-height: 1.55; }
+pre .c { color: var(--muted); font-style: italic; }
+pre .k { color: var(--accent); font-weight: 600; }
+pre .s { color: var(--good); }
+
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.table-wrap { overflow-x: auto; }
+.grid2 > *, .grid3 > *, .sbs > *, .versus > *, .map-grid > *, .flow-wrap > *, .split > *, .seq > *, .seq-row > *, .cycle > * { min-width: 0; }
+.msg { overflow-wrap: anywhere; }
+
+button.btn { background: var(--accent); color: #fff; border: 0; padding: 8px 14px; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+button.btn.ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+button.btn:disabled { opacity: .45; cursor: default; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+input[type=text] { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font: inherit; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+
+/* ---------- mission map ---------- */
+.mission { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin-top: 18px; }
+.mission-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.mission-head h2 { font-size: 20px; margin: 0; }
+.mission-head .pct { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; }
+.progress { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin: 10px 0 16px; }
+.progress div { height: 100%; background: var(--good); width: 0; transition: width .3s; }
+.stations { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; position: relative; }
+.station { border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 8px; background: var(--surface-2); position: relative; }
+.station.done { border-color: var(--good); background: var(--good-soft); }
+.station .st-top { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.station .st-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 13px; flex: none; }
+.station.done .st-num { background: var(--good); }
+.station .st-name { font-weight: 700; }
+.station .st-time { color: var(--muted); font-size: 12.5px; margin-left: auto; white-space: nowrap; }
+.station .st-goal { color: var(--muted); font-size: 13px; margin: 0 0 6px; }
+.station:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 14px; color: var(--muted); font-size: 16px; z-index: 1; }
+.task { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 13.5px; line-height: 1.4; border-top: 1px dashed var(--border); }
+.task input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--good); flex: none; }
+.task.done label { color: var(--muted); text-decoration: line-through; }
+.task code { font-size: 12px; }
+.done-when { margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+.done-when .flag { font-size: 18px; line-height: 1.2; }
+
+/* ---------- diagrams ---------- */
+.versus { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.mini-flow { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.box { border: 2px solid var(--border); background: var(--surface); border-radius: 10px; padding: 8px 12px; font-size: 14px; text-align: center; }
+.box.model { border-color: var(--role-model); }
+.box.you { border-color: var(--role-user); }
+.box.toolc { border-color: var(--role-tool); }
+.arrow { text-align: center; color: var(--muted); font-size: 16px; line-height: 1.3; }
+.loopback { border: 2px dashed var(--accent); border-radius: 12px; padding: 10px; position: relative; }
+.loopback .lbl { position: absolute; top: -11px; right: 12px; background: var(--surface); padding: 0 6px; color: var(--accent); font-size: 12px; font-weight: 700; }
+
+.seq { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; position: relative; }
+.seq .lane { text-align: center; font-weight: 700; font-size: 14px; padding: 8px; border-bottom: 2px solid var(--border); }
+.seq .lane.you { color: var(--role-user); } .seq .lane.model { color: var(--role-model); } .seq .lane.toolc { color: var(--role-tool); }
+.seq-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); padding: 6px 0; }
+.msg { font-size: 13px; padding: 6px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); position: relative; }
+.msg.r { text-align: right; }
+.msg .dir { color: var(--muted); font-weight: 700; }
+.msg.hl { border-color: var(--accent); background: var(--accent-soft); }
+
+.cycle { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 8px; max-width: 560px; margin: 8px auto; align-items: center; }
+.cyc { border: 2px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; background: var(--surface); transition: all .25s; font-size: 14px; }
+.cyc b { display: block; }
+.cyc span { color: var(--muted); font-size: 12.5px; }
+.cyc.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+.cyc.stop.on { border-color: var(--good); background: var(--good-soft); box-shadow: 0 0 0 4px var(--good-soft); }
+.cyc.halt.on { border-color: var(--bad); background: var(--bad-soft); box-shadow: 0 0 0 4px var(--bad-soft); }
+.cyc-ar { text-align: center; color: var(--muted); font-size: 18px; }
+.counter { font-variant-numeric: tabular-nums; }
+
+/* schema mapping */
+.map-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.map-grid pre { margin: 0; font-size: 13px; }
+[data-k] { border-radius: 4px; transition: background .15s, outline-color .15s; outline: 2px solid transparent; cursor: default; }
+[data-k].hot { background: var(--warn-soft); outline-color: var(--warn); }
+
+/* path checker */
+.verdict { margin-top: 10px; padding: 10px 14px; border-radius: 10px; font-size: 14.5px; }
+.verdict.ok { background: var(--good-soft); color: var(--good); }
+.verdict.no { background: var(--bad-soft); color: var(--bad); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip { border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 99px; padding: 3px 10px; font-size: 13px; cursor: pointer; font-family: ui-monospace, Menlo, monospace; }
+
+/* budgets */
+.budget-row { display: grid; grid-template-columns: 140px 1fr 70px; gap: 10px; align-items: center; margin: 8px 0; font-size: 14px; }
+.bar { height: 22px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--accent); border-radius: 6px; transition: width .25s ease; }
+.bar.over > div { background: var(--bad); }
+.budget-row .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+/* side-by-side */
+.sbs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0 18px; }
+.sbs-title { font-weight: 600; margin: 18px 0 4px; }
+.sbs-note { color: var(--muted); font-size: 14px; margin-top: -8px; }
+
+/* flow player */
+.node { border: 2px solid var(--border); background: var(--surface); border-radius: 12px; padding: 8px 12px; transition: all .25s; }
+.node .nm { font-weight: 700; font-size: 14px; }
+.node .fn { color: var(--muted); font-size: 12.5px; }
+.node.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+.node.ok { border-color: var(--good); background: var(--good-soft); }
+.node.err { border-color: var(--bad); background: var(--bad-soft); }
+.down { text-align: center; color: var(--muted); line-height: 1; padding: 3px 0; font-size: 16px; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.flow-wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 20px; }
+.narr { background: var(--surface-2); border-radius: 12px; padding: 14px 16px; min-height: 120px; }
+.narr .stepn { color: var(--muted); font-size: 13px; }
+.narr p { margin: 6px 0 0; }
+.scen { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.scen button { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 7px 12px; border-radius: 99px; cursor: pointer; font: inherit; font-size: 14px; }
+.scen button.sel { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pane-title { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 0 6px; font-weight: 700; }
+.contents { display: flex; flex-direction: column; gap: 5px; }
+.cmsg { border-left: 4px solid var(--border); background: var(--surface); border-radius: 0 8px 8px 0; padding: 5px 10px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; word-break: break-word; }
+.cmsg .role { font-weight: 700; font-family: system-ui, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-right: 6px; }
+.cmsg.user { border-color: var(--role-user); } .cmsg.user .role { color: var(--role-user); }
+.cmsg.model { border-color: var(--role-model); } .cmsg.model .role { color: var(--role-model); }
+.cmsg.tool { border-color: var(--role-tool); } .cmsg.tool .role { color: var(--role-tool); }
+.cmsg.err { border-color: var(--bad); }
+.cmsg.new { animation: pop .35s ease; }
+@keyframes pop { from { background: var(--warn-soft); } to { background: var(--surface); } }
+.term { background: #16161a; color: #d8d8d8; border-radius: 10px; padding: 10px 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; min-height: 60px; white-space: pre-wrap; word-break: break-word; }
+.term .e { color: #ff8a7a; } .term .g { color: #7ddc9c; } .term .d { color: #9a9a9a; }
+
+details.q { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
+details.q summary { cursor: pointer; font-weight: 600; }
+details.q[open] summary { margin-bottom: 8px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; padding: 0 16px; gap: 0; }
+  nav.toc { position: static; height: auto; padding: 16px 0 0; }
+  nav.toc ol { display: flex; flex-wrap: wrap; gap: 4px; }
+  nav.toc .part { display: none; }
+  .grid2, .grid3, .sbs, .flow-wrap, .versus, .map-grid, .stations { grid-template-columns: 1fr; }
+  .station:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -15px; }
+  .budget-row { grid-template-columns: 100px 1fr 56px; }
+  h1 { font-size: 28px; }
+}
+
+/* ---------- day 3 extras ---------- */
+.pipe { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; margin: 8px 0; }
+.pipe .box { flex: 1 1 110px; font-size: 13.5px; }
+.pipe .pa { display: flex; align-items: center; padding: 0 6px; color: var(--muted); }
+.lane-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 0 4px; }
+
+.emb-wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 18px; align-items: start; }
+.emb-wrap > * { min-width: 0; }
+svg.emb { width: 100%; height: auto; background: var(--surface-2); border-radius: 12px; cursor: crosshair; touch-action: none; }
+svg.emb .axis { stroke: var(--border); stroke-width: 0.006; }
+svg.emb .circle { fill: none; stroke: var(--border); stroke-width: 0.006; stroke-dasharray: 0.03 0.03; }
+svg.emb .doc { stroke: var(--surface); stroke-width: 0.01; }
+svg.emb .doc.t-refund { fill: var(--role-tool); }
+svg.emb .doc.t-ship { fill: var(--role-user); }
+svg.emb .doc.t-sec { fill: var(--role-model); }
+svg.emb .doc.t-other { fill: var(--warn); }
+svg.emb .lbl { fill: var(--text); font-size: 0.065px; font-family: system-ui, sans-serif; }
+svg.emb .qarrow { stroke: var(--bad); stroke-width: 0.018; }
+svg.emb .qdot { fill: var(--bad); }
+svg.emb .link { stroke: var(--accent); stroke-width: 0.008; stroke-dasharray: 0.025 0.02; }
+.rank { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.rank li { display: grid; grid-template-columns: 22px minmax(0, 1fr) 52px; gap: 8px; padding: 6px 8px; border-radius: 8px; align-items: center; }
+.rank li.top { background: var(--accent-soft); }
+.rank li .sc { text-align: right; font-variant-numeric: tabular-nums; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+.rank li .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+.chunks { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.chunk { border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 13px; background: var(--surface); line-height: 1.5; word-break: break-word; }
+.chunk .cid { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--muted); margin-right: 6px; }
+.chunk .ov { background: var(--warn-soft); outline: 1px dashed var(--warn); border-radius: 3px; }
+.slider-row { display: grid; grid-template-columns: 170px minmax(0, 1fr) 60px; gap: 10px; align-items: center; font-size: 14px; margin: 6px 0; }
+.slider-row .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.score-row { display: grid; grid-template-columns: 170px minmax(0, 1fr) 52px; gap: 10px; align-items: center; margin: 5px 0; font-size: 13.5px; }
+.score-row .nm { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; overflow-wrap: anywhere; }
+.score-row .bar { position: relative; }
+.score-row .bar > div { background: var(--muted); opacity: .45; }
+.score-row.pick .bar > div { background: var(--good); opacity: 1; }
+.score-row.below .nm { color: var(--muted); text-decoration: line-through; }
+.score-row .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; }
+.thr-line { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--bad); }
+
+.rr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.rr > * { min-width: 0; }
+.rr ol { margin: 6px 0 0; padding-left: 22px; font-size: 14px; }
+.rr li { padding: 4px 0; }
+.rr li.keep { color: var(--good); font-weight: 600; }
+.rr li.drop { color: var(--muted); }
+.answer-box { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; font-size: 14.5px; }
+.cite { display: inline-block; font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: var(--accent-soft); color: var(--accent); border-radius: 5px; padding: 0 5px; cursor: help; }
+.cite.bad { background: var(--bad-soft); color: var(--bad); }
+.preview-badge { display: inline-block; background: var(--warn-soft); color: var(--warn); border: 1px solid var(--warn); border-radius: 99px; font-size: 12px; font-weight: 700; padding: 2px 10px; letter-spacing: .03em; }
+
+@media (max-width: 900px) {
+  .emb-wrap, .rr { grid-template-columns: 1fr; }
+  .slider-row { grid-template-columns: 110px minmax(0, 1fr) 50px; }
+  .score-row { grid-template-columns: 120px minmax(0, 1fr) 44px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <div class="brand">Day 3 · RAG over documents</div>
+  <div class="sub">HackerRank AI Agents bootcamp · 17 Oct</div>
+  <ol>
+    <div class="part">Start here</div>
+    <li><a href="#mission">Today's mission</a></li>
+    <div class="part">Part A — Concepts</div>
+    <li><a href="#big-picture">What RAG is</a></li>
+    <li><a href="#embeddings">Embeddings</a></li>
+    <li><a href="#cosine">Cosine similarity</a></li>
+    <li><a href="#chunking">Chunking</a></li>
+    <li><a href="#search">Top-k + threshold</a></li>
+    <li><a href="#rerank">Reranking</a></li>
+    <li><a href="#citations">Citations + "I don't know"</a></li>
+    <div class="part">Part B — Python for JS devs</div>
+    <li><a href="#numpy">numpy = fast arrays</a></li>
+    <li><a href="#py-misc">Slicing, files, caching</a></li>
+    <div class="part">Part C — Your code</div>
+    <li><a href="#flow">Step through a run</a></li>
+    <li><a href="#quiz">Self-check</a></li>
+  </ol>
+  <button class="theme-btn" id="themeBtn" type="button">Toggle theme</button>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Day 3 of 9 · Sat 17 Oct 2026</div>
+  <h1>Let the agent answer from <em>your</em> documents, and say "I don't know" when they don't cover it</h1>
+  <p class="lead">Hackathon problems often hand you a folder of files. RAG (retrieval-augmented generation) finds the few passages that matter, puts them in the prompt, and makes the model cite them. Today it becomes one more tool, <code>search_docs</code>, for your Day 2 loop.</p>
+</header>
+
+<!-- ============ MISSION ============ -->
+<section id="mission" style="padding-top:20px">
+  <div class="mission">
+    <div class="mission-head">
+      <h2>Today's mission</h2>
+      <span class="pct" id="missionPct">0 of 0 done</span>
+    </div>
+    <div class="progress"><div id="progBar"></div></div>
+    <div class="stations" id="stations">
+      <div class="station">
+        <div class="st-top"><span class="st-num">1</span><span class="st-name">Learn</span><span class="st-time">45 min</span></div>
+        <p class="st-goal">Understand search before building it.</p>
+        <div class="task"><input type="checkbox" id="t1"><label for="t1">Read Part A (sections 2–8) on this page</label></div>
+        <div class="task"><input type="checkbox" id="t2"><label for="t2">Click around the embedding map and the chunk sliders</label></div>
+        <div class="task"><input type="checkbox" id="t3"><label for="t3">Step through all 4 scenarios in Part C</label></div>
+        <div class="task"><input type="checkbox" id="t4"><label for="t4">Answer the questions in <code>notes.md</code></label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">2</span><span class="st-name">Build</span><span class="st-time">90 min</span></div>
+        <p class="st-goal">Index the docs, add a search tool.</p>
+        <div class="task"><input type="checkbox" id="t5"><label for="t5">Add <code>llm.embed()</code>; embed one sentence, print its length</label></div>
+        <div class="task"><input type="checkbox" id="t6"><label for="t6"><code>rag.py</code>: <code>chunk_text</code> + <code>ingest()</code> → <code>data/index.npz</code></label></div>
+        <div class="task"><input type="checkbox" id="t7"><label for="t7"><code>search()</code>: cosine, top-k, score threshold</label></div>
+        <div class="task"><input type="checkbox" id="t8"><label for="t8"><code>@tool search_docs</code> plugged into the Day 2 <code>run_agent</code></label></div>
+        <div class="task"><input type="checkbox" id="t9"><label for="t9">Stretch: swap the numpy index for ChromaDB</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">3</span><span class="st-name">Test</span><span class="st-time">30 min</span></div>
+        <p class="st-goal">7 cited answers, 3 honest refusals.</p>
+        <div class="task"><input type="checkbox" id="t10"><label for="t10"><code>pytest -q</code> with a fake embedder (no key)</label></div>
+        <div class="task"><input type="checkbox" id="t11"><label for="t11"><code>python ask.py --file questions.jsonl</code> → scorecard</label></div>
+        <div class="task"><input type="checkbox" id="t12"><label for="t12">Tune the threshold: write down which value you chose and why</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">4</span><span class="st-name">Harvest</span><span class="st-time">15 min</span></div>
+        <p class="st-goal">Move reusable parts into the starter.</p>
+        <div class="task"><input type="checkbox" id="t13"><label for="t13"><code>rag.py</code> → <code>starter/agent/rag.py</code>, <code>embed()</code> → <code>starter/agent/llm.py</code></label></div>
+        <div class="task"><input type="checkbox" id="t14"><label for="t14">Write "What I learned" in notes, then commit</label></div>
+      </div>
+    </div>
+    <div class="done-when"><span class="flag">🏁</span><div><b>Done when:</b> 10 questions, of which <b>7 answerable</b> ones are answered correctly <b>with citations</b>, and <b>3 unanswerable</b> ones are correctly refused ("the documents don't say").</div></div>
+  </div>
+
+  <div class="card mono" style="font-size:14px">
+    cd bootcamp/day03 &amp;&amp; source ../../.venv/bin/activate<br>
+    pip install -r requirements.txt &nbsp;<span style="color:var(--muted)"># adds numpy (chromadb only for the stretch)</span><br>
+    python rag.py ingest &nbsp;<span style="color:var(--muted)"># docs/ → data/index.npz</span><br>
+    pytest -q<br>
+    python ask.py "How many days do I have to return an item?"<br>
+    python ask.py --file questions.jsonl
+  </div>
+</section>
+
+<!-- ============ PART A ============ -->
+
+<section id="big-picture">
+  <div class="sec-num">2 · What RAG is</div>
+  <h2>Two phases: index once, search on every question</h2>
+  <p class="why">The model has never seen your files, and they're too big to paste whole into every prompt. So you find the relevant bits first, then pass only those.</p>
+  <div class="card">
+    <div class="lane-label">Phase 1 · ingest (once, offline: <code>python rag.py ingest</code>)</div>
+    <div class="pipe">
+      <div class="box">docs/*.md<br><span style="color:var(--muted);font-size:12px">read files</span></div><div class="pa">→</div>
+      <div class="box">chunk_text()<br><span style="color:var(--muted);font-size:12px">~800-char pieces</span></div><div class="pa">→</div>
+      <div class="box model">embed()<br><span style="color:var(--muted);font-size:12px">text → 768 numbers</span></div><div class="pa">→</div>
+      <div class="box toolc">data/index.npz<br><span style="color:var(--muted);font-size:12px">vectors + texts + ids</span></div>
+    </div>
+    <div class="lane-label">Phase 2 · query (every question, inside the agent loop)</div>
+    <div class="pipe">
+      <div class="box you">question</div><div class="pa">→</div>
+      <div class="box model">embed(question)</div><div class="pa">→</div>
+      <div class="box toolc">cosine vs all chunks<br><span style="color:var(--muted);font-size:12px">top-k, drop low scores</span></div><div class="pa">→</div>
+      <div class="box model">LLM answers from<br>those chunks + cites</div>
+    </div>
+  </div>
+  <div class="callout"><b>One sentence to remember</b>RAG = <strong>search first, then answer only from what you found</strong>. The model's job changes from "remember facts" to "read these passages and summarise them honestly".</div>
+  <div class="callout js"><b>JS analogy</b>It's a search index like Algolia or Elasticsearch, but the "match" is by meaning, not by keywords. "Can I get my money back?" finds a passage that says "refunds are issued…" even though no word overlaps.</div>
+</section>
+
+<section id="embeddings">
+  <div class="sec-num">3 · Embeddings</div>
+  <h2>An embedding turns text into a direction in space</h2>
+  <p class="why">Texts with similar meaning point in similar directions. Real embeddings from <code>gemini-embedding-001</code> have 3072 numbers (we'll ask for 768). Here's a toy version with 2, so you can see it. <strong>Pick a question, or click anywhere on the map</strong> to place your own.</p>
+  <div class="card">
+    <div class="scen" id="embQs" role="group" aria-label="query">
+      <button type="button" class="sel" data-q="0">Can I get my money back?</button>
+      <button type="button" data-q="1">When will my parcel arrive?</button>
+      <button type="button" data-q="2">How do I secure my login?</button>
+      <button type="button" data-q="3">What is the CEO's salary?</button>
+    </div>
+    <div class="emb-wrap">
+      <svg class="emb" id="embSvg" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="2D embedding map"></svg>
+      <div>
+        <div class="pane-title" style="margin-top:0">cosine similarity to the question</div>
+        <ol class="rank" id="embRank"></ol>
+        <p style="font-size:13.5px;color:var(--muted)" id="embNote"></p>
+        <div class="legend" style="display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)">
+          <span><span class="dot" style="background:var(--role-tool);display:inline-block;width:9px;height:9px;border-radius:50%"></span> refunds/returns</span>
+          <span><span class="dot" style="background:var(--role-user);display:inline-block;width:9px;height:9px;border-radius:50%"></span> shipping</span>
+          <span><span class="dot" style="background:var(--role-model);display:inline-block;width:9px;height:9px;border-radius:50%"></span> security</span>
+          <span><span class="dot" style="background:var(--warn);display:inline-block;width:9px;height:9px;border-radius:50%"></span> other</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid3">
+    <div class="card"><b>Same model for both</b><br><span style="color:var(--muted);font-size:14px">Chunks and questions must be embedded by the <em>same</em> model, or the directions mean nothing.</span></div>
+    <div class="card"><b>task_type matters</b><br><span style="color:var(--muted);font-size:14px">Use <code>RETRIEVAL_DOCUMENT</code> for chunks and <code>RETRIEVAL_QUERY</code> for questions. Gemini tunes the vector for each side.</span></div>
+    <div class="card"><b>2D is a cartoon</b><br><span style="color:var(--muted);font-size:14px">In 2D everything looks close. Real scores spread out over 768 dimensions, roughly 0.3–0.85 in practice.</span></div>
+  </div>
+</section>
+
+<section id="cosine">
+  <div class="sec-num">4 · Cosine similarity</div>
+  <h2>"How much do two arrows point the same way?"</h2>
+  <p class="why">Cosine = dot product divided by both lengths. 1 = same direction, 0 = unrelated, −1 = opposite. If you normalise every vector to length 1 once, at ingest time, cosine becomes just a dot product.</p>
+  <div class="sbs">
+    <div><span class="tag py">Python + numpy (planned rag.py)</span><pre><span class="k">import</span> numpy <span class="k">as</span> np
+
+<span class="k">def</span> normalize(m: np.ndarray) -&gt; np.ndarray:
+    <span class="k">return</span> m / np.linalg.norm(m, axis=-1, keepdims=<span class="k">True</span>)
+
+<span class="c"># vectors: (n_chunks, 768), already normalised</span>
+<span class="c"># q:       (768,),         normalised</span>
+scores = vectors @ q     <span class="c"># ALL cosines in one line</span></pre></div>
+    <div><span class="tag js">JS / TS</span><pre><span class="k">const</span> dot = (a, b) =&gt; a.reduce((s, x, i) =&gt; s + x * b[i], 0);
+<span class="k">const</span> norm = (a) =&gt; Math.sqrt(dot(a, a));
+<span class="k">const</span> cosine = (a, b) =&gt; dot(a, b) / (norm(a) * norm(b));
+
+<span class="k">const</span> scores = vectors.map((v) =&gt; cosine(v, q));
+<span class="c">// a loop in JS; numpy does it in C, ~100x faster</span></pre></div>
+  </div>
+  <div class="callout warn"><b>Normalise when you shrink</b>Gemini's full 3072-number vectors come back normalised. When you ask for fewer with <code>output_dimensionality=768</code> they don't, so normalise them yourself or your "cosine" scores will be off.</div>
+</section>
+
+<section id="chunking">
+  <div class="sec-num">5 · Chunking</div>
+  <h2>Cut documents into pieces small enough to be specific</h2>
+  <p class="why">One vector per whole file is too blurry: a 10-page policy "means" everything at once. Tiny chunks lose context. Overlap stops a sentence from being cut in half at a boundary. Drag the sliders; the <span style="background:var(--warn-soft);outline:1px dashed var(--warn);border-radius:3px;padding:0 3px">highlighted</span> text is repeated from the previous chunk.</p>
+  <div class="card">
+    <div class="slider-row"><label for="chSize">chunk size (chars)</label><input type="range" id="chSize" min="80" max="500" step="10" value="220"><span class="v" id="chSizeV"></span></div>
+    <div class="slider-row"><label for="chOv">overlap (chars)</label><input type="range" id="chOv" min="0" max="150" step="5" value="40"><span class="v" id="chOvV"></span></div>
+    <div style="font-size:14px;color:var(--muted)" id="chStats"></div>
+    <div class="chunks" id="chOut"></div>
+  </div>
+<pre><span class="c"># planned rag.py: the same logic as this demo</span>
+<span class="k">def</span> chunk_text(text: str, size: int = 800, overlap: int = 150) -&gt; list[str]:
+    step = size - overlap
+    chunks = []
+    <span class="k">for</span> start <span class="k">in</span> range(0, len(text), step):
+        chunks.append(text[start:start + size])
+        <span class="k">if</span> start + size &gt;= len(text):
+            <span class="k">break</span>
+    <span class="k">return</span> chunks</pre>
+  <div class="table-wrap"><table>
+    <tr><th>Too small (~100 chars)</th><th>Good start (~500–1000 chars, 10–20% overlap)</th><th>Too big (whole file)</th></tr>
+    <tr><td>Precise match, but the chunk lacks context: "It is 30 days." What is?</td><td>One idea per chunk, with enough surrounding words to make sense alone.</td><td>Blurry vector; also wastes context tokens when it's put in the prompt.</td></tr>
+  </table></div>
+  <div class="callout"><b>Better splitting, later</b>Splitting on headings and paragraphs (Markdown <code>## </code>, blank lines) beats raw characters. Start with characters because it's 8 lines and always works; improve only if the eval says so.</div>
+</section>
+
+<section id="search">
+  <div class="sec-num">6 · Top-k + threshold</div>
+  <h2>Keep the best k chunks, but only if they're actually good</h2>
+  <p class="why">Top-k always returns <em>something</em>, even for a question the docs don't cover. The threshold is what lets the agent say "I don't know". These scores are realistic for <code>gemini-embedding-001</code>.</p>
+  <div class="card">
+    <div class="scen" id="srchQs" role="group" aria-label="question"></div>
+    <div class="slider-row"><label for="kSl">top-k</label><input type="range" id="kSl" min="1" max="6" value="4"><span class="v" id="kV"></span></div>
+    <div class="slider-row"><label for="thSl">min score (threshold)</label><input type="range" id="thSl" min="0.30" max="0.90" step="0.01" value="0.60"><span class="v" id="thV"></span></div>
+    <div id="srchRows" style="margin-top:10px"></div>
+    <div class="verdict" id="srchVerdict"></div>
+  </div>
+  <div class="callout warn"><b>There is no universal threshold</b>It depends on the embedding model, the chunk size and your documents. Pick it from data: run your 10 questions, look at the best score for the answerable vs unanswerable ones, and put the line between them. That's a Test-block task today.</div>
+</section>
+
+<section id="rerank">
+  <div class="sec-num">7 · Reranking</div>
+  <h2>Cheap search for many, careful check for a few</h2>
+  <p class="why">Cosine is fast but rough: it compares meanings, not "does this passage answer the question?". A reranker looks at each (question, chunk) pair and scores real relevance. It's slower, so run it only on the top ~10.</p>
+  <div class="card">
+    <div style="font-size:14.5px;margin-bottom:8px">Question: <b>"Does the warranty cover water damage?"</b></div>
+    <div class="rr">
+      <div><span class="tag py">Stage 1 · cosine top-6</span><ol id="rrA"></ol></div>
+      <div><span class="tag py">Stage 2 · LLM rerank, keep 2</span><ol id="rrB"></ol></div>
+    </div>
+    <div class="btn-row"><button class="btn" id="rrBtn" type="button">Run rerank →</button><button class="btn ghost" id="rrReset" type="button">Reset</button></div>
+    <p id="rrNote" style="font-size:14px;color:var(--muted);margin-bottom:0"></p>
+  </div>
+  <div class="grid2">
+    <div class="card"><b>How to rerank with what you have</b><br><span style="font-size:14px;color:var(--muted)">Day 1's <code>generate_structured()</code> with a schema like <code>{"scores": [{"id": str, "relevance": int 0–10}]}</code>, all candidates in one call. One extra LLM call per search.</span></div>
+    <div class="card"><b>When to bother</b><br><span style="font-size:14px;color:var(--muted)">Only if the eval shows right chunks ranked low. On a hackathon day, start without it. It's an upgrade, not a requirement.</span></div>
+  </div>
+</section>
+
+<section id="citations">
+  <div class="sec-num">8 · Citations and "I don't know"</div>
+  <h2>Every claim points to a chunk id, and no chunk means no claim</h2>
+  <p class="why">Citations make answers checkable (judges love this) and make hallucinations visible. Give every chunk a stable id like <code>returns-policy.md#0</code> and make the tool return it.</p>
+  <div class="grid2">
+    <div><span class="tag py">what search_docs returns</span><pre>{"result": {"hits": [
+  {"id": "returns-policy.md#0", "score": 0.81,
+   "text": "Items can be returned within 30 days
+            of delivery in original packaging..."},
+  {"id": "refunds.md#1", "score": 0.74,
+   "text": "Refunds are issued to the original
+            payment method within 5 business days..."}
+]}}</pre></div>
+    <div><span class="tag py">what the model must answer</span>
+      <div class="answer-box">You can return an item within <b>30 days</b> of delivery, in its original packaging <span class="cite" title="returns-policy.md#0, score 0.81">[returns-policy.md#0]</span>. The refund reaches your original payment method within 5 business days <span class="cite" title="refunds.md#1, score 0.74">[refunds.md#1]</span>.</div>
+      <div class="answer-box" style="margin-top:8px">If there were no hits: "The documents don't say what the CEO's salary is." <span style="color:var(--muted)">(no citation, no guess)</span></div>
+    </div>
+  </div>
+  <div class="table-wrap"><table>
+    <tr><th>Rule</th><th>Where it lives</th></tr>
+    <tr><td>Answer only from search results; cite the id after each claim</td><td>System prompt</td></tr>
+    <tr><td>If <code>hits</code> is empty, say the documents don't cover it</td><td>System prompt + the tool's <code>note</code> field</td></tr>
+    <tr><td>Drop chunks below the threshold so weak matches never reach the model</td><td><b>Code</b>: <code>rag.search()</code></td></tr>
+    <tr><td>Every cited id must be one that was actually retrieved <span class="cite bad">[made-up.md#9]</span> = fail</td><td><b>Code</b>: <code>check_citations()</code> in <code>ask.py</code></td></tr>
+  </table></div>
+  <div class="callout good"><b>Same lesson as Day 2</b>The prompt asks nicely; the code enforces. A threshold in <code>search()</code> and a citation check after the answer are worth more than another paragraph of instructions.</div>
+</section>
+
+<!-- ============ PART B ============ -->
+
+<section id="numpy">
+  <div class="sec-num">9 · numpy = fast typed arrays</div>
+  <h2>Think <code>Float32Array</code> with maths built in</h2>
+  <p class="why">numpy arrays hold one number type, have a <b>shape</b>, and apply operations to every element in C. No loops needed.</p>
+
+  <div class="sbs-title">Shape is the first thing to check</div>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre>vectors = np.array(list_of_lists, dtype=np.float32)
+vectors.shape      <span class="c"># (23, 768): 23 chunks, 768 numbers each</span>
+vectors[0].shape   <span class="c"># (768,): one chunk's vector</span>
+vectors[:, 0]      <span class="c"># first number of every chunk</span></pre></div>
+    <div><span class="tag js">JS / TS</span><pre><span class="k">const</span> vectors = listOfLists.map((v) =&gt; Float32Array.from(v));
+[vectors.length, vectors[0].length]   <span class="c">// [23, 768]</span>
+vectors[0]                            <span class="c">// one vector</span>
+vectors.map((v) =&gt; v[0])              <span class="c">// first column</span></pre></div>
+  </div>
+
+  <div class="sbs-title">Score everything, take the top k</div>
+  <div class="sbs">
+    <div><span class="tag py">Python (planned rag.search)</span><pre>scores = vectors @ q                 <span class="c"># (23,)</span>
+top = np.argsort(scores)[::-1][:k]   <span class="c"># indexes, best first</span>
+hits = [(ids[i], float(scores[i])) <span class="k">for</span> i <span class="k">in</span> top
+        <span class="k">if</span> scores[i] &gt;= min_score]</pre></div>
+    <div><span class="tag js">JS / TS</span><pre><span class="k">const</span> scores = vectors.map((v) =&gt; dot(v, q));
+<span class="k">const</span> top = scores.map((s, i) =&gt; i)
+  .sort((a, b) =&gt; scores[b] - scores[a]).slice(0, k);
+<span class="k">const</span> hits = top.filter((i) =&gt; scores[i] &gt;= minScore)
+  .map((i) =&gt; [ids[i], scores[i]]);</pre></div>
+  </div>
+  <p class="sbs-note"><code>argsort</code> returns the <em>indexes</em> that would sort the array (ascending). <code>[::-1]</code> reverses it, <code>[:k]</code> takes the first k. <code>float(...)</code> turns a numpy float into a plain Python float so <code>json.dumps</code> works.</p>
+
+  <div class="table-wrap"><table>
+    <tr><th>numpy</th><th>Means</th><th>JS mental model</th></tr>
+    <tr><td><code>a @ b</code></td><td>matrix / dot product</td><td><code>dot(a, b)</code> for every row</td></tr>
+    <tr><td><code>a / norms</code> with <code>keepdims=True</code></td><td>divide each row by its own length (broadcasting)</td><td><code>rows.map((r, i) =&gt; r.map((x) =&gt; x / norms[i]))</code></td></tr>
+    <tr><td><code>a[mask]</code> e.g. <code>scores[scores &gt;= 0.6]</code></td><td>filter by a boolean array</td><td><code>scores.filter((s) =&gt; s &gt;= 0.6)</code></td></tr>
+    <tr><td><code>np.float32</code></td><td>4-byte floats: half the memory of the default float64</td><td><code>Float32Array</code></td></tr>
+  </table></div>
+  <div class="callout js"><b>Truthiness gotcha</b><code>if scores:</code> on a numpy array raises <code>ValueError: truth value of an array is ambiguous</code>. Use <code>if len(scores):</code> or <code>if scores.size:</code>.</div>
+</section>
+
+<section id="py-misc">
+  <div class="sec-num">10 · Slicing, files, caching</div>
+  <h2>The rest of the Python in today's code</h2>
+
+  <div class="sbs-title">String slicing and stepped ranges</div>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre>text[start:start + size]     <span class="c"># never throws, clips at the end</span>
+range(0, len(text), step)    <span class="c"># 0, step, 2*step, ...</span>
+text[-50:]                   <span class="c"># last 50 chars</span></pre></div>
+    <div><span class="tag js">JS / TS</span><pre>text.slice(start, start + size)
+<span class="k">for</span> (<span class="k">let</span> i = 0; i &lt; text.length; i += step) {}
+text.slice(-50)</pre></div>
+  </div>
+
+  <div class="sbs-title">Reading every Markdown file</div>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre><span class="k">from</span> pathlib <span class="k">import</span> Path
+
+<span class="k">for</span> p <span class="k">in</span> sorted(Path(<span class="s">"docs"</span>).glob(<span class="s">"**/*.md"</span>)):
+    text = p.read_text(encoding=<span class="s">"utf-8"</span>)
+    <span class="k">for</span> i, chunk <span class="k">in</span> enumerate(chunk_text(text)):
+        ids.append(<span class="s">f"{p.name}#{i}"</span>)</pre></div>
+    <div><span class="tag js">JS / TS</span><pre><span class="k">import</span> { globSync, readFileSync } <span class="k">from</span> <span class="s">"node:fs"</span>;
+
+<span class="k">for</span> (<span class="k">const</span> p <span class="k">of</span> globSync(<span class="s">"docs/**/*.md"</span>).sort()) {
+  <span class="k">const</span> text = readFileSync(p, <span class="s">"utf8"</span>);
+  chunkText(text).forEach((c, i) =&gt;
+    ids.push(<span class="s">`${basename(p)}#${i}`</span>));
+}</pre></div>
+  </div>
+
+  <div class="sbs-title">Cache the index so you embed once</div>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre>np.savez(<span class="s">"data/index.npz"</span>, vectors=vectors,
+         ids=np.array(ids), texts=np.array(texts))
+
+idx = np.load(<span class="s">"data/index.npz"</span>)
+idx[<span class="s">"vectors"</span>].shape   <span class="c"># (23, 768)</span></pre></div>
+    <div><span class="tag js">JS / TS</span><pre>writeFileSync(<span class="s">"data/index.json"</span>,
+  JSON.stringify({ vectors, ids, texts }));
+
+<span class="k">const</span> idx = JSON.parse(readFileSync(<span class="s">"data/index.json"</span>));
+<span class="c">// .npz is binary: smaller and much faster to load</span></pre></div>
+  </div>
+  <p class="sbs-note">Embedding calls cost time and quota. Re-ingest only when the docs change, never on every question.</p>
+
+  <div class="sbs-title">Calling the Gemini embedding API</div>
+  <div class="sbs">
+    <div><span class="tag py">Python (planned llm.embed)</span><pre>res = get_client().models.embed_content(
+    model=<span class="s">"gemini-embedding-001"</span>,
+    contents=batch,                         <span class="c"># list[str]</span>
+    config=types.EmbedContentConfig(
+        task_type=<span class="s">"RETRIEVAL_DOCUMENT"</span>,
+        output_dimensionality=768),
+)
+vecs = [e.values <span class="k">for</span> e <span class="k">in</span> res.embeddings]</pre></div>
+    <div><span class="tag js">JS (@google/genai)</span><pre><span class="k">const</span> res = <span class="k">await</span> ai.models.embedContent({
+  model: <span class="s">"gemini-embedding-001"</span>,
+  contents: batch,
+  config: { taskType: <span class="s">"RETRIEVAL_DOCUMENT"</span>,
+            outputDimensionality: 768 },
+});
+<span class="k">const</span> vecs = res.embeddings.map((e) =&gt; e.values);</pre></div>
+  </div>
+  <p class="sbs-note">Send chunks in batches (a list per call) rather than one request per chunk, and reuse Day 1's retry loop for 429s.</p>
+</section>
+
+<!-- ============ PART C ============ -->
+
+<section id="flow">
+  <div class="sec-num">11 · Step through a run</div>
+  <h2>How a question becomes a cited answer <span class="preview-badge">PLANNED DESIGN</span></h2>
+  <p class="why">This is the design we'll build today in <code>bootcamp/day03/</code>: <code>rag.py</code> (chunk, ingest, search, <code>search_docs</code> tool), <code>llm.py</code> + <code>embed()</code>, <code>ask.py</code> (CLI + citation check), plus Day 2's <code>tools.py</code>, <code>loop.py</code> and <code>tracing.py</code> unchanged. Names and numbers may shift a little once the code exists; this page gets updated to match.</p>
+  <div class="card">
+    <div class="scen" id="flowScen" role="group" aria-label="scenario">
+      <button type="button" data-s="ingest" class="sel">Ingest the docs</button>
+      <button type="button" data-s="answer">Answerable → cited</button>
+      <button type="button" data-s="refuse">Not in the docs → refuses</button>
+      <button type="button" data-s="retry">Weak match → searches again</button>
+    </div>
+    <div class="flow-wrap">
+      <div>
+        <div class="node" id="n-run"><div class="nm">ask.py → run_agent(question)</div><div class="fn">Day 2 loop.py, with tools=["search_docs"]</div></div>
+        <div class="down">↓ ↑</div>
+        <div class="node" id="n-chat"><div class="nm">llm.chat → Gemini 2.5 Flash</div><div class="fn">decides to search, then answers with citations</div></div>
+        <div class="down">↓ function_call search_docs → run_tool</div>
+        <div class="node" id="n-tool"><div class="nm">search_docs(query, k=4)</div><div class="fn">rag.py: the @tool wrapper the model sees</div></div>
+        <div class="down">↓ ↑</div>
+        <div class="node" id="n-rag"><div class="nm">rag.search / rag.ingest</div><div class="fn">rag.py: chunk, cosine, top-k, threshold</div></div>
+        <div class="split" style="margin-top:6px">
+          <div class="node" id="n-emb"><div class="nm">llm.embed()</div><div class="fn">gemini-embedding-001, 768 dims</div></div>
+          <div class="node" id="n-idx"><div class="nm">data/index.npz</div><div class="fn">vectors + ids + texts</div></div>
+        </div>
+        <div class="narr" aria-live="polite" style="margin-top:14px">
+          <div class="stepn" id="narrStep">Step 0</div>
+          <p id="narrText">Press <b>Next</b> to start.</p>
+        </div>
+      </div>
+      <div>
+        <div class="pane-title">contents (sent on every llm.chat) · <span id="ctxCount">0</span> messages</div>
+        <div class="contents" id="ctxPane"></div>
+        <div class="pane-title">terminal</div>
+        <div class="term" id="termPane"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" id="flowPrev" type="button">← Back</button>
+      <button class="btn" id="flowNext" type="button">Next →</button>
+      <button class="btn ghost" id="flowReset" type="button">Reset</button>
+    </div>
+  </div>
+<pre><span class="c"># planned rag.py: the tool the model sees</span>
+<span class="k">@tool</span>
+<span class="k">def</span> search_docs(query: str, k: int = 4) -&gt; dict:
+    <span class="s">"""Search the provided documents. Returns the most relevant passages with ids to cite.
+    If 'hits' is empty, the documents do not answer the question: say so, don't guess.
+
+    Args:
+        query: what to look for, in your own words. Rephrase and search again if results are weak.
+        k: how many passages to return (1-8).
+    """</span>
+    hits = search(query, k=min(k, 8), min_score=MIN_SCORE)
+    <span class="k">if not</span> hits:
+        <span class="k">return</span> {<span class="s">"hits"</span>: [], <span class="s">"note"</span>: <span class="s">f"No passage scored above {MIN_SCORE}."</span>}
+    <span class="k">return</span> {<span class="s">"hits"</span>: [{<span class="s">"id"</span>: h.id, <span class="s">"score"</span>: round(h.score, 2), <span class="s">"text"</span>: h.text} <span class="k">for</span> h <span class="k">in</span> hits]}</pre>
+  <div class="callout js"><b>Testing without a key</b><code>tests/test_rag.py</code> will swap <code>llm.embed</code> for a fake that turns text into a vector of word counts. Chunking, top-k, the threshold and citation checks all get tested offline, the same way <code>ScriptedClient</code> tested the loop on Day 2.</div>
+</section>
+
+<section id="quiz">
+  <div class="sec-num">12 · Self-check</div>
+  <h2>Answer out loud before opening</h2>
+  <details class="q"><summary>Why not paste every document into the prompt instead of doing RAG?</summary>It may not fit the context window; when it does, every question pays for all those input tokens, and models get worse at finding one fact in a huge prompt. RAG sends only the few passages that matter.</details>
+  <details class="q"><summary>What does cosine similarity measure, and why can it become a plain dot product?</summary>How much two vectors point the same way, ignoring their length. If every vector is normalised to length 1, the denominator is 1, so cosine = dot product. That's why we normalise at ingest.</details>
+  <details class="q"><summary>Why two task types, RETRIEVAL_DOCUMENT and RETRIEVAL_QUERY?</summary>Questions and passages are written differently (short question vs long statement). Gemini produces slightly different vectors for each role so that a question lands near the passage that answers it.</details>
+  <details class="q"><summary>What goes wrong with chunks that are too big? Too small?</summary>Too big: the vector is a blur of many topics, and each hit wastes context. Too small: chunks lose context ("It is 30 days." What is?). Overlap keeps sentences at boundaries intact.</details>
+  <details class="q"><summary>Top-k always returns k results. How does the agent ever say "I don't know"?</summary>The score threshold in <code>search()</code> drops weak matches. If nothing passes, the tool returns empty <code>hits</code> plus a note, and the prompt says: no hits → say the documents don't cover it.</details>
+  <details class="q"><summary>How do you pick the threshold?</summary>From data: run the eval questions, compare the best score for answerable vs unanswerable ones, and set the line between them. It's specific to the model, chunk size and documents.</details>
+  <details class="q"><summary>What is reranking, and when would you skip it?</summary>A second, slower pass that scores each (question, chunk) pair for real relevance, usually with an LLM, on the top ~10 cosine hits. Skip it until the eval shows the right chunk is retrieved but ranked too low.</details>
+  <details class="q"><summary>The model cites <code>pricing.md#3</code> but search never returned it. Which layer catches that?</summary>Code: <code>check_citations()</code> compares every cited id against the ids the tools actually returned in this run, and fails the answer if any are made up.</details>
+</section>
+</main>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  };
+
+  // theme
+  const savedTheme = store.get("bc-theme");
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  $("themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("bc-theme", next);
+  });
+
+  // toc highlight
+  const links = [...document.querySelectorAll("nav.toc a")];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("main section").forEach((s) => io.observe(s));
+
+  // mission checklist
+  const boxes = [...document.querySelectorAll("#stations input")];
+  const KEY = "bc-day03-checks";
+  let saved = {};
+  try { saved = JSON.parse(store.get(KEY) || "{}"); } catch (e) {}
+  function renderMission() {
+    const done = boxes.filter((b) => b.checked).length;
+    $("progBar").style.width = (done / boxes.length * 100) + "%";
+    $("missionPct").textContent = `${done} of ${boxes.length} done`;
+    boxes.forEach((b) => b.parentElement.classList.toggle("done", b.checked));
+    document.querySelectorAll(".station").forEach((st) => {
+      st.classList.toggle("done", [...st.querySelectorAll("input")].every((b) => b.checked));
+    });
+  }
+  boxes.forEach((b) => {
+    b.checked = !!saved[b.id];
+    b.addEventListener("change", () => { saved[b.id] = b.checked; store.set(KEY, JSON.stringify(saved)); renderMission(); });
+  });
+  renderMission();
+
+  // ---------- 2D embedding demo ----------
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const unit = (v) => { const n = Math.hypot(v[0], v[1]) || 1; return [v[0] / n, v[1] / n]; };
+  const docs = [
+    { t: "Refunds are issued within 5 business days", s: "refunds", c: "t-refund", v: [0.95, 0.3] },
+    { t: "Returns accepted within 30 days, original packaging", s: "returns", c: "t-refund", v: [0.8, 0.55] },
+    { t: "Orders ship from the Pune warehouse in 2 days", s: "ship time", c: "t-ship", v: [0.15, 0.98] },
+    { t: "Express shipping costs ₹150 extra", s: "express", c: "t-ship", v: [0.45, 0.88] },
+    { t: "Passwords must be at least 12 characters", s: "passwords", c: "t-sec", v: [-0.85, 0.5] },
+    { t: "Admins must enable two-factor login", s: "2FA", c: "t-sec", v: [-0.95, 0.2] },
+    { t: "The office is closed on public holidays", s: "holidays", c: "t-other", v: [-0.25, -0.95] },
+    { t: "Warranty covers defects for 12 months", s: "warranty", c: "t-other", v: [0.8, -0.35] },
+  ].map((d) => ({ ...d, u: unit(d.v) }));
+  const presetQ = [[0.97, 0.22], [0.25, 0.97], [-0.9, 0.42], [0.6, -0.8]];
+  let q = unit(presetQ[0]);
+  const svg = $("embSvg");
+  function el(name, attrs, parent) {
+    const e = document.createElementNS(SVGNS, name);
+    Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+    (parent || svg).appendChild(e);
+    return e;
+  }
+  function renderEmb() {
+    svg.innerHTML = "";
+    el("line", { x1: -1.2, y1: 0, x2: 1.2, y2: 0, class: "axis" });
+    el("line", { x1: 0, y1: -1.2, x2: 0, y2: 1.2, class: "axis" });
+    el("circle", { cx: 0, cy: 0, r: 1, class: "circle" });
+    const scored = docs.map((d) => ({ d, s: d.u[0] * q[0] + d.u[1] * q[1] })).sort((a, b) => b.s - a.s);
+    const top = scored.slice(0, 3);
+    top.forEach(({ d }) => el("line", { x1: q[0], y1: -q[1], x2: d.u[0], y2: -d.u[1], class: "link" }));
+    docs.forEach((d) => {
+      el("circle", { cx: d.u[0], cy: -d.u[1], r: 0.045, class: "doc " + d.c });
+      const lx = d.u[0] * 1.0 + (d.u[0] >= 0 ? 0.06 : -0.06);
+      const t = el("text", { x: lx, y: -d.u[1] + 0.02, class: "lbl", "text-anchor": d.u[0] >= 0 ? "start" : "end" });
+      t.textContent = d.s;
+    });
+    el("line", { x1: 0, y1: 0, x2: q[0] * 0.95, y2: -q[1] * 0.95, class: "qarrow" });
+    el("circle", { cx: q[0], cy: -q[1], r: 0.05, class: "qdot" });
+    const qt = el("text", { x: q[0] * 0.55, y: -q[1] * 0.55 - 0.06, class: "lbl", "text-anchor": "middle" });
+    qt.textContent = "question";
+    $("embRank").innerHTML = scored.map(({ d, s }, i) =>
+      `<li class="${i < 3 ? "top" : ""}"><span class="dot" style="background:var(${({ "t-refund": "--role-tool", "t-ship": "--role-user", "t-sec": "--role-model", "t-other": "--warn" })[d.c]})"></span><span>${esc(d.t)}</span><span class="sc">${s.toFixed(2)}</span></li>`).join("");
+    const best = scored[0].s;
+    $("embNote").innerHTML = best < 0.9
+      ? `Best match is only <b>${best.toFixed(2)}</b>: nothing really points this way. With a threshold this question gets "I don't know". (Toy numbers: in 2D everything is close; real scores are lower.)`
+      : `Top 3 are highlighted: those chunks would go into the prompt. Notice no words need to overlap with the question.`;
+  }
+  svg.addEventListener("pointerdown", (ev) => {
+    const pt = svg.createSVGPoint();
+    pt.x = ev.clientX; pt.y = ev.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    if (Math.hypot(p.x, p.y) < 0.05) return;
+    q = unit([p.x, -p.y]);
+    document.querySelectorAll("#embQs button").forEach((b) => b.classList.remove("sel"));
+    renderEmb();
+  });
+  document.querySelectorAll("#embQs button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#embQs button").forEach((x) => x.classList.toggle("sel", x === b));
+    q = unit(presetQ[+b.dataset.q]);
+    renderEmb();
+  }));
+  renderEmb();
+
+  // ---------- chunking demo ----------
+  const SAMPLE = "Returns policy. Items can be returned within 30 days of delivery, in their original packaging. Opened software and gift cards cannot be returned. To start a return, open the order page and press Return item. Refunds. Once the warehouse receives the item, the refund is issued to the original payment method within 5 business days. Shipping costs are refunded only if the item arrived damaged. Exchanges. You can exchange an item for a different size or colour once per order, free of charge.";
+  function chunkText(text, size, overlap) {
+    const step = size - overlap, out = [];
+    for (let start = 0; start < text.length; start += step) {
+      out.push({ start, text: text.slice(start, start + size) });
+      if (start + size >= text.length) break;
+    }
+    return out;
+  }
+  function renderChunks() {
+    const size = +$("chSize").value;
+    let ov = +$("chOv").value;
+    if (ov >= size) ov = size - 10;
+    $("chSizeV").textContent = size;
+    $("chOvV").textContent = ov;
+    const chunks = chunkText(SAMPLE, size, ov);
+    const stored = chunks.reduce((a, c) => a + c.text.length, 0);
+    $("chStats").innerHTML = `${SAMPLE.length} chars → <b>${chunks.length} chunks</b>, ${stored} chars stored (${Math.round((stored / SAMPLE.length - 1) * 100)}% duplicated by overlap)`;
+    $("chOut").innerHTML = chunks.map((c, i) => {
+      const dup = i === 0 ? 0 : Math.max(0, chunks[i - 1].start + size - c.start);
+      return `<div class="chunk"><span class="cid">returns-policy.md#${i}</span>${dup ? `<span class="ov">${esc(c.text.slice(0, dup))}</span>` : ""}${esc(c.text.slice(dup))}</div>`;
+    }).join("");
+  }
+  $("chSize").addEventListener("input", renderChunks);
+  $("chOv").addEventListener("input", renderChunks);
+  renderChunks();
+
+  // ---------- top-k + threshold demo ----------
+  const SRCH = [
+    { q: "How many days do I have to return an item?", ans: true, rows: [["returns-policy.md#0", 0.81], ["refunds.md#1", 0.74], ["returns-policy.md#1", 0.66], ["warranty.md#0", 0.58], ["shipping.md#0", 0.47], ["security.md#2", 0.31]] },
+    { q: "Does the warranty cover water damage?", ans: true, rows: [["warranty.md#0", 0.76], ["warranty.md#1", 0.72], ["returns-policy.md#1", 0.55], ["refunds.md#0", 0.49], ["shipping.md#2", 0.38], ["holidays.md#0", 0.29]] },
+    { q: "Can I pay with crypto?", ans: false, rows: [["payments.md#0", 0.57], ["refunds.md#1", 0.51], ["pricing.md#0", 0.49], ["security.md#0", 0.41], ["shipping.md#1", 0.36], ["holidays.md#0", 0.27]] },
+    { q: "What is the CEO's salary?", ans: false, rows: [["pricing.md#0", 0.44], ["holidays.md#0", 0.41], ["security.md#1", 0.38], ["payments.md#0", 0.35], ["refunds.md#0", 0.31], ["shipping.md#0", 0.29]] },
+  ];
+  let sq = 0;
+  $("srchQs").innerHTML = SRCH.map((s, i) => `<button type="button" data-i="${i}" class="${i === 0 ? "sel" : ""}">${esc(s.q)}</button>`).join("");
+  document.querySelectorAll("#srchQs button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#srchQs button").forEach((x) => x.classList.toggle("sel", x === b));
+    sq = +b.dataset.i; renderSearch();
+  }));
+  function renderSearch() {
+    const k = +$("kSl").value, th = +$("thSl").value;
+    $("kV").textContent = k; $("thV").textContent = th.toFixed(2);
+    const s = SRCH[sq];
+    const lo = 0.2, hi = 0.9, pct = (x) => ((x - lo) / (hi - lo) * 100);
+    const kept = [];
+    $("srchRows").innerHTML = s.rows.map(([id, sc], i) => {
+      const inK = i < k, above = sc >= th, pick = inK && above;
+      if (pick) kept.push(id);
+      const cls = pick ? "pick" : (inK && !above ? "below" : "");
+      return `<div class="score-row ${cls}"><span class="nm">${esc(id)}</span><div class="bar"><div style="width:${pct(sc).toFixed(1)}%"></div><span class="thr-line" style="left:${pct(th).toFixed(1)}%"></span></div><span class="v">${sc.toFixed(2)}</span></div>`;
+    }).join("");
+    const v = $("srchVerdict");
+    if (kept.length) {
+      const wrong = !s.ans;
+      v.className = "verdict " + (wrong ? "no" : "ok");
+      v.innerHTML = wrong
+        ? `✗ ${kept.length} weak chunk(s) pass the threshold for a question the docs <b>don't</b> answer. The model may now "answer" from <code>${esc(kept[0])}</code>, a hallucination with a citation. Raise the threshold.`
+        : `✓ The model gets ${kept.length} chunk(s) to answer from and cite: ${kept.map((x) => `<code>${esc(x)}</code>`).join(", ")}.`;
+    } else {
+      v.className = "verdict " + (s.ans ? "no" : "ok");
+      v.innerHTML = s.ans
+        ? `✗ Nothing passes, but the docs <b>do</b> answer this. The agent wrongly says "I don't know". Lower the threshold.`
+        : `✓ <code>hits: []</code> → the agent says "The documents don't cover that." Correct refusal.`;
+    }
+  }
+  $("kSl").addEventListener("input", renderSearch);
+  $("thSl").addEventListener("input", renderSearch);
+  renderSearch();
+
+  // ---------- rerank demo ----------
+  const RR = [
+    { id: "warranty.md#0", cos: 0.76, rel: 4, t: "Warranty covers manufacturing defects for 12 months" },
+    { id: "warranty.md#1", cos: 0.72, rel: 10, t: "Not covered: water damage, drops, unauthorised repairs" },
+    { id: "returns-policy.md#1", cos: 0.55, rel: 1, t: "Opened items can't be returned" },
+    { id: "repairs.md#0", cos: 0.53, rel: 8, t: "Liquid damage repairs are paid; quote within 3 days" },
+    { id: "refunds.md#0", cos: 0.49, rel: 0, t: "Refunds go to the original payment method" },
+    { id: "shipping.md#2", cos: 0.38, rel: 0, t: "Damaged-in-transit claims within 48 hours" },
+  ];
+  let reranked = false;
+  function renderRR() {
+    $("rrA").innerHTML = RR.map((r, i) => `<li class="${!reranked && i < 2 ? "keep" : ""}">${esc(r.id)} <span class="mono" style="color:var(--muted)">${r.cos.toFixed(2)}</span><br><span style="font-size:12.5px;color:var(--muted)">${esc(r.t)}</span></li>`).join("");
+    if (!reranked) {
+      $("rrB").innerHTML = `<li style="color:var(--muted);list-style:none;margin-left:-22px">Press "Run rerank". Without it, the top 2 by cosine go to the model.</li>`;
+      $("rrNote").innerHTML = "Cosine top 2 = <code>warranty.md#0</code> + <code>warranty.md#1</code>. The general warranty chunk ranks first, but it doesn't mention water at all.";
+      $("rrBtn").disabled = false;
+      return;
+    }
+    const sorted = [...RR].sort((a, b) => b.rel - a.rel);
+    $("rrB").innerHTML = sorted.map((r, i) => `<li class="${i < 2 ? "keep" : "drop"}">${esc(r.id)} <span class="mono">relevance ${r.rel}/10</span></li>`).join("");
+    $("rrNote").innerHTML = "After rerank: the exclusions chunk (<b>water damage not covered</b>) and the paid-repairs chunk win. <code>repairs.md#0</code> was 4th by cosine and would have been cut by top-2. Cost: one extra LLM call.";
+    $("rrBtn").disabled = true;
+  }
+  $("rrBtn").addEventListener("click", () => { reranked = true; renderRR(); });
+  $("rrReset").addEventListener("click", () => { reranked = false; renderRR(); });
+  renderRR();
+
+  // ---------- flow player (planned design) ----------
+  const NODES = ["n-run", "n-chat", "n-tool", "n-rag", "n-emb", "n-idx"];
+  const U = (t) => ({ r: "user", t });
+  const M = (t) => ({ r: "model", t });
+  const T = (t, err) => ({ r: "tool", t, err });
+  const scenarios = {
+    ingest: [
+      { on: "n-rag", term: "$ python rag.py ingest", t: "<code>ingest()</code> globs <code>docs/**/*.md</code>: 6 files (returns-policy, refunds, warranty, shipping, payments, security). No LLM chat in this phase." },
+      { on: "n-rag", ok: true, term: "<d>read 6 files, 9,840 chars → 17 chunks (size=800, overlap=150)</d>", t: "<code>chunk_text()</code> cuts each file; ids look like <code>warranty.md#1</code> so answers can cite them later." },
+      { on: "n-emb", t: "<code>llm.embed(texts, task_type=\"RETRIEVAL_DOCUMENT\")</code> sends the 17 chunks as one batch to <code>gemini-embedding-001</code> with <code>output_dimensionality=768</code>. Day 1's retry loop covers 429s." },
+      { on: "n-emb", ok: true, term: "<d>embedded 17 chunks in 1 batch · 1.2s</d>", t: "Back come 17 lists of 768 floats → <code>np.array(..., dtype=np.float32)</code>, shape <code>(17, 768)</code>, then <code>normalize()</code> so cosine = dot later." },
+      { on: "n-idx", ok: true, term: "<g>saved data/index.npz  vectors=(17, 768) ids=17 texts=17</g>", t: "<code>np.savez</code> writes vectors, ids and texts together. Questions now never re-embed the docs, only themselves." },
+    ],
+    answer: [
+      { on: "n-run", add: [U("How many days do I have to return an item?")], t: "<code>ask.py</code> calls Day 2's <code>run_agent(question, tools=[\"search_docs\"], system=RAG_SYSTEM)</code>. The system prompt says: search first, answer only from hits, cite ids." },
+      { on: "n-chat", ok: true, add: [M("function_call search_docs(query='return window days to return an item', k=4)")], term: "[1] LLM     640ms  in=820 out=24", t: "Gemini doesn't answer from memory; it calls the tool, rewording the query a bit. That's allowed and often helps." },
+      { on: "n-tool", t: "Day 2's <code>run_tool</code> validates args and calls <code>search_docs</code>, which calls <code>rag.search(query, k=4, min_score=0.6)</code>." },
+      { on: "n-emb", ok: true, t: "The query is embedded with <code>task_type=\"RETRIEVAL_QUERY\"</code> and normalised. One small API call." },
+      { on: "n-idx", ok: true, t: "<code>scores = vectors @ q</code> scores all 17 chunks at once. <code>argsort</code> → top 4: 0.81, 0.74, 0.66, 0.58. The threshold drops 0.58 → <b>3 hits</b>." },
+      { on: "n-tool", ok: true, add: [T("function_response search_docs → {hits: [{id: 'returns-policy.md#0', score: 0.81, text: 'Items can be returned within 30 days…'}, {id: 'refunds.md#1', score: 0.74, …}, {id: 'returns-policy.md#1', score: 0.66, …}]}")], term: "[2] TOOL    310ms  ok  search_docs({\"query\": \"return window…\"}) -> {\"result\": {\"hits\": [{\"id\": \"returns-policy.md#0\", …", t: "Hits go back as the function response: id + score + text. The text is now in the model's context." },
+      { on: "n-chat", ok: true, add: [M("You can return an item within 30 days of delivery, in its original packaging [returns-policy.md#0]. Refunds arrive within 5 business days [refunds.md#1].")], term: "[3] LLM     720ms  in=1460 out=48\n<g>[3] FINAL You can return an item within 30 days … [returns-policy.md#0] …</g>", t: "No more function calls → final answer, with an id after each claim." },
+      { on: "n-run", ok: true, term: "<g>citations ok: returns-policy.md#0, refunds.md#1 (both retrieved)</g>", t: "<code>check_citations()</code> in <code>ask.py</code> pulls every <code>[id]</code> out of the answer and checks it was in a <code>search_docs</code> result in this trace. Both were → pass." },
+    ],
+    refuse: [
+      { on: "n-run", add: [U("What is the CEO's salary?")], t: "One of the 3 unanswerable questions in <code>questions.jsonl</code>." },
+      { on: "n-chat", ok: true, add: [M("function_call search_docs(query='CEO salary compensation')")], term: "[1] LLM     590ms  in=812 out=18", t: "The model searches, as instructed." },
+      { on: "n-idx", t: "Scores: best is <code>pricing.md#0</code> at <b>0.44</b>. Top-k would happily return 4 chunks, but every one is below <code>MIN_SCORE = 0.6</code>." },
+      { on: "n-tool", ok: true, add: [T("function_response search_docs → {hits: [], note: 'No passage scored above 0.6.'}")], term: "[2] TOOL    280ms  ok  search_docs({\"query\": \"CEO salary compensation\"}) -> {\"result\": {\"hits\": [], \"note\": …", t: "Empty hits plus a note. The weak chunks <b>never reach the model</b>, so it has nothing to twist into a fake answer." },
+      { on: "n-chat", ok: true, add: [M("The documents don't say what the CEO's salary is.")], term: "[3] LLM     410ms  in=900 out=12\n<g>[3] FINAL The documents don't say what the CEO's salary is.</g>", t: "Correct refusal. In the eval this counts as a <b>pass</b> for an unanswerable question: refusing is the right answer." },
+    ],
+    retry: [
+      { on: "n-run", add: [U("Can I pay with crypto?")], t: "A borderline question: there <em>is</em> a payments doc, it just doesn't mention crypto." },
+      { on: "n-chat", ok: true, add: [M("function_call search_docs(query='pay with crypto')")], term: "[1] LLM     600ms  in=815 out=16", t: "First search uses the user's words." },
+      { on: "n-tool", ok: true, add: [T("function_response search_docs → {hits: [], note: 'No passage scored above 0.6.'}")], term: "[2] TOOL    290ms  ok  search_docs({\"query\": \"pay with crypto\"}) -> {\"result\": {\"hits\": [] …", t: "Best score 0.57: just under the line. Empty hits." },
+      { on: "n-chat", ok: true, add: [M("function_call search_docs(query='accepted payment methods')")], term: "[3] LLM     580ms  in=930 out=17", t: "The tool's docstring says \"rephrase and search again if results are weak\". The model searches for the general topic. This is the Day 2 loop paying off." },
+      { on: "n-tool", ok: true, add: [T("function_response search_docs → {hits: [{id: 'payments.md#0', score: 0.71, text: 'We accept Visa, Mastercard, RuPay and UPI…'}]}")], term: "[4] TOOL    300ms  ok  search_docs({\"query\": \"accepted payment methods\"}) -> {\"result\": {\"hits\": [{\"id\": \"payments.md#0\" …", t: "Now a strong hit." },
+      { on: "n-chat", ok: true, add: [M("The documents list Visa, Mastercard, RuPay and UPI as payment methods [payments.md#0]; crypto isn't mentioned, so it doesn't appear to be accepted.")], term: "[5] LLM     690ms  in=1120 out=36\n<g>[5] FINAL The documents list Visa, Mastercard, RuPay and UPI … [payments.md#0] …</g>", t: "A careful, cited answer that says what the docs do and don't cover. Two searches, still well inside <code>max_steps</code>." },
+    ],
+  };
+  let scen = "ingest", idx = -1;
+  function renderFlow() {
+    const steps = scenarios[scen];
+    NODES.forEach((id) => $(id).classList.remove("on", "ok", "err"));
+    const msgs = [], lines = [];
+    for (let i = 0; i <= idx; i++) {
+      (steps[i].add || []).forEach((m) => msgs.push({ ...m, at: i }));
+      if (steps[i].term) lines.push(steps[i].term);
+    }
+    $("ctxPane").innerHTML = msgs.length
+      ? msgs.map((m) => `<div class="cmsg ${m.r}${m.err ? " err" : ""}${m.at === idx ? " new" : ""}"><span class="role">${m.r === "tool" ? "user · tool result" : m.r}</span>${esc(m.t).replace(/\n/g, "<br>")}</div>`).join("")
+      : `<div style="color:var(--muted);font-size:14px">${scen === "ingest" ? "no chat in the ingest phase" : "empty"}</div>`;
+    $("ctxCount").textContent = msgs.length;
+    $("termPane").innerHTML = lines.length
+      ? lines.map((l) => esc(l).replace(/&lt;(\/?)(e|g|d)&gt;/g, "<$1$2>").replace(/<(e|g|d)>/g, '<span class="$1">').replace(/<\/(e|g|d)>/g, "</span>")).join("\n")
+      : `<span class="d">$ ${scen === "ingest" ? "python rag.py ingest" : 'python ask.py "…"'}</span>`;
+    if (idx < 0) {
+      $("narrStep").textContent = "Step 0 of " + steps.length;
+      $("narrText").innerHTML = "Press <b>Next</b> to start.";
+    } else {
+      const s = steps[idx];
+      $(s.on).classList.add(s.err ? "err" : s.ok ? "ok" : "on");
+      $("narrStep").textContent = `Step ${idx + 1} of ${steps.length}`;
+      $("narrText").innerHTML = s.t;
+    }
+    $("flowPrev").disabled = idx < 0;
+    $("flowNext").disabled = idx >= steps.length - 1;
+  }
+  document.querySelectorAll("#flowScen button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#flowScen button").forEach((x) => x.classList.toggle("sel", x === b));
+    scen = b.dataset.s; idx = -1; renderFlow();
+  }));
+  $("flowNext").addEventListener("click", () => { idx++; renderFlow(); });
+  $("flowPrev").addEventListener("click", () => { idx--; renderFlow(); });
+  $("flowReset").addEventListener("click", () => { idx = -1; renderFlow(); });
+  renderFlow();
+})();
+</script>
+</body>
+</html>

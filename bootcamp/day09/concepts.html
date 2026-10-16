@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 9 Rehearsal</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --surface-2: #f0eee8; --text: #1d1d1f; --muted: #5f5e5a;
+  --border: #e2dfd6; --accent: #2f6fde; --accent-soft: #e5eefc; --good: #1f8a4c; --good-soft: #e3f4ea;
+  --warn: #b26a00; --warn-soft: #fbf0dc; --bad: #c0392b; --bad-soft: #fbe6e3;
+  --js: #b8860b; --py: #2f6fde; --code-bg: #f3f1ec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+    --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+    --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+    --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+  --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+  --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+  --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+:not(pre) > code { background: var(--surface-2); padding: 1px 6px; border-radius: 5px; }
+a { color: var(--accent); }
+
+.layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); max-width: 1180px; margin: 0 auto; gap: 32px; padding: 0 24px; }
+nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 28px 0; }
+nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+nav.toc .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+nav.toc li a { display: flex; gap: 10px; padding: 6px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; }
+nav.toc li a::before { counter-increment: s; content: counter(s); font-variant-numeric: tabular-nums; min-width: 18px; color: var(--muted); opacity: .7; }
+nav.toc li a:hover { background: var(--surface-2); color: var(--text); }
+nav.toc li a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav.toc .part { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 10px 4px; }
+.theme-btn { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+
+main { padding: 28px 0 120px; min-width: 0; }
+header.hero { padding: 24px 0 8px; }
+.eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+h1 { font-size: 34px; line-height: 1.15; margin: 6px 0 12px; }
+h2 { font-size: 24px; margin: 0 0 6px; }
+h3 { font-size: 17px; margin: 22px 0 8px; }
+.lead { font-size: 18px; color: var(--muted); max-width: 680px; }
+section { padding-top: 56px; scroll-margin-top: 12px; }
+.sec-num { color: var(--muted); font-size: 13px; font-weight: 600; }
+.why { color: var(--muted); margin: 0 0 18px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin: 16px 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.grid2 > *, .grid3 > *, .stations > *, .pitch-wrap > *, .tl-row > * { min-width: 0; }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+.callout.js { border-color: var(--js); background: var(--warn-soft); }
+.callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+.callout.good { border-color: var(--good); background: var(--good-soft); }
+.callout b:first-child { display: block; margin-bottom: 2px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; }
+.tag.py { background: var(--accent-soft); color: var(--py); }
+.tag.bad { background: var(--bad-soft); color: var(--bad); }
+.tag.good { background: var(--good-soft); color: var(--good); }
+
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 8px 0; line-height: 1.55; }
+pre .c { color: var(--muted); font-style: italic; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.table-wrap { overflow-x: auto; }
+
+button.btn { background: var(--accent); color: #fff; border: 0; padding: 8px 14px; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+button.btn.ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+button.btn:disabled { opacity: .45; cursor: default; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* mission map */
+.mission { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin-top: 18px; }
+.mission-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.mission-head h2 { font-size: 20px; margin: 0; }
+.mission-head .pct { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; }
+.progress { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin: 10px 0 16px; }
+.progress div { height: 100%; background: var(--good); width: 0; transition: width .3s; }
+.stations { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.station { border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 8px; background: var(--surface-2); position: relative; }
+.station.done { border-color: var(--good); background: var(--good-soft); }
+.station .st-top { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; flex-wrap: wrap; }
+.station .st-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 13px; flex: none; }
+.station.done .st-num { background: var(--good); }
+.station .st-name { font-weight: 700; font-size: 14.5px; line-height: 1.25; }
+.station .st-time { color: var(--muted); font-size: 12.5px; width: 100%; }
+.station .st-goal { color: var(--muted); font-size: 13px; margin: 0 0 6px; }
+.station:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 14px; color: var(--muted); font-size: 16px; z-index: 1; }
+.task { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 13.5px; line-height: 1.4; border-top: 1px dashed var(--border); overflow-wrap: anywhere; }
+.task input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--good); flex: none; }
+.task.done label { color: var(--muted); text-decoration: line-through; }
+.task code { font-size: 12px; }
+.done-when { margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+.done-when .flag { font-size: 18px; line-height: 1.2; }
+
+/* pitch timer */
+.pitch-bar { display: flex; height: 40px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); margin: 12px 0 6px; }
+.pitch-bar div { display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 600; color: var(--muted); background: var(--surface-2); border-right: 1px solid var(--border); position: relative; overflow: hidden; white-space: nowrap; }
+.pitch-bar div:last-child { border-right: 0; }
+.pitch-bar div .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent-soft); width: 0; z-index: 0; }
+.pitch-bar div span { position: relative; z-index: 1; }
+.pitch-bar div.on { color: var(--accent); }
+.pitch-bar div.past .fill { width: 100%; background: var(--good-soft); }
+.pitch-bar div.past { color: var(--good); }
+.pitch-wrap { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 18px; align-items: start; }
+.clock { font-size: 44px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.clock.over { color: var(--bad); }
+.clock-sub { color: var(--muted); font-size: 13px; margin-top: 6px; }
+.seg-card { background: var(--surface-2); border-radius: 12px; padding: 14px 16px; min-height: 150px; }
+.seg-card h3 { margin: 0 0 4px; }
+.seg-card .say { font-style: italic; margin: 8px 0 0; }
+.seg-card ul { margin: 6px 0 0; padding-left: 20px; font-size: 14.5px; }
+
+/* failure plan */
+.ladder { display: grid; gap: 8px; }
+.rung { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px 12px; background: var(--surface-2); border-radius: 10px; cursor: pointer; border: 2px solid transparent; }
+.rung .n { width: 26px; height: 26px; border-radius: 50%; background: var(--warn); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.rung.on { border-color: var(--accent); background: var(--accent-soft); }
+.rung .detail { display: none; color: var(--muted); font-size: 14px; margin-top: 4px; }
+.rung.on .detail { display: block; }
+
+/* judges */
+.judge { display: grid; grid-template-columns: 150px minmax(0, 1fr) 60px; gap: 10px; align-items: center; margin: 8px 0; font-size: 14px; }
+.judge select { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 4px 6px; font: inherit; font-size: 13px; width: 100%; }
+.bar { height: 22px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--accent); border-radius: 6px; transition: width .25s ease; }
+.judge .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+/* packing */
+.pack-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14.5px; }
+.check input { margin-top: 4px; width: 17px; height: 17px; accent-color: var(--good); flex: none; }
+.check.done label { color: var(--muted); text-decoration: line-through; }
+.check small { display: block; color: var(--muted); font-size: 12.5px; }
+
+/* playbook card */
+.playbook { border: 2px solid var(--text); border-radius: 14px; padding: 22px 26px; background: var(--surface); }
+.playbook h3 { margin: 0 0 2px; font-size: 20px; }
+.playbook .pb-sub { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+.playbook ol { margin: 0; padding-left: 22px; }
+.playbook li { margin: 8px 0; }
+.playbook .foot { margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 13.5px; color: var(--muted); }
+
+/* timeline */
+.timeline { position: relative; margin: 12px 0; }
+.tl-row { display: grid; grid-template-columns: 110px 22px minmax(0, 1fr); gap: 10px; align-items: stretch; }
+.tl-time { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 14px; padding-top: 10px; }
+.tl-line { position: relative; }
+.tl-line::before { content: ""; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.tl-line::after { content: ""; position: absolute; left: 4px; top: 14px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface); border: 3px solid var(--accent); }
+.tl-row.gate .tl-line::after { border-color: var(--warn); background: var(--warn); }
+.tl-row.stop .tl-line::after { border-color: var(--bad); background: var(--bad); }
+.tl-row.now .tl-line::after { box-shadow: 0 0 0 5px var(--accent-soft); background: var(--accent); }
+.tl-body { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-bottom: 10px; }
+.tl-row.now .tl-body { border-color: var(--accent); background: var(--accent-soft); }
+.tl-body b { display: block; }
+.tl-body span { color: var(--muted); font-size: 14px; }
+.tl-body .rule { display: inline-block; margin-top: 4px; font-size: 12px; font-weight: 700; color: var(--warn); }
+.tl-row.stop .tl-body .rule { color: var(--bad); }
+.sim { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.sim input[type=range] { flex: 1 1 240px; accent-color: var(--accent); }
+
+details.q { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
+details.q summary { cursor: pointer; font-weight: 600; }
+details.q[open] summary { margin-bottom: 8px; }
+
+@media (max-width: 1050px) {
+  .stations { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .station:nth-child(3)::after { content: none; }
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; padding: 0 16px; gap: 0; }
+  nav.toc { position: static; height: auto; padding: 16px 0 0; }
+  nav.toc ol { display: flex; flex-wrap: wrap; gap: 4px; }
+  nav.toc .part { display: none; }
+  .grid2, .grid3, .stations, .pitch-wrap, .pack-grid { grid-template-columns: 1fr; }
+  .station:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -15px; }
+  .judge { grid-template-columns: 110px minmax(0, 1fr) 46px; }
+  .tl-row { grid-template-columns: 70px 22px minmax(0, 1fr); }
+  .pitch-bar div { font-size: 10.5px; }
+  h1 { font-size: 28px; }
+}
+
+@media print {
+  body { background: #fff; color: #000; }
+  nav.toc, header.hero, main > section:not(#playbook), #playbook > :not(.playbook) { display: none !important; }
+  .layout { display: block; padding: 0; }
+  main { padding: 0; }
+  section { padding: 0; }
+  .playbook { border-color: #000; background: #fff; color: #000; }
+  .playbook .pb-sub, .playbook .foot { color: #333; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <div class="brand">Day 9 · Rehearsal + Freeze</div>
+  <div class="sub">HackerRank AI Agents bootcamp · 23 Oct</div>
+  <ol>
+    <div class="part">Start here</div>
+    <li><a href="#mission">Today's mission</a></li>
+    <div class="part">Part A — The pitch</div>
+    <li><a href="#pitch">3-minute pitch</a></li>
+    <li><a href="#failure">When the demo breaks</a></li>
+    <li><a href="#judges">What judges look for</a></li>
+    <div class="part">Part B — Be ready</div>
+    <li><a href="#packing">Venue checklist</a></li>
+    <li><a href="#logistics">Logistics questions</a></li>
+    <li><a href="#playbook">Printable playbook</a></li>
+    <div class="part">Part C — Tomorrow</div>
+    <li><a href="#timeline">Sat 24 Oct, hour by hour</a></li>
+    <li><a href="#quiz">Self-check</a></li>
+  </ol>
+  <button class="theme-btn" id="themeBtn" type="button">Toggle theme</button>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Day 9 of 9 · Fri 23 Oct 2026 · the day before</div>
+  <h1>Rehearse once, test on the real laptop, then stop</h1>
+  <p class="lead">No new features today. Prove the starter works from a fresh clone, make it work without Wi-Fi, practise the 3-minute pitch, and go to bed early. Tomorrow's job is solving the problem, not fixing setup.</p>
+</header>
+
+<!-- ============ MISSION ============ -->
+<section id="mission" style="padding-top:20px">
+  <div class="mission">
+    <div class="mission-head">
+      <h2>Today's mission</h2>
+      <span class="pct" id="missionPct">0 of 0 done</span>
+    </div>
+    <div class="progress"><div id="progBar"></div></div>
+    <div class="stations" id="stations">
+      <div class="station">
+        <div class="st-top"><span class="st-num">1</span><span class="st-name">Mini mock</span><span class="st-time">2 h · strict clock</span></div>
+        <p class="st-goal">One last full cycle, shorter.</p>
+        <div class="task"><input type="checkbox" id="t1"><label for="t1">15 min: read problem, write <code>SPEC.md</code></label></div>
+        <div class="task"><input type="checkbox" id="t2"><label for="t2">75 min: tools → loop → UI from <code>starter/</code></label></div>
+        <div class="task"><input type="checkbox" id="t3"><label for="t3">20 min: 5 eval cases + scorecard</label></div>
+        <div class="task"><input type="checkbox" id="t4"><label for="t4">10 min: README + note what the starter lacked</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">2</span><span class="st-name">Fresh-clone test</span><span class="st-time">30 min</span></div>
+        <p class="st-goal">On the laptop you're taking.</p>
+        <div class="task"><input type="checkbox" id="t5"><label for="t5"><code>git clone</code> into a new folder</label></div>
+        <div class="task"><input type="checkbox" id="t6"><label for="t6"><code>python -m venv .venv</code> + activate</label></div>
+        <div class="task"><input type="checkbox" id="t7"><label for="t7"><code>pip install -r requirements.txt</code></label></div>
+        <div class="task"><input type="checkbox" id="t8"><label for="t8"><code>cp .env.example .env</code> + real keys</label></div>
+        <div class="task"><input type="checkbox" id="t9"><label for="t9"><code>pytest -q</code>, <code>make eval</code>, <code>streamlit run app.py</code></label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">3</span><span class="st-name">Offline wheelhouse</span><span class="st-time">20 min</span></div>
+        <p class="st-goal">Install works with no Wi-Fi.</p>
+        <div class="task"><input type="checkbox" id="t10"><label for="t10"><code>pip download -r requirements.txt -d wheels/</code></label></div>
+        <div class="task"><input type="checkbox" id="t11"><label for="t11">Wi-Fi off: <code>pip install --no-index --find-links wheels/ -r requirements.txt</code> in a new venv</label></div>
+        <div class="task"><input type="checkbox" id="t12"><label for="t12">Copy <code>wheels/</code> to a USB stick too</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">4</span><span class="st-name">Rehearse pitch</span><span class="st-time">30 min</span></div>
+        <p class="st-goal">3 minutes, out loud, timed.</p>
+        <div class="task"><input type="checkbox" id="t13"><label for="t13">Run the pitch timer below 3 times</label></div>
+        <div class="task"><input type="checkbox" id="t14"><label for="t14">Record a 60-second backup demo video</label></div>
+        <div class="task"><input type="checkbox" id="t15"><label for="t15">Write your 1-line "limits" sentence</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">5</span><span class="st-name">Freeze + sleep</span><span class="st-time">evening</span></div>
+        <p class="st-goal">No more changes after this.</p>
+        <div class="task"><input type="checkbox" id="t16"><label for="t16">Fix only what the fresh clone broke</label></div>
+        <div class="task"><input type="checkbox" id="t17"><label for="t17"><code>git tag starter-v1</code> + push</label></div>
+        <div class="task"><input type="checkbox" id="t18"><label for="t18">Pack the bag (Part B list)</label></div>
+        <div class="task"><input type="checkbox" id="t19"><label for="t19">Laptop charging, alarm set, sleep early</label></div>
+      </div>
+    </div>
+    <div class="done-when"><span class="flag">🏁</span><div><b>Done when:</b> a fresh clone on the hackathon laptop installs <em>with Wi-Fi off</em>, all tests pass, the demo runs, you've said the 3-minute pitch out loud within time, and <code>starter-v1</code> is tagged and pushed.</div></div>
+  </div>
+
+  <div class="card mono" style="font-size:14px;overflow-x:auto">
+    <span style="color:var(--muted)"># fresh-clone test (on the hackathon laptop)</span><br>
+    git clone https://github.com/pappukrs/agents.git agents-fresh &amp;&amp; cd agents-fresh/starter<br>
+    python3 -m venv .venv &amp;&amp; source .venv/bin/activate<br>
+    pip install -r requirements.txt &amp;&amp; cp .env.example .env<br>
+    pytest -q &amp;&amp; make eval &amp;&amp; streamlit run app.py<br><br>
+    <span style="color:var(--muted)"># offline wheelhouse</span><br>
+    pip download -r requirements.txt -d wheels/<br>
+    pip install --no-index --find-links wheels/ -r requirements.txt<br><br>
+    <span style="color:var(--muted)"># freeze</span><br>
+    git tag starter-v1 &amp;&amp; git push origin starter-v1
+  </div>
+  <div class="callout js"><b>JS analogy for the wheelhouse</b>It's like running <code>npm ci</code> from a pre-filled offline cache (<code>npm ci --offline</code>). <code>pip download</code> fills the cache; <code>--no-index --find-links wheels/</code> tells pip "don't go to PyPI, use only this folder".</div>
+</section>
+
+<!-- ============ PART A ============ -->
+
+<section id="pitch">
+  <div class="sec-num">2 · The 3-minute pitch</div>
+  <h2>Five parts, always in the same order</h2>
+  <p class="why">Judges see many projects. A clear, fixed structure makes yours easy to follow and easy to score. Press <b>Start</b> and say each part out loud. The timer moves you on when a part's time is up.</p>
+  <div class="card">
+    <div class="pitch-bar" id="pitchBar"></div>
+    <div class="pitch-wrap">
+      <div>
+        <div class="clock" id="clock">0:00</div>
+        <div class="clock-sub" id="clockSub">of 3:00</div>
+        <div class="btn-row">
+          <button class="btn" id="pStart" type="button">Start</button>
+          <button class="btn ghost" id="pNext" type="button">Next part</button>
+          <button class="btn ghost" id="pReset" type="button">Reset</button>
+        </div>
+      </div>
+      <div class="seg-card" id="segCard" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="callout"><b>Why demo before eval results?</b>The demo makes them care; the numbers make them believe it. Numbers first is boring. Demo with no numbers looks like a lucky happy path.</div>
+</section>
+
+<section id="failure">
+  <div class="sec-num">3 · When the demo breaks</div>
+  <h2>Have a plan for each kind of failure, before you need it</h2>
+  <p class="why">Live demos fail: Wi-Fi drops, the API returns 429, the model says something odd. Decide now what you'll do, so you don't freeze on stage. Click each step.</p>
+  <div class="ladder" id="ladder">
+    <div class="rung on"><span class="n">1</span><div><b>Fallback provider</b> — API down or rate-limited<div class="detail">Your <code>llm.py</code> has a provider switch (Day 7). Set <code>PROVIDER=openai</code> (or anthropic) in <code>.env</code> and re-run. Practise this switch once today, so you know it takes under 30 seconds.</div></div></div>
+    <div class="rung"><span class="n">2</span><div><b>Cached responses</b> — slow or flaky network<div class="detail">Run the demo questions once beforehand and save the results (or the trace JSON files). Add a <code>--replay traces/demo.json</code> mode that shows the saved steps. Say clearly "this is a recorded run" if you use it. Honesty scores better than pretending.</div></div></div>
+    <div class="rung"><span class="n">3</span><div><b>Recorded backup video</b> — laptop or projector trouble<div class="detail">A 60-second screen recording of a good run, saved locally <em>and</em> on your phone. If nothing else works, play it and talk over it.</div></div></div>
+    <div class="rung"><span class="n">4</span><div><b>Explain the trace</b> — the model gives a wrong answer live<div class="detail">Don't hide it. Open the trace panel: "Here it called <code>search_docs</code>, got a low score, and still answered. My eval caught this kind of case: 8/10 pass, here are the two misses." A failure you can explain shows you understand your system.</div></div></div>
+  </div>
+</section>
+
+<section id="judges">
+  <div class="sec-num">4 · What judges look for</div>
+  <h2>Score yourself honestly, the way a judge would</h2>
+  <p class="why">The exact rubric isn't known yet (ask on the day), but agent hackathons usually reward these four things. Rate your mock-challenge build. The bars show where to spend your last hour tomorrow.</p>
+  <div class="card" id="judgeCard"></div>
+  <div class="grid2">
+    <div class="card"><span class="tag good">scores well</span><ul style="margin:8px 0 0;padding-left:20px;font-size:14.5px">
+      <li>One agent, a few good tools, clearly explained</li>
+      <li>A scorecard: "9/10 cases pass, avg 2.1 s, 3k tokens"</li>
+      <li>Visible trace of tool steps in the UI</li>
+      <li>"It fails when … ; next I would …"</li></ul></div>
+    <div class="card"><span class="tag bad">scores badly</span><ul style="margin:8px 0 0;padding-left:20px;font-size:14.5px">
+      <li>5 agents where 1 would do, no reason given</li>
+      <li>"It works, trust me" with one happy-path demo</li>
+      <li>A crash or stack trace on stage</li>
+      <li>Claiming it handles everything</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ PART B ============ -->
+
+<section id="packing">
+  <div class="sec-num">5 · Venue readiness checklist</div>
+  <h2>Pack tonight, not tomorrow morning</h2>
+  <p class="why">Ticks are saved in this browser. Go through it once with the bag in front of you.</p>
+  <div class="card">
+    <div class="progress"><div id="packBar"></div></div>
+    <div style="font-size:13px;color:var(--muted)" id="packTxt"></div>
+    <div class="pack-grid" id="packList">
+      <div class="check"><input type="checkbox" id="p1"><label for="p1">Laptop, fully charged<small>the one you ran the fresh-clone test on</small></label></div>
+      <div class="check"><input type="checkbox" id="p2"><label for="p2">Charger + extension lead<small>venue sockets run out fast</small></label></div>
+      <div class="check"><input type="checkbox" id="p3"><label for="p3">Primary API key in <code>.env</code><small>tested today with a real call</small></label></div>
+      <div class="check"><input type="checkbox" id="p4"><label for="p4">Backup API key (other provider)<small>tested with the provider switch</small></label></div>
+      <div class="check"><input type="checkbox" id="p5"><label for="p5">Keys also stored in a password manager<small>never in git, never on a slide</small></label></div>
+      <div class="check"><input type="checkbox" id="p6"><label for="p6"><code>wheels/</code> folder on laptop + USB<small>offline install proven</small></label></div>
+      <div class="check"><input type="checkbox" id="p7"><label for="p7">Offline docs saved<small>these concepts pages, Gemini SDK + pandas + Streamlit docs as PDF/HTML</small></label></div>
+      <div class="check"><input type="checkbox" id="p8"><label for="p8">Phone hotspot works with the laptop<small>check your data balance</small></label></div>
+      <div class="check"><input type="checkbox" id="p9"><label for="p9">Claude Code / Codex logged in<small>open both once tonight on this laptop</small></label></div>
+      <div class="check"><input type="checkbox" id="p10"><label for="p10">Backup demo video on laptop + phone</label></div>
+      <div class="check"><input type="checkbox" id="p11"><label for="p11">Printed playbook card (below)</label></div>
+      <div class="check"><input type="checkbox" id="p12"><label for="p12">ID, registration email, water, snacks</label></div>
+    </div>
+  </div>
+</section>
+
+<section id="logistics">
+  <div class="sec-num">6 · Logistics questions</div>
+  <h2>Know these answers before the clock starts</h2>
+  <p class="why">From <code>BOOTCAMP.md</code>. If you couldn't confirm them this week, ask an organiser in the first 10 minutes tomorrow. Each answer changes your plan.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Question</th><th>If the answer is bad…</th></tr>
+    <tr><td>Is internet available? Are LLM API keys provided, or bring your own?</td><td>No internet → wheelhouse + hotspot. Keys provided → check which models, and set them in <code>.env</code> first thing.</td></tr>
+    <tr><td>Which models/providers are allowed? Any rate-limit or cost caps?</td><td>Only one provider → set it as default and turn off the fallback. Tight caps → <code>thinking_budget=0</code>, fewer eval cases, cache results.</td></tr>
+    <tr><td>Judging: hidden test cases, demo, code review — or a mix?</td><td>Hidden tests → match the I/O format exactly, eval early. Demo-heavy → Streamlit trace panel. Code review → clean README + tests.</td></tr>
+    <tr><td>Own laptop allowed? Can you bring pre-written code/templates?</td><td>Not allowed → you still have the practised <em>process</em>: re-type the loop from memory (you can, after Day 2).</td></tr>
+    <tr><td>Gemini free-tier limits — paid or backup key ready?</td><td>Free tier only → expect 429s mid-demo. The backup key is not optional.</td></tr>
+  </table></div>
+</section>
+
+<section id="playbook">
+  <div class="sec-num">7 · Printable playbook</div>
+  <h2>One card, on the desk next to the laptop</h2>
+  <p class="why">When you're tired at 3 pm and tempted to add "one more feature", read the card. Print it (only the card prints).</p>
+  <div class="btn-row" style="margin-bottom:14px"><button class="btn" id="printBtn" type="button">Print the card</button></div>
+  <div class="playbook">
+    <h3>Hackathon-day playbook</h3>
+    <div class="pb-sub">HackerRank AI Agent Building Challenge · Sat 24 Oct 2026</div>
+    <ol>
+      <li><b>First 30 min: no code.</b> Read the problem twice. Find the inputs, the outputs and how it's scored. Write <code>SPEC.md</code>.</li>
+      <li><b>Simplest working version by midday</b>, end to end, then improve. Never be without a demo-able build.</li>
+      <li><b>Give Claude Code small, specific tasks</b> ("add a tool <code>x</code> with signature … and a test"). Review each diff. Commit.</li>
+      <li><b>Evals before polish.</b> A 10-case scorecard beats a pretty UI.</li>
+      <li><b>Last hour: no new features.</b> README, architecture diagram, demo run-through.</li>
+    </ol>
+    <div class="foot">Commit every 30 min · one agent + good tools before multi-agent · bounded loops, validated output · errors are observations · say the limits out loud</div>
+  </div>
+</section>
+
+<!-- ============ PART C ============ -->
+
+<section id="timeline">
+  <div class="sec-num">8 · Sat 24 Oct, hour by hour</div>
+  <h2>Tomorrow's plan, so you only have to follow it</h2>
+  <p class="why">Times assume a 10:00 start and a 17:00 submission. Shift them when you know the real hours. Drag the slider to see where you should be at any moment, and what you should <em>not</em> be doing.</p>
+  <div class="card">
+    <div class="sim"><label for="simT" style="font-weight:600">It's now <span class="mono" id="simLbl">10:00</span></label><input type="range" id="simT" min="0" max="420" step="10" value="0"></div>
+    <p id="simMsg" style="margin:10px 0 0;font-size:14.5px"></p>
+  </div>
+  <div class="timeline" id="tl"></div>
+  <div class="callout warn"><b>The two gates</b>At <b>12:30</b>, if nothing runs end to end, cut scope until something does. At <b>16:00</b>, stop adding features, whatever state you're in. Both feel bad in the moment, and both win hackathons.</div>
+</section>
+
+<section id="quiz">
+  <div class="sec-num">9 · Self-check</div>
+  <h2>Answer out loud before opening</h2>
+  <details class="q"><summary>What are the 5 parts of the pitch, in order?</summary>Problem → architecture → demo → eval results → limits. About 20 / 35 / 60 / 40 / 25 seconds.</details>
+  <details class="q"><summary>Why run the fresh-clone test on the laptop you're taking, not your usual machine?</summary>Your usual machine has hidden state: a global package, a cached login, an env var. The fresh clone on the real laptop shows what's actually missing.</details>
+  <details class="q"><summary>What do <code>--no-index</code> and <code>--find-links wheels/</code> do?</summary><code>--no-index</code>: don't contact PyPI. <code>--find-links wheels/</code>: look for packages in this folder. Together they install with no internet.</details>
+  <details class="q"><summary>The Gemini API starts returning 429 during your demo. What do you do?</summary>Switch provider in <code>.env</code> (practised, under 30 s). If that fails, use the cached/replay run and say it's recorded. Last resort: the backup video.</details>
+  <details class="q"><summary>The model gives a wrong answer live. What's the best response?</summary>Show the trace, explain why it went wrong, and point to the eval numbers that already measure this failure. Explaining a failure shows understanding.</details>
+  <details class="q"><summary>Why is "limits" a part of the pitch at all?</summary>Judges know every system has limits. Saying them shows you tested it properly; hiding them makes them doubt everything else.</details>
+  <details class="q"><summary>It's 12:30 and nothing runs end to end. What now?</summary>Cut scope: fewer tools, no UI, hard-code a step if needed, until one input goes all the way to one output. Then build up again.</details>
+  <details class="q"><summary>It's 16:15 and you have a great idea for a new feature. What do you do?</summary>Write it in the README under "Next steps" and keep going with README, diagram and demo rehearsal. Last hour: no new features.</details>
+</section>
+</main>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  };
+
+  // theme
+  const savedTheme = store.get("bc-theme");
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  $("themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("bc-theme", next);
+  });
+
+  // toc highlight
+  const links = [...document.querySelectorAll("nav.toc a")];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("main section").forEach((s) => io.observe(s));
+
+  // checklists (mission + packing share one store key)
+  const KEY = "bc-day09-checks";
+  let saved = {};
+  try { saved = JSON.parse(store.get(KEY) || "{}"); } catch (e) {}
+  const missionBoxes = [...document.querySelectorAll("#stations input")];
+  const packBoxes = [...document.querySelectorAll("#packList input")];
+  function render() {
+    const md = missionBoxes.filter((b) => b.checked).length;
+    $("progBar").style.width = (md / missionBoxes.length * 100) + "%";
+    $("missionPct").textContent = `${md} of ${missionBoxes.length} done`;
+    document.querySelectorAll(".station").forEach((st) => {
+      st.classList.toggle("done", [...st.querySelectorAll("input")].every((b) => b.checked));
+    });
+    const pd = packBoxes.filter((b) => b.checked).length;
+    $("packBar").style.width = (pd / packBoxes.length * 100) + "%";
+    $("packTxt").textContent = `${pd} of ${packBoxes.length} packed`;
+    [...missionBoxes, ...packBoxes].forEach((b) => b.parentElement.classList.toggle("done", b.checked));
+  }
+  [...missionBoxes, ...packBoxes].forEach((b) => {
+    b.checked = !!saved[b.id];
+    b.addEventListener("change", () => { saved[b.id] = b.checked; store.set(KEY, JSON.stringify(saved)); render(); });
+  });
+  render();
+
+  // pitch timer
+  const segs = [
+    { name: "Problem", s: 20, say: "“Support teams spend hours answering questions that are already in their docs.”",
+      tips: ["Who has the problem, and why it matters", "One sentence. No tech words yet"] },
+    { name: "Architecture", s: 35, say: "“One agent, four tools, a bounded loop. Here's the diagram.”",
+      tips: ["Show the diagram: input → agent loop → tools → output", "Say why it's this simple (or why it needed more)", "Name the guards: max steps, validated output, sandbox"] },
+    { name: "Demo", s: 60, say: "“Let me ask it a real question. Watch the trace panel on the right.”",
+      tips: ["One prepared question, typed live", "Point at the tool steps as they appear", "Show one refusal or error recovery, if you have time"] },
+    { name: "Eval results", s: 40, say: "“On 10 test cases: 9 pass, average 2.1 seconds, about 3k tokens each.”",
+      tips: ["Show the scorecard table", "Mention what you compared (2 models / 2 prompts)", "Numbers are what make the demo believable"] },
+    { name: "Limits", s: 25, say: "“It struggles with questions that need two documents at once. Next I'd add a reranker.”",
+      tips: ["One or two honest weaknesses", "What you'd do next with more time", "End here and stop talking"] },
+  ];
+  const TOTAL = segs.reduce((a, b) => a + b.s, 0);
+  $("pitchBar").innerHTML = segs.map((g, i) =>
+    `<div id="pb${i}" style="flex:${g.s}"><i class="fill"></i><span>${g.name} · ${g.s}s</span></div>`).join("");
+  let elapsed = 0, timer = null;
+  const fmt = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+  function segAt(t) {
+    let acc = 0;
+    for (let i = 0; i < segs.length; i++) { if (t < acc + segs[i].s) return [i, t - acc]; acc += segs[i].s; }
+    return [segs.length, 0];
+  }
+  function renderPitch() {
+    const [i, into] = segAt(elapsed);
+    segs.forEach((g, j) => {
+      const el = $("pb" + j);
+      el.classList.toggle("on", j === i);
+      el.classList.toggle("past", j < i);
+      el.querySelector(".fill").style.width = j === i ? (into / g.s * 100) + "%" : "";
+    });
+    $("clock").textContent = fmt(elapsed);
+    $("clock").classList.toggle("over", elapsed >= TOTAL);
+    if (i >= segs.length) {
+      $("clockSub").textContent = "time's up";
+      $("segCard").innerHTML = "<h3>Done. Stop talking.</h3><p style='margin:6px 0 0'>Then: “Happy to take questions.” Run it again until it fits in 3:00 without rushing the demo.</p>";
+      return;
+    }
+    const g = segs[i];
+    $("clockSub").textContent = `of ${fmt(TOTAL)} · ${g.s - Math.floor(into)}s left in this part`;
+    $("segCard").innerHTML = `<div style="color:var(--muted);font-size:13px">Part ${i + 1} of ${segs.length} · ${g.s} seconds</div><h3>${g.name}</h3><ul>${g.tips.map((t) => `<li>${t}</li>`).join("")}</ul><p class="say">Example: ${g.say}</p>`;
+  }
+  function stop() { clearInterval(timer); timer = null; $("pStart").textContent = elapsed > 0 && elapsed < TOTAL ? "Resume" : "Start"; }
+  $("pStart").addEventListener("click", () => {
+    if (timer) { stop(); return; }
+    if (elapsed >= TOTAL) elapsed = 0;
+    $("pStart").textContent = "Pause";
+    timer = setInterval(() => { elapsed += 1; renderPitch(); if (elapsed >= TOTAL) stop(); }, 1000);
+    renderPitch();
+  });
+  $("pNext").addEventListener("click", () => {
+    const [i] = segAt(elapsed);
+    if (i >= segs.length) return;
+    elapsed = segs.slice(0, i + 1).reduce((a, b) => a + b.s, 0);
+    renderPitch();
+    if (elapsed >= TOTAL) stop();
+  });
+  $("pReset").addEventListener("click", () => { elapsed = 0; stop(); renderPitch(); });
+  renderPitch();
+
+  // failure ladder
+  const rungs = [...document.querySelectorAll(".rung")];
+  rungs.forEach((r) => r.addEventListener("click", () => rungs.forEach((x) => x.classList.toggle("on", x === r))));
+
+  // judge self-score
+  const crit = [
+    ["Reliability", "No crashes; bounded loops; validated output; graceful errors"],
+    ["Evaluation", "A scorecard on real test cases, not one happy path"],
+    ["Clear architecture", "Simplest design that works, explained in one diagram"],
+    ["Honest limits", "Knows and says where it fails, and what's next"],
+  ];
+  const JKEY = "bc-day09-judge";
+  let jsaved = {};
+  try { jsaved = JSON.parse(store.get(JKEY) || "{}"); } catch (e) {}
+  $("judgeCard").innerHTML = crit.map((c, i) => `
+    <div class="judge"><span><b>${c[0]}</b></span><div class="bar"><div id="jb${i}"></div></div><span class="v" id="jv${i}"></span></div>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:10px;align-items:center;margin:-2px 0 12px;font-size:13px;color:var(--muted)">
+      <span>${c[1]}</span>
+      <select id="js${i}" aria-label="${c[0]} score">${[0, 1, 2, 3, 4, 5].map((n) => `<option value="${n}">${n} / 5</option>`).join("")}</select>
+    </div>`).join("") + `<p id="judgeMsg" style="margin:4px 0 0;font-size:14.5px"></p>`;
+  function renderJudge() {
+    const vals = crit.map((_, i) => +$("js" + i).value);
+    vals.forEach((v, i) => {
+      $("jb" + i).style.width = (v / 5 * 100) + "%";
+      $("jb" + i).style.background = v <= 2 ? "var(--bad)" : v === 3 ? "var(--warn)" : "var(--good)";
+      $("jv" + i).textContent = v + "/5";
+    });
+    const min = Math.min(...vals);
+    const weakest = crit[vals.indexOf(min)][0];
+    $("judgeMsg").innerHTML = vals.every((v) => v === 0)
+      ? "Pick a score for each line, based on your Day 8 mock build."
+      : min >= 4 ? "<b style='color:var(--good)'>Strong all round.</b> Tomorrow, protect this: don't break it in the last hour."
+      : `Weakest: <b>${weakest}</b>. That's where tomorrow's spare time should go first.`;
+  }
+  crit.forEach((_, i) => {
+    $("js" + i).value = jsaved[i] || 0;
+    $("js" + i).addEventListener("change", () => { jsaved[i] = +$("js" + i).value; store.set(JKEY, JSON.stringify(jsaved)); renderJudge(); });
+  });
+  renderJudge();
+
+  // print
+  $("printBtn").addEventListener("click", () => window.print());
+
+  // timeline (minutes from 10:00)
+  const tl = [
+    { t: 0, end: 30, name: "Read + SPEC.md — no code", d: "Read the problem twice. Inputs, outputs, scoring. Ask organisers the logistics questions. Write SPEC.md and a 5-case test list.", rule: "no code yet", cls: "gate" },
+    { t: 30, end: 60, name: "Skeleton from starter/", d: "Copy starter/, set .env, run pytest. Stub the tools from SPEC.md with fake data. First commit.", rule: "" },
+    { t: 60, end: 150, name: "Real tools + loop, end to end", d: "One input → agent loop → tools → one correct output, in the terminal. Give Claude Code one small task at a time; review every diff.", rule: "commit every 30 min" },
+    { t: 150, end: 180, name: "12:30 gate: does it run end to end?", d: "If not, cut scope now: fewer tools, hard-code a step, skip the UI. Get one path working.", rule: "cut scope, don't push on", cls: "gate" },
+    { t: 180, end: 210, name: "Lunch (actually eat)", d: "Away from the screen for 20 min. Tired brains write bugs.", rule: "" },
+    { t: 210, end: 270, name: "Evals before polish", d: "cases.jsonl with the 5–10 cases from SPEC.md → make eval → scorecard. Fix the worst failures.", rule: "scorecard before UI" },
+    { t: 270, end: 360, name: "Improve + demo layer", d: "Edge cases, error handling, then Streamlit with the trace panel. Re-run evals after each change.", rule: "" },
+    { t: 360, end: 420, name: "16:00 — last hour: no new features", d: "README (problem, architecture diagram, how to run, eval results, limits), record a backup video, rehearse the pitch twice, final commit + push.", rule: "feature freeze", cls: "stop" },
+  ];
+  const clockOf = (m) => { const h = 10 + Math.floor(m / 60), mm = m % 60; return `${h}:${String(mm).padStart(2, "0")}`; };
+  $("tl").innerHTML = tl.map((r, i) => `
+    <div class="tl-row ${r.cls || ""}" id="tl${i}">
+      <div class="tl-time">${clockOf(r.t)}</div><div class="tl-line"></div>
+      <div class="tl-body"><b>${r.name}</b><span>${r.d}</span>${r.rule ? `<br><span class="rule">⚑ ${r.rule}</span>` : ""}</div>
+    </div>`).join("") + `<div class="tl-row stop"><div class="tl-time">17:00</div><div class="tl-line"></div><div class="tl-body"><b>Submit</b><span>Pushed, README done, demo ready. Breathe.</span></div></div>`;
+  function renderSim() {
+    const m = +$("simT").value;
+    $("simLbl").textContent = clockOf(m);
+    let cur = tl.findIndex((r) => m >= r.t && m < r.end);
+    if (cur < 0) cur = tl.length - 1;
+    tl.forEach((_, i) => $("tl" + i).classList.toggle("now", i === cur));
+    const r = tl[cur];
+    const left = r.end - m;
+    let msg = `You should be on: <b>${r.name}</b> (${left} min left in this block).`;
+    if (m < 30) msg += " Not writing code yet is the right call.";
+    else if (m >= 360) msg += " <b style='color:var(--bad)'>No new features.</b> Only README, demo and pitch.";
+    else if (m < 210) msg += " Goal: something that runs end to end before lunch.";
+    else msg += " Evals first, then polish.";
+    $("simMsg").innerHTML = msg;
+  }
+  $("simT").addEventListener("input", renderSim);
+  renderSim();
+})();
+</script>
+</body>
+</html>

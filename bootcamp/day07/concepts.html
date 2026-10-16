@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 7 Concepts</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --surface-2: #f0eee8; --text: #1d1d1f; --muted: #5f5e5a;
+  --border: #e2dfd6; --accent: #2f6fde; --accent-soft: #e5eefc; --good: #1f8a4c; --good-soft: #e3f4ea;
+  --warn: #b26a00; --warn-soft: #fbf0dc; --bad: #c0392b; --bad-soft: #fbe6e3;
+  --js: #b8860b; --py: #2f6fde; --code-bg: #f3f1ec;
+  --role-user: #2f6fde; --role-model: #7a4cc2; --role-tool: #1f8a4c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+    --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+    --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+    --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+    --role-user: #6ea0ff; --role-model: #b48cf2; --role-tool: #4cc783;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+  --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+  --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+  --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+  --role-user: #6ea0ff; --role-model: #b48cf2; --role-tool: #4cc783;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+:not(pre) > code { background: var(--surface-2); padding: 1px 6px; border-radius: 5px; }
+a { color: var(--accent); }
+
+.layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); max-width: 1180px; margin: 0 auto; gap: 32px; padding: 0 24px; }
+nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 28px 0; }
+nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+nav.toc .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+nav.toc li a { display: flex; gap: 10px; padding: 6px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; }
+nav.toc li a::before { counter-increment: s; content: counter(s); font-variant-numeric: tabular-nums; min-width: 18px; color: var(--muted); opacity: .7; }
+nav.toc li a:hover { background: var(--surface-2); color: var(--text); }
+nav.toc li a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav.toc .part { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 10px 4px; }
+.theme-btn { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+
+main { padding: 28px 0 120px; min-width: 0; }
+header.hero { padding: 24px 0 8px; }
+.eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+h1 { font-size: 34px; line-height: 1.15; margin: 6px 0 12px; }
+h2 { font-size: 24px; margin: 0 0 6px; }
+h3 { font-size: 17px; margin: 22px 0 8px; }
+.lead { font-size: 18px; color: var(--muted); max-width: 680px; }
+section { padding-top: 56px; scroll-margin-top: 12px; }
+.sec-num { color: var(--muted); font-size: 13px; font-weight: 600; }
+.why { color: var(--muted); margin: 0 0 18px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin: 16px 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+.callout.js { border-color: var(--js); background: var(--warn-soft); }
+.callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+.callout.good { border-color: var(--good); background: var(--good-soft); }
+.callout b:first-child { display: block; margin-bottom: 2px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; }
+.tag.js { background: var(--warn-soft); color: var(--js); }
+.tag.py { background: var(--accent-soft); color: var(--py); }
+
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 8px 0; line-height: 1.55; }
+pre .c { color: var(--muted); font-style: italic; }
+pre .k { color: var(--accent); font-weight: 600; }
+pre .s { color: var(--good); }
+
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.table-wrap { overflow-x: auto; }
+.grid2 > *, .grid3 > *, .sbs > *, .versus > *, .map-grid > *, .flow-wrap > *, .split > *, .seq > *, .seq-row > *, .cycle > * { min-width: 0; }
+.msg { overflow-wrap: anywhere; }
+
+button.btn { background: var(--accent); color: #fff; border: 0; padding: 8px 14px; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+button.btn.ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+button.btn:disabled { opacity: .45; cursor: default; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+input[type=text] { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font: inherit; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+
+/* ---------- mission map ---------- */
+.mission { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin-top: 18px; }
+.mission-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.mission-head h2 { font-size: 20px; margin: 0; }
+.mission-head .pct { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; }
+.progress { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin: 10px 0 16px; }
+.progress div { height: 100%; background: var(--good); width: 0; transition: width .3s; }
+.stations { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; position: relative; }
+.station { border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 8px; background: var(--surface-2); position: relative; }
+.station.done { border-color: var(--good); background: var(--good-soft); }
+.station .st-top { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.station .st-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 13px; flex: none; }
+.station.done .st-num { background: var(--good); }
+.station .st-name { font-weight: 700; }
+.station .st-time { color: var(--muted); font-size: 12.5px; margin-left: auto; white-space: nowrap; }
+.station .st-goal { color: var(--muted); font-size: 13px; margin: 0 0 6px; }
+.station:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 14px; color: var(--muted); font-size: 16px; z-index: 1; }
+.task { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 13.5px; line-height: 1.4; border-top: 1px dashed var(--border); }
+.task input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--good); flex: none; }
+.task.done label { color: var(--muted); text-decoration: line-through; }
+.task code { font-size: 12px; }
+.done-when { margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+.done-when .flag { font-size: 18px; line-height: 1.2; }
+
+/* ---------- diagrams ---------- */
+.versus { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.mini-flow { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.box { border: 2px solid var(--border); background: var(--surface); border-radius: 10px; padding: 8px 12px; font-size: 14px; text-align: center; }
+.box.model { border-color: var(--role-model); }
+.box.you { border-color: var(--role-user); }
+.box.toolc { border-color: var(--role-tool); }
+.arrow { text-align: center; color: var(--muted); font-size: 16px; line-height: 1.3; }
+.loopback { border: 2px dashed var(--accent); border-radius: 12px; padding: 10px; position: relative; }
+.loopback .lbl { position: absolute; top: -11px; right: 12px; background: var(--surface); padding: 0 6px; color: var(--accent); font-size: 12px; font-weight: 700; }
+
+.seq { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; position: relative; }
+.seq .lane { text-align: center; font-weight: 700; font-size: 14px; padding: 8px; border-bottom: 2px solid var(--border); }
+.seq .lane.you { color: var(--role-user); } .seq .lane.model { color: var(--role-model); } .seq .lane.toolc { color: var(--role-tool); }
+.seq-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); padding: 6px 0; }
+.msg { font-size: 13px; padding: 6px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); position: relative; }
+.msg.r { text-align: right; }
+.msg .dir { color: var(--muted); font-weight: 700; }
+.msg.hl { border-color: var(--accent); background: var(--accent-soft); }
+
+.cycle { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 8px; max-width: 560px; margin: 8px auto; align-items: center; }
+.cyc { border: 2px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; background: var(--surface); transition: all .25s; font-size: 14px; }
+.cyc b { display: block; }
+.cyc span { color: var(--muted); font-size: 12.5px; }
+.cyc.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+.cyc.stop.on { border-color: var(--good); background: var(--good-soft); box-shadow: 0 0 0 4px var(--good-soft); }
+.cyc.halt.on { border-color: var(--bad); background: var(--bad-soft); box-shadow: 0 0 0 4px var(--bad-soft); }
+.cyc-ar { text-align: center; color: var(--muted); font-size: 18px; }
+.counter { font-variant-numeric: tabular-nums; }
+
+/* schema mapping */
+.map-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.map-grid pre { margin: 0; font-size: 13px; }
+[data-k] { border-radius: 4px; transition: background .15s, outline-color .15s; outline: 2px solid transparent; cursor: default; }
+[data-k].hot { background: var(--warn-soft); outline-color: var(--warn); }
+
+/* path checker */
+.verdict { margin-top: 10px; padding: 10px 14px; border-radius: 10px; font-size: 14.5px; }
+.verdict.ok { background: var(--good-soft); color: var(--good); }
+.verdict.no { background: var(--bad-soft); color: var(--bad); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip { border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 99px; padding: 3px 10px; font-size: 13px; cursor: pointer; font-family: ui-monospace, Menlo, monospace; }
+
+/* budgets */
+.budget-row { display: grid; grid-template-columns: 140px 1fr 70px; gap: 10px; align-items: center; margin: 8px 0; font-size: 14px; }
+.bar { height: 22px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--accent); border-radius: 6px; transition: width .25s ease; }
+.bar.over > div { background: var(--bad); }
+.budget-row .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+/* side-by-side */
+.sbs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0 18px; }
+.sbs-title { font-weight: 600; margin: 18px 0 4px; }
+.sbs-note { color: var(--muted); font-size: 14px; margin-top: -8px; }
+
+/* flow player */
+.node { border: 2px solid var(--border); background: var(--surface); border-radius: 12px; padding: 8px 12px; transition: all .25s; }
+.node .nm { font-weight: 700; font-size: 14px; }
+.node .fn { color: var(--muted); font-size: 12.5px; }
+.node.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+.node.ok { border-color: var(--good); background: var(--good-soft); }
+.node.err { border-color: var(--bad); background: var(--bad-soft); }
+.down { text-align: center; color: var(--muted); line-height: 1; padding: 3px 0; font-size: 16px; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.flow-wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 20px; }
+.narr { background: var(--surface-2); border-radius: 12px; padding: 14px 16px; min-height: 120px; }
+.narr .stepn { color: var(--muted); font-size: 13px; }
+.narr p { margin: 6px 0 0; }
+.scen { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.scen button { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 7px 12px; border-radius: 99px; cursor: pointer; font: inherit; font-size: 14px; }
+.scen button.sel { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pane-title { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 0 6px; font-weight: 700; }
+.contents { display: flex; flex-direction: column; gap: 5px; }
+.cmsg { border-left: 4px solid var(--border); background: var(--surface); border-radius: 0 8px 8px 0; padding: 5px 10px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; word-break: break-word; }
+.cmsg .role { font-weight: 700; font-family: system-ui, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-right: 6px; }
+.cmsg.user { border-color: var(--role-user); } .cmsg.user .role { color: var(--role-user); }
+.cmsg.model { border-color: var(--role-model); } .cmsg.model .role { color: var(--role-model); }
+.cmsg.tool { border-color: var(--role-tool); } .cmsg.tool .role { color: var(--role-tool); }
+.cmsg.err { border-color: var(--bad); }
+.cmsg.new { animation: pop .35s ease; }
+@keyframes pop { from { background: var(--warn-soft); } to { background: var(--surface); } }
+.term { background: #16161a; color: #d8d8d8; border-radius: 10px; padding: 10px 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; min-height: 60px; white-space: pre-wrap; word-break: break-word; }
+.term .e { color: #ff8a7a; } .term .g { color: #7ddc9c; } .term .d { color: #9a9a9a; }
+
+details.q { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
+details.q summary { cursor: pointer; font-weight: 600; }
+details.q[open] summary { margin-bottom: 8px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; padding: 0 16px; gap: 0; }
+  nav.toc { position: static; height: auto; padding: 16px 0 0; }
+  nav.toc ol { display: flex; flex-wrap: wrap; gap: 4px; }
+  nav.toc .part { display: none; }
+  .grid2, .grid3, .sbs, .flow-wrap, .versus, .map-grid, .stations { grid-template-columns: 1fr; }
+  .station:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -15px; }
+  .budget-row { grid-template-columns: 100px 1fr 56px; }
+  h1 { font-size: 28px; }
+}
+/* ---------- day 7 extras ---------- */
+.tree-q { font-size: 17px; font-weight: 600; margin: 4px 0 10px; }
+.tree-path { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tree-path span { font-size: 12.5px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 99px; padding: 2px 10px; color: var(--muted); }
+.leaf { border-radius: 12px; padding: 14px 16px; margin-top: 4px; }
+.leaf.prompt { background: var(--accent-soft); border: 1px solid var(--accent); }
+.leaf.rag { background: var(--good-soft); border: 1px solid var(--good); }
+.leaf.ft { background: var(--warn-soft); border: 1px solid var(--warn); }
+.leaf b { display: block; font-size: 17px; margin-bottom: 4px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.lora-svg { width: 100%; height: auto; display: block; }
+.lora-svg text { font-family: system-ui, sans-serif; fill: var(--text); }
+.lora-svg .muted { fill: var(--muted); }
+.mem-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 80px; gap: 10px; align-items: center; margin: 6px 0; font-size: 14px; }
+.mem-row .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.score-table td.num, .score-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.score-table tr.win td { background: var(--good-soft); font-weight: 600; }
+.score-table tr.fail td { color: var(--muted); text-decoration: line-through; }
+.wrow { display: grid; grid-template-columns: 110px minmax(0, 1fr) 44px; gap: 10px; align-items: center; font-size: 14px; }
+.fb-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.st-demo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.code-lines { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 8px 0; }
+.code-lines div { padding: 1px 14px; white-space: pre; overflow: hidden; text-overflow: ellipsis; transition: background .15s; }
+.code-lines div.run { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.fake-app { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-size: 14px; }
+.fake-app .big { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.bubble { border-radius: 10px; padding: 8px 12px; margin: 6px 0; font-size: 13.5px; }
+.bubble.user { background: var(--accent-soft); }
+.bubble.assistant { background: var(--surface-2); }
+.bubble .who { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: block; }
+.status-box { border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 12.5px; margin: 4px 0; font-family: ui-monospace, Menlo, monospace; }
+.status-box .hd { font-family: system-ui, sans-serif; font-weight: 600; font-size: 12.5px; }
+.state-pane { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; white-space: pre-wrap; word-break: break-word; min-height: 60px; }
+.planned { display: inline-block; background: var(--warn-soft); color: var(--warn); border: 1px solid var(--warn); border-radius: 99px; padding: 2px 10px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.grid2 > *, .grid3 > *, .fb-grid > *, .st-demo > *, .mem-row > *, .wrow > * { min-width: 0; }
+@media (max-width: 900px) {
+  .fb-grid, .st-demo { grid-template-columns: 1fr; }
+  .mem-row { grid-template-columns: 100px minmax(0, 1fr) 64px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <div class="brand">Day 7 · Model Choice + Demo</div>
+  <div class="sub">HackerRank AI Agents bootcamp · 21 Oct</div>
+  <ol>
+    <div class="part">Start here</div>
+    <li><a href="#mission">Today's mission</a></li>
+    <div class="part">Part A — Concepts</div>
+    <li><a href="#hosted-open">Hosted vs open models</a></li>
+    <li><a href="#decide">Prompt, RAG or fine-tune?</a></li>
+    <li><a href="#lora">LoRA / QLoRA</a></li>
+    <li><a href="#pick">Pick a model with data</a></li>
+    <li><a href="#fallback">Provider fallback</a></li>
+    <li><a href="#streamlit">Streamlit mental model</a></li>
+    <div class="part">Part B — Python for JS devs</div>
+    <li><a href="#st-react">Streamlit vs React</a></li>
+    <li><a href="#protocol">Provider interface</a></li>
+    <li><a href="#callbacks">Callbacks + with blocks</a></li>
+    <div class="part">Part C — Your code</div>
+    <li><a href="#flow">Step through the app</a></li>
+    <li><a href="#quiz">Self-check</a></li>
+  </ol>
+  <button class="theme-btn" id="themeBtn" type="button">Toggle theme</button>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Day 7 of 9 · Wed 21 Oct 2026 · make it choosable and showable</div>
+  <h1>Pick the model with data, then put the agent on a screen</h1>
+  <p class="lead">Judges remember what they can see. Today you choose a model from your eval numbers, not a hunch, add a backup provider so a 429 can't kill the demo, and wrap the agent in a Streamlit chat with a live trace panel.</p>
+</header>
+
+<!-- ============ MISSION ============ -->
+<section id="mission" style="padding-top:20px">
+  <div class="mission">
+    <div class="mission-head">
+      <h2>Today's mission</h2>
+      <span class="pct" id="missionPct">0 of 0 done</span>
+    </div>
+    <div class="progress"><div id="progBar"></div></div>
+    <div class="stations" id="stations">
+      <div class="station">
+        <div class="st-top"><span class="st-num">1</span><span class="st-name">Learn</span><span class="st-time">45 min</span></div>
+        <p class="st-goal">Decide how to choose a model, then how Streamlit thinks.</p>
+        <div class="task"><input type="checkbox" id="t1"><label for="t1">Read Part A sections 2–6</label></div>
+        <div class="task"><input type="checkbox" id="t2"><label for="t2">Run all 4 presets through the decision tree</label></div>
+        <div class="task"><input type="checkbox" id="t3"><label for="t3">Click the Streamlit rerun demo until "reruns top to bottom" makes sense</label></div>
+        <div class="task"><input type="checkbox" id="t4"><label for="t4">Answer the self-check questions out loud</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">2</span><span class="st-name">Build</span><span class="st-time">90 min</span></div>
+        <p class="st-goal">Data-picked model, backup provider, demo UI.</p>
+        <div class="task"><input type="checkbox" id="t5"><label for="t5"><code>compare_models.py</code>: Day-6 eval on 2 models × 2 prompts</label></div>
+        <div class="task"><input type="checkbox" id="t6"><label for="t6">Write the winner + why into <code>notes.md</code></label></div>
+        <div class="task"><input type="checkbox" id="t7"><label for="t7">Provider switch + fallback in <code>llm.py</code> / <code>providers.py</code></label></div>
+        <div class="task"><input type="checkbox" id="t8"><label for="t8"><code>app.py</code>: chat box, live trace panel, sources</label></div>
+        <div class="task"><input type="checkbox" id="t9"><label for="t9">Claude Code: spec + build a "model" dropdown in the sidebar</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">3</span><span class="st-name">Test</span><span class="st-time">30 min</span></div>
+        <p class="st-goal">Prove the fallback and the UI both work.</p>
+        <div class="task"><input type="checkbox" id="t10"><label for="t10"><code>pytest -q</code>: fake 429 on Gemini → backup answers</label></div>
+        <div class="task"><input type="checkbox" id="t11"><label for="t11"><code>streamlit run app.py</code>: ask the Day-2 target question, see tool steps</label></div>
+        <div class="task"><input type="checkbox" id="t12"><label for="t12">Break the Gemini key on purpose → demo still answers</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">4</span><span class="st-name">Harvest</span><span class="st-time">15 min</span></div>
+        <p class="st-goal">Starter gets the switch and the UI.</p>
+        <div class="task"><input type="checkbox" id="t13"><label for="t13"><code>llm.py</code> + <code>providers.py</code> → <code>starter/agent/</code></label></div>
+        <div class="task"><input type="checkbox" id="t14"><label for="t14"><code>app.py</code> → <code>starter/app.py</code>, then commit</label></div>
+      </div>
+    </div>
+    <div class="done-when"><span class="flag">🏁</span><div><b>Done when:</b> <code>streamlit run app.py</code> shows a working agent with visible tool steps, and you can say which model you picked and show the eval numbers that back it up.</div></div>
+  </div>
+
+  <div class="card mono" style="font-size:14px">
+    cd bootcamp/day07 &amp;&amp; source ../../.venv/bin/activate<br>
+    pip install -r requirements.txt&nbsp;&nbsp;<span style="color:var(--muted)"># adds streamlit + the backup provider's SDK</span><br>
+    cp .env.example .env&nbsp;&nbsp;<span style="color:var(--muted)"># GEMINI_API_KEY + backup key, LLM_PROVIDER=gemini</span><br>
+    python compare_models.py&nbsp;&nbsp;<span style="color:var(--muted)"># 2 models × 2 prompts → scorecard</span><br>
+    pytest -q<br>
+    streamlit run app.py
+  </div>
+</section>
+
+<!-- ============ PART A ============ -->
+
+<section id="hosted-open">
+  <div class="sec-num">2 · Hosted vs open models</div>
+  <h2>Rent a model through an API, or run the weights yourself</h2>
+  <p class="why">"Open" (open-weight) means you can download the model and run it on your own machine. "Hosted" means you call someone else's servers. For a one-day hackathon the answer is almost always hosted, but you should know why.</p>
+  <div class="grid2">
+    <div class="card">
+      <span class="tag py">Hosted API</span>
+      <p style="margin:8px 0 4px"><b>Gemini, Claude, GPT…</b></p>
+      <ul style="margin:0;padding-left:20px;font-size:14.5px">
+        <li>Zero setup: a key and an HTTP call</li>
+        <li>Strongest models, long context, tool calling built in</li>
+        <li>You pay per token (check the pricing page)</li>
+        <li>Risks: rate limits (429), outages, needs internet</li>
+        <li>Your data goes to the provider</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag js">Open weights</span>
+      <p style="margin:8px 0 4px"><b>Llama, Qwen, Mistral, Gemma…</b> (run via Ollama, vLLM)</p>
+      <ul style="margin:0;padding-left:20px;font-size:14.5px">
+        <li>Runs offline, data stays on your machine</li>
+        <li>No per-token bill, but you need the hardware (GPU/RAM)</li>
+        <li>Smaller ones fit a laptop, but are weaker at tool calling</li>
+        <li>You can fine-tune them (LoRA, section 4)</li>
+        <li>Setup and download time you don't have on the day</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><b>Hackathon rule of thumb</b>Hosted model as primary, a <em>second hosted provider</em> as backup (section 6). An open model on your laptop is only worth it if the venue Wi-Fi might die, or if the problem explicitly says "no external APIs".</div>
+</section>
+
+<section id="decide">
+  <div class="sec-num">3 · Prompting vs RAG vs fine-tuning</div>
+  <h2>Fix the cheapest thing first</h2>
+  <p class="why">When the agent gets something wrong, there are three levers. They differ hugely in effort. Walk the tree, or pick a preset situation.</p>
+  <div class="card">
+    <div class="presets">
+      <button class="chip" type="button" data-preset="facts">Answers about our internal docs are wrong</button>
+      <button class="chip" type="button" data-preset="format">Output format is inconsistent</button>
+      <button class="chip" type="button" data-preset="style">Must write in a very specific house style, 1000s of examples</button>
+      <button class="chip" type="button" data-preset="fresh">Needs today's prices</button>
+    </div>
+    <div class="tree-path" id="treePath"></div>
+    <div id="treeBody"></div>
+    <div class="btn-row"><button class="btn ghost" id="treeReset" type="button">Start over</button></div>
+  </div>
+  <div class="table-wrap"><table>
+    <tr><th>Lever</th><th>What it changes</th><th>Effort</th><th>Good for</th></tr>
+    <tr><td><b>Prompting</b></td><td>The instructions and examples in the request</td><td>Minutes</td><td>Format, tone, rules, step order, few-shot examples</td></tr>
+    <tr><td><b>RAG</b></td><td>What facts are in the context (Day 3)</td><td>Hours</td><td>Private or changing knowledge, citations, "I don't know"</td></tr>
+    <tr><td><b>Fine-tuning</b></td><td>The model's weights</td><td>Days + data + GPU</td><td>A narrow, repeated behaviour you can show with many examples; making a small model act like a big one</td></tr>
+  </table></div>
+  <div class="callout warn"><b>Fine-tuning does not teach facts well</b>It shapes <em>behaviour</em> (style, format, a narrow skill). For "know our documents", use RAG. And not on hackathon day: no time to collect data, train and evaluate.</div>
+</section>
+
+<section id="lora">
+  <div class="sec-num">4 · LoRA and QLoRA (concept only)</div>
+  <h2>Don't retrain the whole matrix. Train a tiny "patch" next to it.</h2>
+  <p class="why">A model is mostly big weight matrices. Full fine-tuning updates all of them. LoRA freezes them and learns a small low-rank update <code>B × A</code> that is added on top. Drag the sliders.</p>
+  <div class="card">
+    <svg class="lora-svg" viewBox="0 0 720 230" role="img" aria-label="LoRA: frozen W plus B times A">
+      <rect x="20" y="20" width="180" height="180" rx="8" fill="var(--surface-2)" stroke="var(--border)" stroke-width="2"></rect>
+      <text x="110" y="105" text-anchor="middle" font-size="22" font-weight="700">W</text>
+      <text x="110" y="130" text-anchor="middle" font-size="13" class="muted">frozen · d × d</text>
+      <text x="110" y="222" text-anchor="middle" font-size="12" class="muted" id="loraWtxt"></text>
+      <text x="235" y="118" text-anchor="middle" font-size="30" class="muted">+</text>
+      <rect id="loraB" x="270" y="20" width="30" height="180" rx="6" fill="var(--good-soft)" stroke="var(--good)" stroke-width="2"></rect>
+      <text id="loraBl" x="285" y="222" text-anchor="middle" font-size="12" class="muted">B: d × r</text>
+      <text id="loraX" x="330" y="118" text-anchor="middle" font-size="22" class="muted">×</text>
+      <rect id="loraA" x="360" y="20" width="180" height="30" rx="6" fill="var(--good-soft)" stroke="var(--good)" stroke-width="2"></rect>
+      <text id="loraAl" x="450" y="75" text-anchor="middle" font-size="12" class="muted">A: r × d</text>
+      <text x="630" y="95" text-anchor="middle" font-size="14" font-weight="700">trained:</text>
+      <text x="630" y="118" text-anchor="middle" font-size="13" class="muted">only B and A</text>
+      <text x="630" y="141" text-anchor="middle" font-size="13" class="muted">W never changes</text>
+    </svg>
+    <div class="grid2" style="margin-top:8px">
+      <div><label for="dSlider">Matrix size d: <b id="dVal"></b></label><input type="range" id="dSlider" min="0" max="3" step="1" value="2"></div>
+      <div><label for="rSlider">Rank r: <b id="rVal"></b></label><input type="range" id="rSlider" min="0" max="5" step="1" value="2"></div>
+    </div>
+    <div class="stat-row" style="display:flex;gap:28px;flex-wrap:wrap;margin-top:10px">
+      <div><b id="fullP" style="font-size:22px;display:block;font-variant-numeric:tabular-nums"></b><span style="color:var(--muted);font-size:13px">full fine-tune: d × d</span></div>
+      <div><b id="loraP" style="font-size:22px;display:block;font-variant-numeric:tabular-nums;color:var(--good)"></b><span style="color:var(--muted);font-size:13px">LoRA: 2 × d × r</span></div>
+      <div><b id="loraPct" style="font-size:22px;display:block;font-variant-numeric:tabular-nums"></b><span style="color:var(--muted);font-size:13px">of the parameters</span></div>
+    </div>
+    <p style="font-size:14px;color:var(--muted);margin:8px 0 0">Per matrix. A real model has hundreds of these; LoRA is usually applied to a subset of them (e.g. the attention projections).</p>
+  </div>
+  <h3>QLoRA = LoRA on a 4-bit base model</h3>
+  <p style="margin-top:0">The frozen <code>W</code> is stored in 4-bit instead of 16-bit, so it takes about a quarter of the memory. The small adapters still train in higher precision. Rough memory for just the weights of a 7B-parameter model:</p>
+  <div class="card">
+    <div class="mem-row"><span>16-bit (full)</span><div class="bar"><div style="width:100%"></div></div><span class="v">~14 GB</span></div>
+    <div class="mem-row"><span>8-bit</span><div class="bar"><div style="width:50%"></div></div><span class="v">~7 GB</span></div>
+    <div class="mem-row"><span>4-bit (QLoRA base)</span><div class="bar"><div style="width:25%;background:var(--good)"></div></div><span class="v">~3.5 GB</span></div>
+    <p style="font-size:13px;color:var(--muted);margin:6px 0 0">7B params × 2 bytes ≈ 14 GB; × 0.5 byte ≈ 3.5 GB. Training also needs memory for activations and optimizer state, so real numbers are higher.</p>
+  </div>
+  <div class="callout"><b>What to say if a judge asks</b>"We'd fine-tune only with a few hundred good examples of a narrow behaviour that prompting and RAG couldn't fix. We'd use QLoRA on an open model so it fits one GPU, and compare against the prompted baseline on the same eval set."</div>
+</section>
+
+<section id="pick">
+  <div class="sec-num">5 · Pick a model with eval data</div>
+  <h2>Run the same eval on every option, then let the numbers decide</h2>
+  <p class="why"><code>compare_models.py</code> runs your Day-6 cases on 2 models × 2 prompts. Below are <b>made-up example numbers</b>. Replace them with yours. Move the weights to see how "best" depends on what you care about.</p>
+  <div class="card">
+    <div class="wrow"><span>accuracy</span><input type="range" id="wAcc" min="0" max="10" value="6"><span class="v mono" id="wAccV"></span></div>
+    <div class="wrow"><span>speed</span><input type="range" id="wLat" min="0" max="10" value="3"><span class="v mono" id="wLatV"></span></div>
+    <div class="wrow"><span>low cost</span><input type="range" id="wCost" min="0" max="10" value="1"><span class="v mono" id="wCostV"></span></div>
+    <label style="display:flex;gap:8px;align-items:center;margin:10px 0 4px;font-size:14px"><input type="checkbox" id="minAcc" checked> rule out anything under 80% pass (a fast wrong answer is still wrong)</label>
+    <div class="table-wrap"><table class="score-table">
+      <thead><tr><th>Model</th><th>Prompt</th><th class="num">Pass %</th><th class="num">Avg latency</th><th class="num">Relative cost</th><th class="num">Score</th></tr></thead>
+      <tbody id="scoreBody"></tbody>
+    </table></div>
+    <p id="scoreMsg" style="font-size:14px;margin:10px 0 0"></p>
+  </div>
+  <div class="callout"><b>How the score works</b>Each column is scaled 0–1 across the rows (best = 1), then multiplied by its weight and summed. Simple and explainable, which is what you want in a 3-minute pitch: "flash + prompt v2 passed 9/10 at a third of the latency of pro."</div>
+</section>
+
+<section id="fallback">
+  <div class="sec-num">6 · Provider switch with a fallback</div>
+  <h2>If Gemini says 429 in the middle of your demo, the backup answers</h2>
+  <p class="why">Day 1's retries handle a short blip. A real outage or an exhausted quota needs a second provider. Pick what Gemini does and watch the path.</p>
+  <div class="card">
+    <div class="scen" role="group" aria-label="gemini outcome" id="fbBtns">
+      <button type="button" data-fb="ok" class="sel">Gemini OK</button>
+      <button type="button" data-fb="429">429 after retries</button>
+      <button type="button" data-fb="503">503 outage</button>
+      <button type="button" data-fb="400">400 bad request</button>
+      <button type="button" data-fb="both">Both down</button>
+    </div>
+    <div class="fb-grid">
+      <div>
+        <div class="node" id="fb-chat"><div class="nm">llm.chat(messages, tools)</div><div class="fn">picks the provider order from LLM_PROVIDER</div></div>
+        <div class="down">↓</div>
+        <div class="node" id="fb-gem"><div class="nm">GeminiProvider</div><div class="fn">primary · Day-1 retries inside</div></div>
+        <div class="down">↓ only on a retryable failure</div>
+        <div class="node" id="fb-bak"><div class="nm">BackupProvider</div><div class="fn">Anthropic or OpenAI · same interface</div></div>
+        <div class="down">↓</div>
+        <div class="node" id="fb-out"><div class="nm">Reply(text, calls, usage, provider)</div><div class="fn">the loop never knows which one answered</div></div>
+      </div>
+      <div class="narr" id="fbText"></div>
+    </div>
+  </div>
+<pre><span class="c"># llm.py (planned): try providers in order, fall back only on errors worth falling back on</span>
+<span class="k">def</span> chat(messages, *, tools=<span class="k">None</span>, **kw) -&gt; Reply:
+    errors = []
+    <span class="k">for</span> provider <span class="k">in</span> provider_order():          <span class="c"># e.g. [gemini, anthropic]</span>
+        <span class="k">try</span>:
+            <span class="k">return</span> provider.chat(messages, tools=tools, **kw)
+        <span class="k">except</span> LLMError <span class="k">as</span> e:
+            <span class="k">if not</span> e.retryable:                    <span class="c"># 400: our bug, don't hide it</span>
+                <span class="k">raise</span>
+            errors.append(<span class="s">f"{provider.name}: {e}"</span>)
+    <span class="k">raise</span> LLMError(<span class="s">"all providers failed: "</span> + <span class="s">"; "</span>.join(errors))</pre>
+  <div class="callout warn"><b>The hidden cost: message formats differ</b>Day 2's loop stores Gemini <code>types.Content</code> objects. Anthropic and OpenAI use different shapes for tool calls and tool results. So the switch needs one neutral format (<code>Message</code>, <code>ToolCall</code>, <code>Reply</code>) and a small adapter per provider. Test the backup path <em>before</em> the event, with a fake 429.</div>
+</section>
+
+<section id="streamlit">
+  <div class="sec-num">7 · Streamlit mental model</div>
+  <h2>Every click reruns the whole script, top to bottom</h2>
+  <p class="why">There are no event handlers or components. Streamlit runs <code>app.py</code> from line 1 to the end, draws whatever it hits, and on <em>any</em> interaction does it all again. Click the button and watch.</p>
+  <div class="st-demo">
+    <div>
+      <div class="pane-title">app.py</div>
+      <div class="code-lines" id="stCode"></div>
+    </div>
+    <div>
+      <div class="pane-title">browser</div>
+      <div class="fake-app">
+        <div style="font-weight:700;margin-bottom:8px">Counter demo</div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap">
+          <div><span style="color:var(--muted);font-size:13px">plain variable</span><div class="big" id="stPlain">0</div></div>
+          <div><span style="color:var(--muted);font-size:13px">st.session_state</span><div class="big" id="stState" style="color:var(--good)">0</div></div>
+        </div>
+        <div class="btn-row"><button class="btn" id="stClick" type="button">+1 (click me)</button><button class="btn ghost" id="stReset" type="button">Reset</button></div>
+        <p id="stMsg" style="font-size:13.5px;color:var(--muted);margin:10px 0 0">Reruns so far: 0</p>
+      </div>
+    </div>
+  </div>
+  <div class="grid3">
+    <div class="card"><b>st.session_state</b><br><span style="color:var(--muted);font-size:14px">Survives reruns. Store the chat history here, like <code>useState</code>.</span></div>
+    <div class="card"><b>st.cache_resource</b><br><span style="color:var(--muted);font-size:14px">Create once, reuse on every rerun: the LLM client, the RAG index. Like a module-level singleton.</span></div>
+    <div class="card"><b>st.status / st.expander</b><br><span style="color:var(--muted);font-size:14px">Collapsible boxes. Write each agent step into one while it runs: that's your live trace panel.</span></div>
+  </div>
+</section>
+
+<!-- ============ PART B ============ -->
+
+<section id="st-react">
+  <div class="sec-num">8 · Streamlit vs React</div>
+  <h2>The same chat UI, both ways</h2>
+  <p class="why">If you know React, map it like this: the whole script is one component, and it re-renders on every interaction.</p>
+  <div class="table-wrap"><table>
+    <tr><th>React</th><th>Streamlit</th></tr>
+    <tr><td>component re-renders</td><td>script reruns top to bottom</td></tr>
+    <tr><td><code>useState</code></td><td><code>st.session_state</code> (a dict-like object)</td></tr>
+    <tr><td><code>useMemo</code> / module singleton</td><td><code>@st.cache_resource</code> (objects) · <code>@st.cache_data</code> (data)</td></tr>
+    <tr><td><code>&lt;input onSubmit&gt;</code></td><td><code>if prompt := st.chat_input():</code> (returns the text on the rerun after Enter)</td></tr>
+    <tr><td>JSX nesting</td><td><code>with st.sidebar:</code> / <code>with st.chat_message("user"):</code></td></tr>
+    <tr><td><code>.env</code> via Vite / Next</td><td><code>.env</code> via <code>python-dotenv</code>, or <code>.streamlit/secrets.toml</code></td></tr>
+  </table></div>
+  <div class="sbs">
+    <div><span class="tag py">Python · app.py</span><pre><span class="k">import</span> streamlit <span class="k">as</span> st
+
+<span class="k">if</span> <span class="s">"messages"</span> <span class="k">not in</span> st.session_state:
+    st.session_state.messages = []
+
+<span class="k">for</span> m <span class="k">in</span> st.session_state.messages:    <span class="c"># redraw history</span>
+    <span class="k">with</span> st.chat_message(m[<span class="s">"role"</span>]):
+        st.markdown(m[<span class="s">"content"</span>])
+
+<span class="k">if</span> prompt := st.chat_input(<span class="s">"Ask the agent"</span>):
+    st.session_state.messages.append(
+        {<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: prompt})
+    ...  <span class="c"># run the agent, append the answer</span></pre></div>
+    <div><span class="tag js">React</span><pre><span class="k">function</span> Chat() {
+  <span class="k">const</span> [messages, setMessages] = useState([]);
+
+  <span class="k">return</span> (&lt;&gt;
+    {messages.map((m, i) =&gt;
+      &lt;Bubble key={i} role={m.role}&gt;{m.content}&lt;/Bubble&gt;)}
+    &lt;ChatInput onSubmit={(prompt) =&gt;
+      setMessages([...messages,
+        { role: <span class="s">"user"</span>, content: prompt }])} /&gt;
+  &lt;/&gt;);
+}</pre></div>
+  </div>
+  <p class="sbs-note"><code>:=</code> is the "walrus" operator: assign and test in one go. <code>if prompt := st.chat_input():</code> is like <code>const prompt = chatInput(); if (prompt) {…}</code>.</p>
+  <div class="callout js"><b>Two classic Streamlit bugs</b>1. Keeping history in a normal variable: it resets to <code>[]</code> on every rerun (the left counter above). 2. Creating the LLM client or loading the index at the top of the script without <code>@st.cache_resource</code>: it rebuilds on every keystroke-triggered rerun.</div>
+</section>
+
+<section id="protocol">
+  <div class="sec-num">9 · A provider interface</div>
+  <h2><code>Protocol</code> is Python's TypeScript <code>interface</code></h2>
+  <p class="why">Each provider class just needs the right method. It doesn't have to inherit from anything, same as TS structural typing.</p>
+  <div class="sbs">
+    <div><span class="tag py">Python · providers.py</span><pre><span class="k">from</span> typing <span class="k">import</span> Protocol
+
+<span class="k">class</span> Provider(Protocol):
+    name: str
+    <span class="k">def</span> chat(self, messages: list[Message], *,
+             tools: list[dict] | <span class="k">None</span> = <span class="k">None</span>) -&gt; Reply: ...
+
+<span class="k">class</span> GeminiProvider:          <span class="c"># no "implements" needed</span>
+    name = <span class="s">"gemini"</span>
+    <span class="k">def</span> chat(self, messages, *, tools=<span class="k">None</span>) -&gt; Reply:
+        ...  <span class="c"># convert Message → types.Content, call, convert back</span></pre></div>
+    <div><span class="tag js">TS</span><pre><span class="k">interface</span> Provider {
+  name: string;
+  chat(messages: Message[],
+       opts?: { tools?: ToolDecl[] }): Promise&lt;Reply&gt;;
+}
+
+<span class="k">class</span> GeminiProvider <span class="k">implements</span> Provider {
+  name = <span class="s">"gemini"</span>;
+  <span class="k">async</span> chat(messages, opts) { ... }
+}</pre></div>
+  </div>
+  <div class="sbs-title">Choosing from an env var</div>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre>PROVIDERS = {<span class="s">"gemini"</span>: GeminiProvider, <span class="s">"anthropic"</span>: AnthropicProvider}
+
+<span class="k">def</span> provider_order() -&gt; list[Provider]:
+    first = os.getenv(<span class="s">"LLM_PROVIDER"</span>, <span class="s">"gemini"</span>)
+    rest = [n <span class="k">for</span> n <span class="k">in</span> PROVIDERS <span class="k">if</span> n != first]
+    <span class="k">return</span> [PROVIDERS[n]() <span class="k">for</span> n <span class="k">in</span> [first, *rest]]</pre></div>
+    <div><span class="tag js">JS</span><pre><span class="k">const</span> PROVIDERS = { gemini: GeminiProvider, anthropic: AnthropicProvider };
+
+<span class="k">function</span> providerOrder() {
+  <span class="k">const</span> first = process.env.LLM_PROVIDER ?? <span class="s">"gemini"</span>;
+  <span class="k">const</span> rest = Object.keys(PROVIDERS).filter((n) =&gt; n !== first);
+  <span class="k">return</span> [first, ...rest].map((n) =&gt; <span class="k">new</span> PROVIDERS[n]());
+}</pre></div>
+  </div>
+  <p class="sbs-note"><code>[first, *rest]</code> is Python's spread: same as <code>[first, ...rest]</code>.</p>
+</section>
+
+<section id="callbacks">
+  <div class="sec-num">10 · Callbacks and <code>with</code> blocks</div>
+  <h2>Stream each agent step into the UI as it happens</h2>
+  <p class="why"><code>run_agent</code> gets an <code>on_step</code> callback. The app passes a function that writes into an <code>st.status</code> box, so the trace appears live instead of after the run.</p>
+  <div class="sbs">
+    <div><span class="tag py">Python · app.py</span><pre><span class="k">with</span> st.chat_message(<span class="s">"assistant"</span>):
+    <span class="k">with</span> st.status(<span class="s">"Thinking…"</span>, expanded=<span class="k">True</span>) <span class="k">as</span> box:
+        result = run_agent(
+            prompt,
+            on_step=<span class="k">lambda</span> s: box.write(Trace.format(s)),
+        )
+        box.update(label=<span class="s">f"Done in {len(result.trace.steps)} steps"</span>,
+                   state=<span class="s">"complete"</span>, expanded=<span class="k">False</span>)
+    st.markdown(result.answer)</pre></div>
+    <div><span class="tag js">JS (same idea)</span><pre><span class="k">const</span> box = ui.status(<span class="s">"Thinking…"</span>);
+<span class="k">const</span> result = <span class="k">await</span> runAgent(prompt, {
+  onStep: (s) =&gt; box.write(formatStep(s)),
+});
+box.update({ label: <span class="s">`Done in ${result.trace.steps.length} steps`</span>,
+             state: <span class="s">"complete"</span> });
+ui.markdown(result.answer);</pre></div>
+  </div>
+  <p class="sbs-note"><code>lambda s: …</code> is a one-expression arrow function, <code>(s) =&gt; …</code>. For more than one line, define a normal <code>def</code> and pass its name.</p>
+  <div class="callout js"><b><code>with</code> = "everything inside goes in here"</b>A context manager runs setup on entry and cleanup on exit (like <code>try/finally</code>). Streamlit uses it for layout: anything drawn inside <code>with st.chat_message("assistant"):</code> appears inside that bubble. Same as nesting children in JSX.</div>
+</section>
+
+<!-- ============ PART C ============ -->
+
+<section id="flow">
+  <div class="sec-num">11 · Step through the app</div>
+  <h2>What happens when you press Enter in the chat box</h2>
+  <p class="why"><span class="planned">Planned design</span> This is the code we'll write today in <code>bootcamp/day07/</code>: <code>app.py</code>, <code>providers.py</code>, <code>llm.py</code> (with fallback), <code>compare_models.py</code>, <code>tests/test_fallback.py</code>, reusing Day 2's <code>tools.py</code>, <code>loop.py</code> and <code>tracing.py</code>. Names may shift slightly while building.</p>
+  <div class="card">
+    <div class="scen" role="group" aria-label="scenario" id="flowBtns">
+      <button type="button" data-s="first" class="sel">First question</button>
+      <button type="button" data-s="fallback">Gemini 429 → backup</button>
+      <button type="button" data-s="second">Second question (rerun)</button>
+      <button type="button" data-s="compare">compare_models.py</button>
+    </div>
+    <div class="flow-wrap">
+      <div>
+        <div class="node" id="n-app"><div class="nm">app.py (Streamlit script)</div><div class="fn">reruns on each interaction · history in session_state</div></div>
+        <div class="down">↓ ↑</div>
+        <div class="node" id="n-loop"><div class="nm">run_agent(prompt, on_step=…)</div><div class="fn">loop.py (Day 2) + on_step callback</div></div>
+        <div class="down">↓ ↑</div>
+        <div class="node" id="n-llm"><div class="nm">llm.chat(messages, tools)</div><div class="fn">llm.py: provider order + fallback</div></div>
+        <div class="down">↓ ↑</div>
+        <div class="split">
+          <div class="node" id="n-gem"><div class="nm">Gemini</div><div class="fn">primary</div></div>
+          <div class="node" id="n-bak"><div class="nm">Backup</div><div class="fn">Anthropic / OpenAI</div></div>
+        </div>
+        <div class="down">↓ function calls → back in run_agent</div>
+        <div class="node" id="n-tool"><div class="nm">run_tool → search_docs, analyze_csv…</div><div class="fn">tools.py (Day 2) + rag.py (Day 3)</div></div>
+        <div class="narr" aria-live="polite" style="margin-top:14px">
+          <div class="stepn" id="narrStep">Step 0</div>
+          <p id="narrText">Press <b>Next</b> to start.</p>
+        </div>
+      </div>
+      <div>
+        <div class="pane-title">browser</div>
+        <div class="fake-app" id="screenPane"></div>
+        <div class="pane-title">st.session_state</div>
+        <div class="state-pane" id="statePane"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" id="flowPrev" type="button">← Back</button>
+      <button class="btn" id="flowNext" type="button">Next →</button>
+      <button class="btn ghost" id="flowReset" type="button">Reset</button>
+    </div>
+  </div>
+  <div class="callout js"><b>Testing it without a browser or a key</b><code>tests/test_fallback.py</code> reuses the Day 2 fake-client idea: the fake Gemini raises a 429 <code>APIError</code>, the fake backup returns text, and the test asserts <code>reply.provider == "anthropic"</code>. The Streamlit layer stays thin, so almost everything is testable in plain pytest.</div>
+</section>
+
+<section id="quiz">
+  <div class="sec-num">12 · Self-check</div>
+  <h2>Answer out loud before opening</h2>
+  <details class="q"><summary>The agent gets facts about your company's docs wrong. Prompt, RAG or fine-tune?</summary>RAG. The model can't know private facts; put them in the context with retrieval and cite them. Fine-tuning is poor at adding facts.</details>
+  <details class="q"><summary>Why does LoRA train so few parameters?</summary>It freezes the big d×d matrix and learns two thin ones, B (d×r) and A (r×d), with small r. That's 2·d·r numbers instead of d². With d=4096, r=8 it's well under 1% of the matrix.</details>
+  <details class="q"><summary>What does the Q in QLoRA add?</summary>The frozen base model is loaded in 4-bit, about a quarter of the 16-bit memory, so bigger models fit on one GPU. The adapters still train in higher precision.</details>
+  <details class="q"><summary>Model A passes 9/10 in 2.1s, model B passes 7/10 in 0.8s. Which do you demo?</summary>Usually A: a fast wrong answer is still wrong. Set a minimum pass rate first, then compare speed and cost among what's left. Say the numbers out loud in the pitch.</details>
+  <details class="q"><summary>Gemini returns 400. Should the app fall back to the backup provider?</summary>No. 400 means our request is wrong (bad schema, bad params). The backup would likely fail too and hide the bug. Fall back on 429 / 5xx / timeouts only.</details>
+  <details class="q"><summary>You keep the chat history in <code>messages = []</code> at the top of app.py. What happens?</summary>Every interaction reruns the script, so it resets to empty and the old messages disappear. Use <code>st.session_state.messages</code>.</details>
+  <details class="q"><summary>Why wrap the client / RAG index creation in <code>@st.cache_resource</code>?</summary>Otherwise it's rebuilt on every rerun (every message). Cached, it's created once per server process and reused.</details>
+  <details class="q"><summary>How does the trace show up live instead of after the answer?</summary><code>run_agent</code> calls <code>on_step(step)</code> after each LLM or tool step; the app's callback writes it into an <code>st.status</code> box that is already on screen.</details>
+</section>
+</main>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  };
+
+  // theme
+  const savedTheme = store.get("bc-theme");
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  $("themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("bc-theme", next);
+  });
+
+  // toc highlight
+  const links = [...document.querySelectorAll("nav.toc a")];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("main section").forEach((s) => io.observe(s));
+
+  // mission checklist
+  const boxes = [...document.querySelectorAll("#stations input")];
+  const KEY = "bc-day07-checks";
+  let saved = {};
+  try { saved = JSON.parse(store.get(KEY) || "{}"); } catch (e) {}
+  function renderMission() {
+    const done = boxes.filter((b) => b.checked).length;
+    $("progBar").style.width = (done / boxes.length * 100) + "%";
+    $("missionPct").textContent = `${done} of ${boxes.length} done`;
+    boxes.forEach((b) => b.parentElement.classList.toggle("done", b.checked));
+    document.querySelectorAll(".station").forEach((st) => {
+      st.classList.toggle("done", [...st.querySelectorAll("input")].every((b) => b.checked));
+    });
+  }
+  boxes.forEach((b) => {
+    b.checked = !!saved[b.id];
+    b.addEventListener("change", () => { saved[b.id] = b.checked; store.set(KEY, JSON.stringify(saved)); renderMission(); });
+  });
+  renderMission();
+
+  // decision tree
+  const TREE = {
+    start: { q: "Is the problem that the model doesn't KNOW something (private, recent, or too large to paste)?", yes: "fresh", no: "tried" },
+    fresh: { q: "Does the knowledge change often, or must answers cite sources?", yes: "L_rag", no: "small" },
+    small: { q: "Does all of it fit comfortably in the prompt (a few pages)?", yes: "L_prompt_ctx", no: "L_rag" },
+    tried: { q: "Have you already tried clear instructions, a schema, and 3–5 examples in the prompt?", yes: "data", no: "L_prompt" },
+    data: { q: "Do you have hundreds+ of good input→output examples of the exact behaviour, and days to train and evaluate?", yes: "L_ft", no: "L_prompt_more" },
+    L_prompt: { leaf: "prompt", t: "Prompting", d: "Write explicit rules, add a Pydantic schema (Day 1), and few-shot examples. Re-run the eval. This fixes most format and behaviour problems in minutes." },
+    L_prompt_ctx: { leaf: "prompt", t: "Prompting (paste it in)", d: "If it's small and stable, just put it in the system prompt. No retrieval needed." },
+    L_prompt_more: { leaf: "prompt", t: "Keep prompting", d: "Without lots of examples and time, fine-tuning will be worse than a better prompt. Split the task into steps, add a reviewer pass (Day 4), or try a stronger model." },
+    L_rag: { leaf: "rag", t: "RAG", d: "Retrieve the relevant chunks at question time and put them in the context with citations (Day 3). Refuse when retrieval scores are low." },
+    L_ft: { leaf: "ft", t: "Fine-tuning (LoRA / QLoRA)", d: "A narrow behaviour you can demonstrate with many examples. Still compare against the prompted baseline on the same eval set. Not a hackathon-day job." },
+  };
+  const PRESETS = {
+    facts: ["yes", "no", "no"],
+    format: ["no", "no"],
+    style: ["no", "yes", "yes"],
+    fresh: ["yes", "yes"],
+  };
+  let treePath = [];
+  function treeNode() {
+    let id = "start";
+    treePath.forEach((a) => { id = TREE[id][a]; });
+    return id;
+  }
+  function renderTree() {
+    const id = treeNode();
+    const n = TREE[id];
+    let walk = "start";
+    $("treePath").innerHTML = treePath.map((a) => {
+      const q = TREE[walk].q; walk = TREE[walk][a];
+      return `<span>${esc(q.split(" ").slice(0, 6).join(" "))}… <b>${a}</b></span>`;
+    }).join("");
+    if (n.leaf) {
+      $("treeBody").innerHTML = `<div class="leaf ${n.leaf}"><b>→ ${esc(n.t)}</b>${esc(n.d)}</div>`;
+    } else {
+      $("treeBody").innerHTML = `<div class="tree-q">${esc(n.q)}</div><div class="btn-row" style="margin-top:0"><button class="btn" type="button" data-a="yes">Yes</button><button class="btn ghost" type="button" data-a="no">No</button></div>`;
+      $("treeBody").querySelectorAll("[data-a]").forEach((b) => b.addEventListener("click", () => { treePath.push(b.dataset.a); renderTree(); }));
+    }
+  }
+  $("treeReset").addEventListener("click", () => { treePath = []; renderTree(); });
+  document.querySelectorAll("[data-preset]").forEach((b) => b.addEventListener("click", () => { treePath = PRESETS[b.dataset.preset].slice(); renderTree(); }));
+  renderTree();
+
+  // LoRA
+  const DS = [512, 1024, 4096, 8192], RS = [1, 4, 8, 16, 64, 256];
+  const fmt = (n) => n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + "M" : n >= 1e3 ? (n / 1e3).toFixed(n >= 1e4 ? 0 : 1) + "k" : String(n);
+  function renderLora() {
+    const d = DS[+$("dSlider").value], r = RS[+$("rSlider").value];
+    $("dVal").textContent = d; $("rVal").textContent = r;
+    const full = d * d, lora = 2 * d * r;
+    $("fullP").textContent = fmt(full);
+    $("loraP").textContent = fmt(lora);
+    const pct = lora / full * 100;
+    $("loraPct").textContent = (pct < 0.1 ? pct.toFixed(3) : pct < 1 ? pct.toFixed(2) : pct.toFixed(1)) + "%";
+    $("loraWtxt").textContent = `${d} × ${d}`;
+    const w = Math.max(6, Math.min(180, 180 * r / d * 8));
+    $("loraB").setAttribute("width", w);
+    $("loraBl").setAttribute("x", 270 + w / 2);
+    $("loraBl").textContent = `B: ${d} × ${r}`;
+    $("loraX").setAttribute("x", 270 + w + 22);
+    const ax = 270 + w + 44;
+    $("loraA").setAttribute("x", ax);
+    $("loraA").setAttribute("height", w);
+    $("loraAl").setAttribute("x", ax + 90);
+    $("loraAl").setAttribute("y", 20 + w + 20);
+    $("loraAl").textContent = `A: ${r} × ${d}`;
+  }
+  $("dSlider").addEventListener("input", renderLora);
+  $("rSlider").addEventListener("input", renderLora);
+  renderLora();
+
+  // model picker (example numbers)
+  const ROWS = [
+    { m: "gemini-2.5-flash", p: "v1 (Day 3 prompt)", acc: 80, lat: 1.4, cost: 1 },
+    { m: "gemini-2.5-flash", p: "v2 (+ rules, examples)", acc: 90, lat: 1.6, cost: 1.2 },
+    { m: "gemini-2.5-pro", p: "v1 (Day 3 prompt)", acc: 90, lat: 5.2, cost: 6 },
+    { m: "gemini-2.5-pro", p: "v2 (+ rules, examples)", acc: 100, lat: 5.8, cost: 7 },
+    { m: "backup model", p: "v2 (+ rules, examples)", acc: 70, lat: 2.0, cost: 2 },
+  ];
+  function renderScore() {
+    const wa = +$("wAcc").value, wl = +$("wLat").value, wc = +$("wCost").value;
+    $("wAccV").textContent = wa; $("wLatV").textContent = wl; $("wCostV").textContent = wc;
+    const gate = $("minAcc").checked;
+    const ok = ROWS.map((r) => !gate || r.acc >= 80);
+    const pool = ROWS.filter((_, i) => ok[i]);
+    const span = (k) => [Math.min(...pool.map((r) => r[k])), Math.max(...pool.map((r) => r[k]))];
+    const [a0, a1] = span("acc"), [l0, l1] = span("lat"), [c0, c1] = span("cost");
+    const norm = (v, lo, hi, higherBetter) => hi === lo ? 1 : higherBetter ? (v - lo) / (hi - lo) : (hi - v) / (hi - lo);
+    const tw = wa + wl + wc || 1;
+    const scores = ROWS.map((r, i) => ok[i]
+      ? (wa * norm(r.acc, a0, a1, true) + wl * norm(r.lat, l0, l1, false) + wc * norm(r.cost, c0, c1, false)) / tw
+      : null);
+    let best = -1;
+    scores.forEach((s, i) => { if (s !== null && (best < 0 || s > scores[best])) best = i; });
+    $("scoreBody").innerHTML = ROWS.map((r, i) =>
+      `<tr class="${i === best ? "win" : ""}${!ok[i] ? " fail" : ""}"><td>${esc(r.m)}</td><td>${esc(r.p)}</td><td class="num">${r.acc}%</td><td class="num">${r.lat.toFixed(1)} s</td><td class="num">${r.cost.toFixed(1)}×</td><td class="num">${scores[i] === null ? "—" : scores[i].toFixed(2)}</td></tr>`
+    ).join("");
+    const b = ROWS[best];
+    $("scoreMsg").innerHTML = best < 0 ? "Nothing passes the gate." :
+      `With these weights: <b>${esc(b.m)} + prompt ${esc(b.p.split(" ")[0])}</b>. ${wa >= wl + wc ? "Accuracy dominates, so the most correct option wins." : "Speed/cost matter a lot here, so a slightly less accurate but faster option can win."}`;
+  }
+  ["wAcc", "wLat", "wCost"].forEach((id) => $(id).addEventListener("input", renderScore));
+  $("minAcc").addEventListener("change", renderScore);
+  renderScore();
+
+  // fallback simulator
+  const FB = {
+    ok: { s: { "fb-chat": "ok", "fb-gem": "ok", "fb-out": "ok" }, t: "Gemini answers on the first try. The backup is never touched. <code>reply.provider == \"gemini\"</code>." },
+    "429": { s: { "fb-chat": "ok", "fb-gem": "err", "fb-bak": "ok", "fb-out": "ok" }, t: "Gemini returns 429. Day 1's retry loop waits and tries again, and still gets 429. <code>LLMError(retryable=True)</code> → <code>chat()</code> moves on to the backup, which answers. The trace shows <code>provider=anthropic</code>, so you can see it happened." },
+    "503": { s: { "fb-chat": "ok", "fb-gem": "err", "fb-bak": "ok", "fb-out": "ok" }, t: "Same path as 429: a 5xx is the provider's problem, not yours, so falling back is the right move." },
+    "400": { s: { "fb-chat": "err", "fb-gem": "err" }, t: "400 = <b>our</b> request is broken (bad schema, wrong model name). Not retryable, so no fallback: <code>chat()</code> re-raises immediately. Hiding it behind the backup would just make the bug harder to find." },
+    both: { s: { "fb-chat": "err", "fb-gem": "err", "fb-bak": "err" }, t: "Both fail. <code>LLMError(\"all providers failed: gemini: 429…; anthropic: 503…\")</code>. <code>run_agent</code> stops with <code>stopped_because=\"error\"</code> and the app shows a friendly message instead of a stack trace." },
+  };
+  function renderFb(k) {
+    ["fb-chat", "fb-gem", "fb-bak", "fb-out"].forEach((id) => { $(id).classList.remove("on", "ok", "err"); const c = FB[k].s[id]; if (c) $(id).classList.add(c); });
+    $("fbText").innerHTML = `<p style="margin:0">${FB[k].t}</p>`;
+    document.querySelectorAll("#fbBtns button").forEach((b) => b.classList.toggle("sel", b.dataset.fb === k));
+  }
+  document.querySelectorAll("#fbBtns button").forEach((b) => b.addEventListener("click", () => renderFb(b.dataset.fb)));
+  renderFb("ok");
+
+  // streamlit rerun demo
+  const ST_LINES = [
+    "import streamlit as st",
+    "",
+    "count = 0                       # plain variable",
+    "if \"count\" not in st.session_state:",
+    "    st.session_state.count = 0  # runs once",
+    "",
+    "if st.button(\"+1\"):",
+    "    count += 1",
+    "    st.session_state.count += 1",
+    "",
+    "st.write(count, st.session_state.count)",
+  ];
+  $("stCode").innerHTML = ST_LINES.map((l) => `<div>${esc(l) || "&nbsp;"}</div>`).join("");
+  const stDivs = [...$("stCode").children];
+  let stState = 0, stRuns = 0, stBusy = false;
+  function rerun(clicked) {
+    if (stBusy) return;
+    stBusy = true;
+    stRuns++;
+    let i = 0, plain = 0;
+    const tick = () => {
+      stDivs.forEach((d, j) => d.classList.toggle("run", j === i));
+      if (i === 2) { plain = 0; $("stPlain").textContent = "…"; }
+      if (i === 7 && clicked) plain += 1;
+      if (i === 8 && clicked) stState += 1;
+      if (i === 10) { $("stPlain").textContent = plain; $("stState").textContent = stState; }
+      i++;
+      if (i < ST_LINES.length) setTimeout(tick, (i === 7 || i === 8) && !clicked ? 30 : 160);
+      else setTimeout(() => {
+        stDivs.forEach((d) => d.classList.remove("run"));
+        $("stMsg").innerHTML = `Reruns so far: ${stRuns}. The plain variable was reset to 0 on line 3 and only ever reaches 1; <b>session_state</b> kept counting.`;
+        stBusy = false;
+      }, 300);
+    };
+    tick();
+  }
+  $("stClick").addEventListener("click", () => rerun(true));
+  $("stReset").addEventListener("click", () => { if (stBusy) return; stState = 0; stRuns = 0; $("stPlain").textContent = 0; $("stState").textContent = 0; $("stMsg").textContent = "Reruns so far: 0"; });
+
+  // flow player (planned design)
+  const NODES = ["n-app", "n-loop", "n-llm", "n-gem", "n-bak", "n-tool"];
+  const Q1 = "Average revenue per region, and which doc mentions refunds?";
+  const A1 = "East 1182, North 1217, South 1150, West 1457. Refunds: docs/q3-review.md.";
+  const Q2 = "Why did refunds rise?";
+  const A2 = "Faulty Gadget chargers (docs/q3-review.md).";
+  // screen: list of [role, text, statusLines?]
+  const scenarios = {
+    first: [
+      { on: "n-app", screen: [], state: { messages: [] }, t: "First load: the script runs top to bottom. <code>session_state.messages</code> is created empty; <code>get_agent()</code> (wrapped in <code>@st.cache_resource</code>) loads the tools and the RAG index once." },
+      { on: "n-app", screen: [["user", Q1]], state: { messages: [["user", Q1]] }, t: "You press Enter. Streamlit <b>reruns</b> the script; <code>st.chat_input()</code> now returns your text. It's appended to <code>session_state.messages</code> and drawn as a bubble." },
+      { on: "n-loop", screen: [["user", Q1], ["assistant", "", []]], state: { messages: [["user", Q1]] }, t: "Inside <code>with st.chat_message(\"assistant\")</code> + <code>st.status(\"Thinking…\")</code>, the app calls <code>run_agent(prompt, on_step=box.write)</code>." },
+      { on: "n-gem", ok: "n-gem", screen: [["user", Q1], ["assistant", "", ["[1] LLM gemini 820ms → analyze_csv, search_docs"]]], state: { messages: [["user", Q1]] }, t: "<code>llm.chat</code> → Gemini asks for two tools. <code>on_step</code> fires and the line appears in the status box <b>right now</b>, not at the end." },
+      { on: "n-tool", ok: "n-tool", screen: [["user", Q1], ["assistant", "", ["[1] LLM gemini 820ms → analyze_csv, search_docs", "[2] TOOL analyze_csv ok", "[3] TOOL search_docs ok · q3-review.md"]]], state: { messages: [["user", Q1]] }, t: "Day 2's <code>run_tool</code> runs them. Each result is another <code>on_step</code> → another line in the panel." },
+      { on: "n-gem", ok: "n-gem", screen: [["user", Q1], ["assistant", A1, ["[1] LLM gemini 820ms → analyze_csv, search_docs", "[2] TOOL analyze_csv ok", "[3] TOOL search_docs ok · q3-review.md", "[4] LLM gemini 700ms → final"], ["q3-review.md"]]], state: { messages: [["user", Q1], ["assistant", A1]] }, t: "Final answer. The status box collapses to \"Done in 4 steps\", the answer is drawn, sources go in an <code>st.expander(\"Sources\")</code>, and the reply is saved to <code>session_state</code>." },
+    ],
+    fallback: [
+      { on: "n-app", screen: [["user", Q1]], state: { messages: [["user", Q1]] }, t: "Same question, but Gemini's quota is exhausted." },
+      { on: "n-gem", err: "n-gem", screen: [["user", Q1], ["assistant", "", []]], state: { messages: [["user", Q1]] }, t: "Gemini returns 429. The Day-1 retries inside <code>GeminiProvider</code> wait and try again: still 429. It raises <code>LLMError(retryable=True)</code>." },
+      { on: "n-bak", ok: "n-bak", screen: [["user", Q1], ["assistant", "", ["[1] LLM anthropic (fallback: gemini 429) 1.1s → analyze_csv, search_docs"]]], state: { messages: [["user", Q1]], provider_used: "anthropic" }, t: "<code>llm.chat</code> moves to the next provider in <code>provider_order()</code>. Its adapter converts the neutral messages and tool schemas to that provider's format. It asks for the same tools." },
+      { on: "n-tool", ok: "n-tool", screen: [["user", Q1], ["assistant", "", ["[1] LLM anthropic (fallback: gemini 429) 1.1s → analyze_csv, search_docs", "[2] TOOL analyze_csv ok", "[3] TOOL search_docs ok"]]], state: { messages: [["user", Q1]], provider_used: "anthropic" }, t: "Tools don't care which model asked. Same <code>run_tool</code>, same results." },
+      { on: "n-app", ok: "n-app", screen: [["user", Q1], ["assistant", A1, ["[1] LLM anthropic (fallback: gemini 429) 1.1s → analyze_csv, search_docs", "[2] TOOL analyze_csv ok", "[3] TOOL search_docs ok", "[4] LLM anthropic 900ms → final"], ["q3-review.md"]]], state: { messages: [["user", Q1], ["assistant", A1]], provider_used: "anthropic" }, t: "The demo keeps going. The trace says which provider answered, so you can even point it out to the judges as a reliability feature." },
+    ],
+    second: [
+      { on: "n-app", screen: [["user", Q1], ["assistant", A1]], state: { messages: [["user", Q1], ["assistant", A1]] }, t: "You type a follow-up. Rerun: the <code>for m in session_state.messages</code> loop redraws the old bubbles first. The old status box is gone; only the answers were saved." },
+      { on: "n-app", screen: [["user", Q1], ["assistant", A1], ["user", Q2]], state: { messages: [["user", Q1], ["assistant", A1], ["user", Q2]] }, t: "New user message appended and drawn." },
+      { on: "n-loop", screen: [["user", Q1], ["assistant", A1], ["user", Q2], ["assistant", "", []]], state: { messages: [["user", Q1], ["assistant", A1], ["user", Q2]] }, t: "<code>run_agent</code> gets the previous turns too (<code>history=session_state.messages[:-1]</code>), so \"why did <em>refunds</em> rise\" makes sense. Without that, every question would start from zero." },
+      { on: "n-tool", ok: "n-tool", screen: [["user", Q1], ["assistant", A1], ["user", Q2], ["assistant", A2, ["[1] LLM gemini 640ms → search_docs", "[2] TOOL search_docs ok · q3-review.md", "[3] LLM gemini 520ms → final"], ["q3-review.md"]]], state: { messages: [["user", Q1], ["assistant", A1], ["user", Q2], ["assistant", A2]] }, t: "One search, one answer, with its source. <code>get_agent()</code> was <b>not</b> rebuilt on this rerun, thanks to <code>@st.cache_resource</code>." },
+    ],
+    compare: [
+      { on: "n-app", screen: "cmp0", state: { models: ["gemini-2.5-flash", "gemini-2.5-pro"], prompts: ["v1", "v2"] }, t: "<code>python compare_models.py</code> has no UI. It loops over 2 models × 2 prompts = 4 configs and loads Day 6's <code>evals/cases.jsonl</code>." },
+      { on: "n-loop", screen: "cmp1", state: { config: "flash + v1", case: "3 / 10" }, t: "For each config and each case it calls <code>run_agent(question, model=…, system=PROMPTS[p], verbose=False)</code> and scores the answer with the Day-6 scorer." },
+      { on: "n-llm", ok: "n-llm", screen: "cmp2", state: { results: "4 configs × 10 cases" }, t: "It sums pass count, average latency and tokens from each run's <code>trace.totals()</code>. Tokens × the price on the provider's pricing page = cost." },
+      { on: "n-app", ok: "n-app", screen: "cmp3", state: { winner: "flash + v2", saved: "results/compare-20261021.json" }, t: "Prints the scorecard and saves JSON. You paste the table into <code>notes.md</code> with one sentence: which you picked and why. That sentence goes in the README and the pitch." },
+    ],
+  };
+  const CMP = {
+    cmp0: "<span class='mono' style='font-size:12.5px;color:var(--muted)'>$ python compare_models.py</span>",
+    cmp1: "<span class='mono' style='font-size:12.5px'>$ python compare_models.py<br>flash + v1  ▓▓▓░░░░░░░ 3/10 cases</span>",
+    cmp2: "<span class='mono' style='font-size:12.5px'>$ python compare_models.py<br>flash + v1  done<br>flash + v2  done<br>pro + v1    done<br>pro + v2    done</span>",
+    cmp3: "<span class='mono' style='font-size:12px'>config       pass  avg_s  tokens<br>flash + v1    8/10   1.4   21k<br>flash + v2    9/10   1.6   24k  ← pick<br>pro + v1      9/10   5.2   30k<br>pro + v2     10/10   5.8   33k<br><span style='color:var(--muted)'>(example output)</span></span>",
+  };
+  function renderScreen(sc) {
+    if (typeof sc === "string") return CMP[sc];
+    if (!sc.length) return "<span style='color:var(--muted);font-size:13.5px'>empty chat · input box at the bottom</span>";
+    return sc.map(([role, text, status, sources]) => {
+      let h = `<div class="bubble ${role}"><span class="who">${role}</span>`;
+      if (status) h += `<div class="status-box"><div class="hd">${text ? "✓ Done in " + status.length + " steps" : "⏳ Thinking…"}</div>${text ? "" : status.map(esc).join("<br>")}</div>`;
+      if (status && text) h += `<div class="status-box" style="color:var(--muted)">${status.map(esc).join("<br>")}</div>`;
+      if (text) h += esc(text);
+      if (sources) h += `<div style="font-size:12px;color:var(--muted);margin-top:4px">▸ Sources: ${sources.map(esc).join(", ")}</div>`;
+      return h + "</div>";
+    }).join("");
+  }
+  function renderState(s) {
+    return Object.entries(s).map(([k, v]) => {
+      if (k === "messages") return "messages = [" + (v.length ? "\n" + v.map(([r, t]) => `  {"role": "${r}", "content": "${esc(t.length > 38 ? t.slice(0, 38) + "…" : t)}"}`).join(",\n") + "\n" : "") + "]";
+      return `${k} = ${esc(JSON.stringify(v))}`;
+    }).join("\n");
+  }
+  let scen = "first", idx = -1;
+  function renderFlow() {
+    const steps = scenarios[scen];
+    NODES.forEach((id) => $(id).classList.remove("on", "ok", "err"));
+    if (idx < 0) {
+      $("narrStep").textContent = "Step 0 of " + steps.length;
+      $("narrText").innerHTML = "Press <b>Next</b> to start.";
+      $("screenPane").innerHTML = scen === "compare" ? CMP.cmp0 : "<span style='color:var(--muted);font-size:13.5px'>$ streamlit run app.py</span>";
+      $("statePane").textContent = "";
+    } else {
+      const s = steps[idx];
+      $(s.on).classList.add("on");
+      if (s.ok) { $(s.ok).classList.remove("on"); $(s.ok).classList.add("ok"); }
+      if (s.err) { $(s.err).classList.remove("on"); $(s.err).classList.add("err"); }
+      $("narrStep").textContent = `Step ${idx + 1} of ${steps.length}`;
+      $("narrText").innerHTML = s.t;
+      $("screenPane").innerHTML = renderScreen(s.screen);
+      $("statePane").innerHTML = renderState(s.state);
+    }
+    $("flowPrev").disabled = idx < 0;
+    $("flowNext").disabled = idx >= steps.length - 1;
+  }
+  document.querySelectorAll("#flowBtns button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#flowBtns button").forEach((x) => x.classList.toggle("sel", x === b));
+    scen = b.dataset.s; idx = -1; renderFlow();
+  }));
+  $("flowNext").addEventListener("click", () => { idx++; renderFlow(); });
+  $("flowPrev").addEventListener("click", () => { idx--; renderFlow(); });
+  $("flowReset").addEventListener("click", () => { idx = -1; renderFlow(); });
+  renderFlow();
+})();
+</script>
+</body>
+</html>

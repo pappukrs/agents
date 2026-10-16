@@ -101,12 +101,15 @@ def declarations(names: list[str] | None = None) -> list[dict]:
 _pool = ThreadPoolExecutor(max_workers=4)
 
 
-def run_tool(name: str, args: dict | None) -> dict:
+def run_tool(name: str, args: dict | None, allowed: list[str] | None = None) -> dict:
     """Execute a tool call from the model. Never raises: every failure becomes an observation
-    the model can read and react to ({"error": ...}), so one bad call doesn't kill the run."""
-    t = REGISTRY.get(name)
+    the model can read and react to ({"error": ...}), so one bad call doesn't kill the run.
+
+    `allowed` enforces the allow-list in code: hiding a tool's schema doesn't stop the model naming it."""
+    available = [n for n in REGISTRY if allowed is None or n in allowed]
+    t = REGISTRY.get(name) if name in available else None
     if t is None:
-        return {"error": f"Unknown tool '{name}'. Available: {', '.join(REGISTRY)}"}
+        return {"error": f"Unknown tool '{name}'. Available: {', '.join(available)}"}
     args = dict(args or {})
     unknown = set(args) - set(t.parameters["properties"])
     missing = [p for p in t.parameters["required"] if p not in args]

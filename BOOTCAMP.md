@@ -9,6 +9,8 @@
 This replaces the TypeScript track in `ROADMAP.md` until the hackathon. Code lives in `bootcamp/dayNN/`;
 the reusable starter grows in `starter/` and is what we take into the hall.
 
+**Start each day at `bootcamp/index.html`** (open it in a browser): it links every day's interactive `concepts.html`.
+
 ---
 
 ## The core idea

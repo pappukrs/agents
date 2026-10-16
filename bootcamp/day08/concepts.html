@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 8 Mock Challenge</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --surface-2: #f0eee8; --text: #1d1d1f; --muted: #5f5e5a;
+  --border: #e2dfd6; --accent: #2f6fde; --accent-soft: #e5eefc; --good: #1f8a4c; --good-soft: #e3f4ea;
+  --warn: #b26a00; --warn-soft: #fbf0dc; --bad: #c0392b; --bad-soft: #fbe6e3;
+  --js: #b8860b; --py: #2f6fde; --code-bg: #f3f1ec;
+  --ph1: #2f6fde; --ph2: #7a4cc2; --ph3: #1f8a4c; --ph4: #b26a00; --ph5: #5f5e5a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+    --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+    --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+    --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+    --ph1: #6ea0ff; --ph2: #b48cf2; --ph3: #4cc783; --ph4: #f0b04f; --ph5: #a3a29d;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+  --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+  --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+  --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+  --ph1: #6ea0ff; --ph2: #b48cf2; --ph3: #4cc783; --ph4: #f0b04f; --ph5: #a3a29d;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+:not(pre) > code { background: var(--surface-2); padding: 1px 6px; border-radius: 5px; }
+a { color: var(--accent); }
+
+.layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); max-width: 1180px; margin: 0 auto; gap: 32px; padding: 0 24px; }
+nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 28px 0; }
+nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+nav.toc .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+nav.toc li a { display: flex; gap: 10px; padding: 6px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; }
+nav.toc li a::before { counter-increment: s; content: counter(s); font-variant-numeric: tabular-nums; min-width: 18px; color: var(--muted); opacity: .7; }
+nav.toc li a:hover { background: var(--surface-2); color: var(--text); }
+nav.toc li a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav.toc .part { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 10px 4px; }
+.theme-btn { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+
+main { padding: 28px 0 120px; min-width: 0; }
+header.hero { padding: 24px 0 8px; }
+.eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+h1 { font-size: 34px; line-height: 1.15; margin: 6px 0 12px; }
+h2 { font-size: 24px; margin: 0 0 6px; }
+h3 { font-size: 17px; margin: 22px 0 8px; }
+.lead { font-size: 18px; color: var(--muted); max-width: 680px; }
+section { padding-top: 56px; scroll-margin-top: 12px; }
+.sec-num { color: var(--muted); font-size: 13px; font-weight: 600; }
+.why { color: var(--muted); margin: 0 0 18px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin: 16px 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.grid2 > *, .grid3 > *, .flow-wrap > *, .ref > *, .timeline > *, .picker > * { min-width: 0; }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+.callout.js { border-color: var(--js); background: var(--warn-soft); }
+.callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+.callout.good { border-color: var(--good); background: var(--good-soft); }
+.callout b:first-child { display: block; margin-bottom: 2px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; }
+.tag.py { background: var(--accent-soft); color: var(--py); }
+.tag.good { background: var(--good-soft); color: var(--good); }
+.tag.bad { background: var(--bad-soft); color: var(--bad); }
+
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 8px 0; line-height: 1.55; }
+pre .c { color: var(--muted); font-style: italic; }
+pre .k { color: var(--accent); font-weight: 600; }
+pre .s { color: var(--good); }
+
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.table-wrap { overflow-x: auto; }
+
+button.btn { background: var(--accent); color: #fff; border: 0; padding: 8px 14px; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+button.btn.ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+button.btn:disabled { opacity: .45; cursor: default; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+input[type=text], textarea { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font: inherit; font-size: 14.5px; }
+textarea { resize: vertical; min-height: 60px; }
+
+/* ---------- mission timeline ---------- */
+.mission { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin-top: 18px; }
+.mission-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.mission-head h2 { font-size: 20px; margin: 0; }
+.mission-head .pct { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; }
+.progress { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin: 10px 0 16px; }
+.progress div { height: 100%; background: var(--good); width: 0; transition: width .3s; }
+
+.timer { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; background: var(--surface-2); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+.timer.over { background: var(--bad-soft); }
+.clock { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; font-family: ui-monospace, Menlo, monospace; }
+.clock-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.now { font-size: 15px; }
+.now b { color: var(--accent); }
+.timer.over .now b { color: var(--bad); }
+.track { position: relative; display: flex; height: 26px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid var(--border); }
+.track div { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11.5px; color: #fff; font-weight: 600; white-space: nowrap; overflow: hidden; opacity: .85; }
+.track .needle { position: absolute; top: -2px; bottom: -2px; width: 3px; background: var(--text); border-radius: 2px; left: 0; opacity: 1; transition: left .5s linear; }
+
+.timeline { display: grid; grid-template-columns: 0.9fr 1.6fr 1.1fr 0.9fr 0.9fr; gap: 10px; }
+.phase { border: 1px solid var(--border); border-top: 5px solid var(--ph); border-radius: 12px; padding: 10px 11px 6px; background: var(--surface-2); position: relative; transition: box-shadow .25s; }
+.phase.current { box-shadow: 0 0 0 3px var(--accent); }
+.phase.done { background: var(--good-soft); border-color: var(--good); border-top-color: var(--good); }
+.phase .ph-time { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--muted); }
+.phase .ph-name { font-weight: 700; font-size: 15px; line-height: 1.25; margin: 2px 0 2px; }
+.phase .ph-goal { color: var(--muted); font-size: 12.5px; margin: 0 0 4px; line-height: 1.35; }
+.task { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 13px; line-height: 1.4; border-top: 1px dashed var(--border); }
+.task input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--good); flex: none; }
+.task.done label { color: var(--muted); text-decoration: line-through; }
+.task code { font-size: 11.5px; }
+.done-when { margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+.done-when .flag { font-size: 18px; line-height: 1.2; }
+
+.placeholder { border: 2px dashed var(--warn); background: var(--warn-soft); border-radius: 14px; padding: 18px 20px; margin: 16px 0; }
+.placeholder h3 { margin: 0 0 4px; color: var(--warn); }
+
+/* problem reading */
+.anatomy { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.anat { border-radius: 12px; padding: 12px; border: 1px solid var(--border); background: var(--surface); }
+.anat b { display: block; margin-bottom: 2px; }
+.anat span { color: var(--muted); font-size: 13.5px; }
+.hl-in { background: var(--accent-soft); border-radius: 4px; padding: 0 3px; }
+.hl-out { background: var(--good-soft); border-radius: 4px; padding: 0 3px; }
+.hl-score { background: var(--warn-soft); border-radius: 4px; padding: 0 3px; }
+.hl-con { background: var(--bad-soft); border-radius: 4px; padding: 0 3px; }
+.sample-ps.off span { background: transparent !important; }
+
+/* spec builder */
+.spec-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.spec-grid label { font-size: 13px; font-weight: 600; display: block; margin: 10px 0 4px; }
+.spec-out { white-space: pre-wrap; word-break: break-word; min-height: 300px; font-size: 13px; margin: 0; }
+.copied { color: var(--good); font-size: 13px; font-weight: 600; }
+
+/* architecture picker */
+.picker { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; }
+.q-row { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14.5px; }
+.q-row .opts { display: flex; gap: 6px; margin-top: 6px; }
+.q-row .opts button { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 4px 12px; border-radius: 99px; cursor: pointer; font: inherit; font-size: 13px; }
+.q-row .opts button.sel { background: var(--text); color: var(--bg); border-color: var(--text); }
+.arch { border: 2px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; transition: all .2s; }
+.arch .an { font-weight: 700; display: flex; justify-content: space-between; gap: 8px; }
+.arch .an .sc { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 600; font-size: 13px; }
+.arch .ad { color: var(--muted); font-size: 13.5px; }
+.arch.best { border-color: var(--good); background: var(--good-soft); }
+.arch.best .an .sc { color: var(--good); }
+.arch.meh { opacity: .55; }
+
+/* prompts */
+.pp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin: 10px 0; }
+.pp > * { min-width: 0; }
+.pp pre { white-space: pre-wrap; word-break: break-word; font-size: 13px; }
+
+/* commit cadence */
+.cadence { position: relative; height: 70px; margin: 14px 0 6px; }
+.cadence .line { position: absolute; left: 0; right: 0; top: 30px; height: 4px; background: var(--surface-2); border-radius: 2px; }
+.cadence .dot { position: absolute; top: 22px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: var(--good); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--good); }
+.cadence .dot.bad { background: var(--bad); box-shadow: 0 0 0 1px var(--bad); }
+.cadence .lbl { position: absolute; top: 48px; transform: translateX(-50%); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.cadence .lbl.top { top: 0; }
+.cadence { margin-left: 14px; margin-right: 14px; }
+
+/* starter ref */
+.ref { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ref .card { margin: 0; padding: 14px 16px; }
+.ref .fname { font-family: ui-monospace, Menlo, monospace; font-weight: 700; font-size: 14px; }
+.ref .gives { color: var(--muted); font-size: 13.5px; margin: 2px 0 6px; }
+.ref pre { margin: 0; font-size: 12.5px; padding: 8px 10px; white-space: pre-wrap; word-break: break-word; }
+.ref .day { float: right; font-size: 11px; color: var(--muted); }
+
+/* flow player */
+.flow-wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 20px; }
+.hours { display: flex; flex-direction: column; gap: 6px; }
+.hr { border: 2px solid var(--border); background: var(--surface); border-radius: 10px; padding: 7px 12px; transition: all .25s; display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 8px; font-size: 14px; }
+.hr .t { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+.hr.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+.hr.past { border-color: var(--good); background: var(--good-soft); }
+.narr { background: var(--surface-2); border-radius: 12px; padding: 14px 16px; min-height: 120px; }
+.narr .stepn { color: var(--muted); font-size: 13px; }
+.narr p { margin: 6px 0 0; }
+.pane-title { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 0 6px; font-weight: 700; }
+.term { background: #16161a; color: #d8d8d8; border-radius: 10px; padding: 10px 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; min-height: 80px; white-space: pre-wrap; word-break: break-word; }
+.term .g { color: #7ddc9c; } .term .d { color: #9a9a9a; } .term .e { color: #ff8a7a; }
+.state { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font-size: 12.5px; padding: 3px 10px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); }
+.pill.on { background: var(--good-soft); color: var(--good); border-color: var(--good); font-weight: 600; }
+
+details.q { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
+details.q summary { cursor: pointer; font-weight: 600; }
+details.q[open] summary { margin-bottom: 8px; }
+.pm { display: flex; flex-direction: column; gap: 8px; }
+.pm label { font-weight: 600; font-size: 14px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; padding: 0 16px; gap: 0; }
+  nav.toc { position: static; height: auto; padding: 16px 0 0; }
+  nav.toc ol { display: flex; flex-wrap: wrap; gap: 4px; }
+  nav.toc .part { display: none; }
+  .grid2, .grid3, .flow-wrap, .timeline, .anatomy, .spec-grid, .picker, .pp, .ref, .timer { grid-template-columns: 1fr; }
+  .track div { font-size: 0; }
+  h1 { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <div class="brand">Day 8 · Full Mock Challenge</div>
+  <div class="sub">HackerRank AI Agents bootcamp · 22 Oct</div>
+  <ol>
+    <div class="part">Start here</div>
+    <li><a href="#mission">Today's mission + timer</a></li>
+    <div class="part">Part A — How to run the day</div>
+    <li><a href="#read">Read the problem</a></li>
+    <li><a href="#spec">Write SPEC.md</a></li>
+    <li><a href="#arch">Pick an architecture</a></li>
+    <li><a href="#drive">Drive Claude Code well</a></li>
+    <li><a href="#commits">Commit cadence</a></li>
+    <li><a href="#demoable">Always demo-able</a></li>
+    <div class="part">Part B — Your toolbox</div>
+    <li><a href="#starter">starter/ quick reference</a></li>
+    <div class="part">Part C — The run</div>
+    <li><a href="#flow">A good 5 hours</a></li>
+    <li><a href="#review">Post-mortem</a></li>
+    <li><a href="#quiz">Self-check</a></li>
+  </ol>
+  <button class="theme-btn" id="themeBtn" type="button">Toggle theme</button>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Day 8 of 9 · Thu 22 Oct 2026 · dress rehearsal</div>
+  <h1>Five hours, one unseen problem, only your starter and Claude Code</h1>
+  <p class="lead">Today is a practice run of hackathon day. The goal isn't a perfect project. It's to find out where your time really goes and what's missing from <code>starter/</code>, while there's still a day left to fix it.</p>
+</header>
+
+<!-- ============ MISSION ============ -->
+<section id="mission" style="padding-top:20px">
+  <div class="placeholder">
+    <h3>Problem statement: given on 22 Oct</h3>
+    <div style="font-size:14.5px">Claude gives you an unseen problem at the start of the session. Don't read ahead or prepare for a specific topic. Start the timer below the moment you get it, then copy the statement into <code>bootcamp/day08/PROBLEM.md</code>.</div>
+  </div>
+
+  <div class="mission">
+    <div class="mission-head">
+      <h2>Today's mission</h2>
+      <span class="pct" id="missionPct">0 of 0 done</span>
+    </div>
+    <div class="progress"><div id="progBar"></div></div>
+
+    <div class="timer" id="timer">
+      <div>
+        <div class="clock" id="clock">0:00:00</div>
+        <div class="clock-sub" id="clockSub">of 5:00:00 · not started</div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn" id="tStart" type="button">Start</button>
+          <button class="btn ghost" id="tReset" type="button">Reset</button>
+        </div>
+      </div>
+      <div>
+        <div class="now" id="nowTxt">Press <b>Start</b> when you receive the problem.</div>
+        <div class="track" id="track">
+          <div style="width:10%;background:var(--ph1)">Spec</div>
+          <div style="width:60%;background:var(--ph2)">Build: tools → loop → UI</div>
+          <div style="width:20%;background:var(--ph3)">Evals</div>
+          <div style="width:10%;background:var(--ph4)">Demo</div>
+          <span class="needle" id="needle"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline" id="stations">
+      <div class="phase" data-ph="0" style="--ph:var(--ph1)">
+        <div class="ph-time">0:00 – 0:30</div>
+        <div class="ph-name">Read · clarify · spec</div>
+        <p class="ph-goal">No code. Understand what's scored.</p>
+        <div class="task"><input type="checkbox" id="t1"><label for="t1">Read the problem twice</label></div>
+        <div class="task"><input type="checkbox" id="t2"><label for="t2">Mark inputs, outputs, scoring, constraints</label></div>
+        <div class="task"><input type="checkbox" id="t3"><label for="t3">Pick an architecture (picker below)</label></div>
+        <div class="task"><input type="checkbox" id="t4"><label for="t4">Write <code>SPEC.md</code> + 5 test cases</label></div>
+      </div>
+      <div class="phase" data-ph="1" style="--ph:var(--ph2)">
+        <div class="ph-time">0:30 – 3:30</div>
+        <div class="ph-name">Build: tools → loop → UI</div>
+        <p class="ph-goal">End-to-end first, then improve. Commit every 30 min.</p>
+        <div class="task"><input type="checkbox" id="t5"><label for="t5">Copy <code>starter/</code>, <code>make test</code> passes (by 0:40)</label></div>
+        <div class="task"><input type="checkbox" id="t6"><label for="t6">Tools with tests, one at a time</label></div>
+        <div class="task"><input type="checkbox" id="t7"><label for="t7">First end-to-end answer in the CLI (by 1:30)</label></div>
+        <div class="task"><input type="checkbox" id="t8"><label for="t8">Streamlit UI with trace panel (by 3:00)</label></div>
+        <div class="task"><input type="checkbox" id="t9"><label for="t9">6 commits: 1:00, 1:30, 2:00, 2:30, 3:00, 3:30</label></div>
+      </div>
+      <div class="phase" data-ph="2" style="--ph:var(--ph3)">
+        <div class="ph-time">3:30 – 4:30</div>
+        <div class="ph-name">Evals + edge cases</div>
+        <p class="ph-goal">Prove it works. Find how it breaks.</p>
+        <div class="task"><input type="checkbox" id="t10"><label for="t10">10 cases in <code>evals/cases.jsonl</code></label></div>
+        <div class="task"><input type="checkbox" id="t11"><label for="t11"><code>make eval</code> → scorecard saved</label></div>
+        <div class="task"><input type="checkbox" id="t12"><label for="t12">Fix the top 2 failures, re-run</label></div>
+      </div>
+      <div class="phase" data-ph="3" style="--ph:var(--ph4)">
+        <div class="ph-time">4:30 – 5:00</div>
+        <div class="ph-name">README + demo</div>
+        <p class="ph-goal">No new features.</p>
+        <div class="task"><input type="checkbox" id="t13"><label for="t13">README: problem, architecture, how to run, eval table, limits</label></div>
+        <div class="task"><input type="checkbox" id="t14"><label for="t14">3-minute demo script, rehearsed once</label></div>
+      </div>
+      <div class="phase" data-ph="4" style="--ph:var(--ph5)">
+        <div class="ph-time">after 5:00</div>
+        <div class="ph-name">Review</div>
+        <p class="ph-goal">Fix the starter, not the mock project.</p>
+        <div class="task"><input type="checkbox" id="t15"><label for="t15">Fill the post-mortem (Part C)</label></div>
+        <div class="task"><input type="checkbox" id="t16"><label for="t16">Add what was missing to <code>starter/</code>, commit</label></div>
+      </div>
+    </div>
+    <div class="done-when"><span class="flag">🏁</span><div><b>Done when:</b> at 5:00 you have a working demo, a scorecard from <code>make eval</code>, and a README. Then the post-mortem lists at least 3 concrete fixes for <code>starter/</code>.</div></div>
+  </div>
+</section>
+
+<!-- ============ PART A ============ -->
+
+<section id="read">
+  <div class="sec-num">2 · Read the problem</div>
+  <h2>Find four things before you think about code</h2>
+  <p class="why">Most hackathon failures are building the wrong thing well. Every problem statement has the same four parts. Find all of them, and ask the organizers about any that are missing.</p>
+  <div class="anatomy">
+    <div class="anat" style="border-color:var(--accent)"><b><span class="hl-in">Inputs</span></b><span>What does the agent receive? Files, a question, an API, a CSV? How big? What format?</span></div>
+    <div class="anat" style="border-color:var(--good)"><b><span class="hl-out">Outputs</span></b><span>What must it produce? Text, JSON, a file, an action? Is there an exact format?</span></div>
+    <div class="anat" style="border-color:var(--warn)"><b><span class="hl-score">Scoring</span></b><span>Hidden test cases? Demo? Code review? Accuracy, speed, cost? This decides where your hours go.</span></div>
+    <div class="anat" style="border-color:var(--bad)"><b><span class="hl-con">Constraints</span></b><span>Allowed models, time limits, no internet, rate limits, things the agent must never do.</span></div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><b>Practice on a made-up example</b> <label style="font-size:14px"><input type="checkbox" id="hlToggle" checked> show highlights</label></div>
+    <p class="sample-ps" id="samplePs" style="font-size:15px;margin-bottom:0">
+      "Build an agent that takes <span class="hl-in">a folder of customer emails (.txt, up to 200 files)</span> and produces <span class="hl-out">a JSON report: top 5 complaint themes, each with a count and 2 example email IDs</span>.
+      <span class="hl-score">Submissions are scored on hidden email sets: theme accuracy (60%), valid JSON (20%), live demo (20%).</span>
+      <span class="hl-con">Must finish in under 2 minutes per folder. Only the provided API key may be used.</span>"
+    </p>
+  </div>
+  <div class="callout"><b>What the scoring line tells you here</b>Valid JSON is 20% of the score and costs almost nothing: Pydantic + <code>generate_structured</code> (Day 1). Theme accuracy is 60%: spend most hours there, measured with evals. The demo is 20%: a simple Streamlit page is enough. A fancy multi-agent setup earns nothing extra.</div>
+  <div class="callout warn"><b>Questions to ask in the first 10 minutes</b>"Is the output format exact?" · "Are the hidden tests like the examples?" · "Can we use our own templates?" · "What happens if the agent times out?" Ask them early, while the answers can still change your plan.</div>
+</section>
+
+<section id="spec">
+  <div class="sec-num">3 · Write SPEC.md</div>
+  <h2>A one-page spec is what you hand to Claude Code</h2>
+  <p class="why">Fill in the fields on the left. The right side is your <code>SPEC.md</code>, ready to copy. Keep it short: if a line doesn't change what you build, delete it.</p>
+  <div class="card">
+    <div class="spec-grid">
+      <div>
+        <label for="sProblem">Problem in one sentence</label>
+        <input type="text" id="sProblem" placeholder="e.g. Turn a folder of emails into a JSON report of top complaint themes">
+        <label for="sIn">Inputs</label>
+        <input type="text" id="sIn" placeholder="e.g. folder of .txt files, ≤200, English">
+        <label for="sOut">Output (exact format)</label>
+        <input type="text" id="sOut" placeholder="e.g. JSON: {themes: [{name, count, examples[2]}]}">
+        <label for="sScore">How it's scored</label>
+        <input type="text" id="sScore" placeholder="e.g. hidden sets: accuracy 60%, valid JSON 20%, demo 20%">
+        <label for="sArch">Architecture (from the picker)</label>
+        <input type="text" id="sArch" placeholder="e.g. single agent + tools, structured output">
+        <label for="sTools">Tools (name: what it does)</label>
+        <textarea id="sTools" placeholder="list_emails: list files&#10;read_email: read one file"></textarea>
+        <label for="sCases">Test cases (input → expected)</label>
+        <textarea id="sCases" placeholder="5 emails about late delivery → theme 'shipping delay', count 5"></textarea>
+        <label for="sOutScope">Out of scope (not today)</label>
+        <input type="text" id="sOutScope" placeholder="e.g. auth, database, multi-language">
+      </div>
+      <div style="min-width:0">
+        <pre class="spec-out" id="specOut"></pre>
+        <div class="btn-row"><button class="btn" id="specCopy" type="button">Copy SPEC.md</button><button class="btn ghost" id="specClear" type="button">Clear</button><span class="copied" id="copiedMsg"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout good"><b>Why this pays off</b>With SPEC.md in the repo, every Claude Code prompt can start with "Read SPEC.md". It stops the AI (and you) from drifting into features nobody scores.</div>
+</section>
+
+<section id="arch">
+  <div class="sec-num">4 · Pick an architecture</div>
+  <h2>Choose the simplest design that solves the problem</h2>
+  <p class="why">Answer the five questions. The picker scores the four designs you practised this week. The default is almost always the top one.</p>
+  <div class="card">
+    <div class="picker">
+      <div id="qs">
+        <div class="q-row" data-q="docs">Does the answer depend on a pile of documents too big for one prompt?<div class="opts"><button type="button" data-v="1">Yes</button><button type="button" data-v="0">No</button></div></div>
+        <div class="q-row" data-q="actions">Does it need to take actions or compute (APIs, files, math, data)?<div class="opts"><button type="button" data-v="1">Yes</button><button type="button" data-v="0">No</button></div></div>
+        <div class="q-row" data-q="parallel">Are there several independent sub-tasks that could run in parallel?<div class="opts"><button type="button" data-v="1">Yes</button><button type="button" data-v="0">No</button></div></div>
+        <div class="q-row" data-q="human">Does a human need to approve steps, or must runs resume after a crash?<div class="opts"><button type="button" data-v="1">Yes</button><button type="button" data-v="0">No</button></div></div>
+        <div class="q-row" data-q="fast">Is speed or cost part of the score?<div class="opts"><button type="button" data-v="1">Yes</button><button type="button" data-v="0">No</button></div></div>
+      </div>
+      <div id="archs">
+        <div class="arch" data-a="single"><div class="an">Single agent + tools <span class="sc"></span></div><div class="ad">Day 2 loop. Fewest moving parts, easy to debug and to explain. <b>The default.</b></div></div>
+        <div class="arch" data-a="rag"><div class="an">Agent + RAG tool <span class="sc"></span></div><div class="ad">Day 3. Same loop with a <code>search_docs</code> tool. Use when answers live in documents.</div></div>
+        <div class="arch" data-a="multi"><div class="an">Multi-agent (planner / workers / reviewer) <span class="sc"></span></div><div class="ad">Day 4. Only when sub-tasks really are independent, and you measured that it helps. Slower and costlier.</div></div>
+        <div class="arch" data-a="graph"><div class="an">LangGraph <span class="sc"></span></div><div class="ad">Day 5. Use when you need branching state, human approval or checkpoints. Otherwise it's extra setup time.</div></div>
+        <div style="font-size:13.5px;color:var(--muted)" id="archMsg">Answer the questions to see a recommendation.</div>
+      </div>
+    </div>
+  </div>
+  <div class="callout js"><b>JS analogy</b>It's like picking Express vs a microservices mesh for a weekend project. Start with the monolith. You can add a RAG tool or a reviewer step later in 30 minutes. Taking a five-agent design apart at hour 3 is very hard.</div>
+</section>
+
+<section id="drive">
+  <div class="sec-num">5 · Drive Claude Code well</div>
+  <h2>Small, specific tasks. Review every diff.</h2>
+  <p class="why">AI tools are allowed for everyone, so the edge is in how you use them. Big vague prompts give big vague diffs you can't check in time.</p>
+  <div class="pp">
+    <div><span class="tag bad">Vague</span><pre>Build the email agent from the problem
+statement. Make it good and add a UI.</pre></div>
+    <div><span class="tag good">Specific</span><pre>Read SPEC.md. In agent/tools.py add a @tool
+read_email(email_id: str) -> str that reads
+data/emails/{email_id}.txt via safe_path.
+Add tests in tests/test_tools.py: reads a
+real file; "../x" returns an error. Don't
+change loop.py. Run pytest and show output.</pre></div>
+  </div>
+  <div class="pp">
+    <div><span class="tag bad">Vague</span><pre>It's not working, fix it.</pre></div>
+    <div><span class="tag good">Specific</span><pre>Case e07 in evals/cases.jsonl fails: expected
+theme "refund delay", got "billing". Trace in
+traces/run-...json shows search_docs returned
+0 hits for "refund". Find why and propose a
+fix before editing.</pre></div>
+  </div>
+  <div class="table-wrap"><table>
+    <tr><th>Rule</th><th>Why</th></tr>
+    <tr><td>One task per prompt: a file, a function, a test</td><td>A diff you can read in 1 minute is a diff you can trust</td></tr>
+    <tr><td>Name the files, the signature and the test</td><td>Stops the AI from inventing structure or touching unrelated code</td></tr>
+    <tr><td>Say what NOT to change</td><td>"Don't change loop.py" protects the parts that already work</td></tr>
+    <tr><td>Paste evidence for bugs (trace, error, case id)</td><td>The AI debugs from facts, not guesses</td></tr>
+    <tr><td>Run tests after every diff, then commit</td><td>Each commit is a safe point to go back to</td></tr>
+  </table></div>
+</section>
+
+<section id="commits">
+  <div class="sec-num">6 · Commit cadence</div>
+  <h2>Commit every 30 minutes, even if it's ugly</h2>
+  <p class="why">A commit is an undo point. When a big AI diff breaks things at 2:40, you go back to 2:30, not to 0:30.</p>
+  <div class="card">
+    <b style="font-size:14px">Good: a commit every 30 min</b>
+    <div class="cadence" id="cadGood"></div>
+    <b style="font-size:14px">Risky: one commit at the end</b>
+    <div class="cadence" id="cadBad"></div>
+  </div>
+<pre><span class="c"># a 10-second habit, set a phone alarm for every :00 and :30</span>
+git add -A &amp;&amp; git commit -m <span class="s">"1:30 end-to-end CLI answer works"</span>
+
+<span class="c"># something broke and you don't know why?</span>
+git diff              <span class="c"># what changed since the last good point</span>
+git stash             <span class="c"># park it, get the working version back, demo still works</span></pre>
+</section>
+
+<section id="demoable">
+  <div class="sec-num">7 · Never be without a demo-able build</div>
+  <h2>Grow a thin working version. Don't build layer by layer.</h2>
+  <p class="why">If the clock stopped right now, could you demo something? Aim for "yes" from 1:30 onwards.</p>
+  <div class="grid2">
+    <div class="card" style="border-color:var(--bad)">
+      <b style="color:var(--bad)">✗ Layer by layer</b>
+      <ol style="font-size:14.5px;margin:8px 0 0;padding-left:20px">
+        <li>All tools, perfect (0:30–2:00)</li>
+        <li>Loop (2:00–3:00)</li>
+        <li>UI (3:00–4:00)</li>
+        <li>First end-to-end run at 4:00… and it doesn't work</li>
+      </ol>
+    </div>
+    <div class="card" style="border-color:var(--good)">
+      <b style="color:var(--good)">✓ Thin slice first</b>
+      <ol style="font-size:14.5px;margin:8px 0 0;padding-left:20px">
+        <li>1 tool + starter loop + CLI answers 1 case (by 1:30)</li>
+        <li>More tools, better prompts, each one tested</li>
+        <li>Streamlit on top of the same <code>run_agent</code></li>
+        <li>Every step leaves something you can demo</li>
+      </ol>
+    </div>
+  </div>
+  <div class="callout warn"><b>The last 30 minutes are frozen</b>From 4:30 on: no new features, no refactors, no model switches. Only README, the demo script and one rehearsal. Judges remember a demo that works, not a feature that almost did.</div>
+</section>
+
+<!-- ============ PART B ============ -->
+
+<section id="starter">
+  <div class="sec-num">8 · starter/ quick reference</div>
+  <h2>What each starter file gives you, in one call</h2>
+  <p class="why">These come from Days 1–7. If a line here doesn't match your real <code>starter/</code>, fix the starter or this card before hackathon day. That's part of today's review.</p>
+  <div class="ref">
+    <div class="card"><span class="day">Day 1 + 7</span><div class="fname">agent/llm.py</div><div class="gives">Gemini call with retries, timing, tokens; validated JSON; provider switch.</div>
+<pre>obj, res = generate_structured(prompt, MySchema)</pre></div>
+    <div class="card"><span class="day">Day 1</span><div class="fname">agent/schemas.py</div><div class="gives">Pydantic models = the exact output format. Literal = no invented values.</div>
+<pre>class Report(BaseModel): themes: list[Theme]</pre></div>
+    <div class="card"><span class="day">Day 2</span><div class="fname">agent/tools.py</div><div class="gives">Write a typed function with a docstring and it becomes a tool. Errors come back as observations.</div>
+<pre>@tool
+def read_email(email_id: str) -&gt; str: """..."""</pre></div>
+    <div class="card"><span class="day">Day 2</span><div class="fname">agent/loop.py</div><div class="gives">Bounded think → act → observe loop with max_steps.</div>
+<pre>result = run_agent(question, max_steps=8)</pre></div>
+    <div class="card"><span class="day">Day 2</span><div class="fname">agent/tracing.py</div><div class="gives">Every step logged live and saved as JSON. Your evidence for debugging and for judges.</div>
+<pre>result.trace.totals(); result.trace.save()</pre></div>
+    <div class="card"><span class="day">Day 3</span><div class="fname">agent/rag.py</div><div class="gives">Ingest a folder, embed, cosine search with citations; refuses when scores are low.</div>
+<pre>ingest("data/docs"); search_docs("refund policy", k=5)</pre></div>
+    <div class="card"><span class="day">Day 6</span><div class="fname">evals/</div><div class="gives"><code>cases.jsonl</code> → run agent → score → table: pass %, latency, tokens.</div>
+<pre>python evals/run_eval.py evals/cases.jsonl</pre></div>
+    <div class="card"><span class="day">Day 7</span><div class="fname">app.py</div><div class="gives">Streamlit chat + live trace panel + sources. The demo.</div>
+<pre>streamlit run app.py</pre></div>
+    <div class="card" style="grid-column:1/-1"><span class="day">Day 9 freeze</span><div class="fname">Makefile</div><div class="gives">One word per job, so you never have to remember commands under pressure.</div>
+<pre>make setup   <span class="c"># venv + pip install -r requirements.txt</span>
+make test    <span class="c"># pytest -q (offline)</span>
+make eval    <span class="c"># scorecard</span>
+make app     <span class="c"># streamlit run app.py</span></pre></div>
+  </div>
+  <div class="callout js"><b>Python reminder for the day</b>Start each session with <code>source .venv/bin/activate</code> (like having the right <code>node_modules</code> on the path). If <code>import agent</code> fails, you're running from the wrong folder or <code>pytest.ini</code> is missing <code>pythonpath = .</code>.</div>
+</section>
+
+<!-- ============ PART C ============ -->
+
+<section id="flow">
+  <div class="sec-num">9 · A good 5 hours (planned)</div>
+  <h2>Step through what a well-run mock looks like</h2>
+  <p class="why">This is the target pace, not a script for a specific problem. Press Next and compare it with your real day afterwards.</p>
+  <div class="card">
+    <div class="flow-wrap">
+      <div>
+        <div class="hours" id="hours"></div>
+        <div class="narr" aria-live="polite" style="margin-top:14px">
+          <div class="stepn" id="narrStep">Step 0</div>
+          <p id="narrText">Press <b>Next</b> to start the clock.</p>
+        </div>
+      </div>
+      <div>
+        <div class="pane-title">what exists now</div>
+        <div class="state" id="statePane"></div>
+        <div class="pane-title">terminal</div>
+        <div class="term" id="termPane"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" id="flowPrev" type="button">← Back</button>
+      <button class="btn" id="flowNext" type="button">Next →</button>
+      <button class="btn ghost" id="flowReset" type="button">Reset</button>
+    </div>
+  </div>
+</section>
+
+<section id="review">
+  <div class="sec-num">10 · Post-mortem</div>
+  <h2>The real output of today: a better starter</h2>
+  <p class="why">Answer right after the 5 hours, while you still remember. Your answers save in this browser. Copy them into <code>bootcamp/day08/notes.md</code>.</p>
+  <div class="card pm" id="pm">
+    <label for="pm1">1. Where did the time actually go? (spec / setup / tools / loop / UI / evals / debugging)</label>
+    <textarea id="pm1"></textarea>
+    <label for="pm2">2. What did you have to write that should already be in <code>starter/</code>?</label>
+    <textarea id="pm2"></textarea>
+    <label for="pm3">3. When did you first have an end-to-end answer? (target: 1:30)</label>
+    <textarea id="pm3"></textarea>
+    <label for="pm4">4. Which Claude Code prompt wasted the most time, and how would you rewrite it?</label>
+    <textarea id="pm4"></textarea>
+    <label for="pm5">5. What broke that you didn't expect? (keys, rate limits, imports, env)</label>
+    <textarea id="pm5"></textarea>
+    <label for="pm6">6. Three concrete fixes for <code>starter/</code> before tomorrow's freeze</label>
+    <textarea id="pm6"></textarea>
+    <div class="btn-row"><button class="btn" id="pmCopy" type="button">Copy as Markdown</button><span class="copied" id="pmMsg"></span></div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="sec-num">11 · Self-check</div>
+  <h2>Answer out loud before opening</h2>
+  <details class="q"><summary>What four things do you find in a problem statement before writing code?</summary>Inputs, outputs (exact format), how it's scored, and constraints. If one is missing, ask the organizers in the first 10 minutes.</details>
+  <details class="q"><summary>Why spend 30 minutes with no code?</summary>Building the wrong thing is the most expensive mistake. SPEC.md also becomes the context for every Claude Code prompt, so the 30 minutes come back many times over.</details>
+  <details class="q"><summary>What's the default architecture, and when would you leave it?</summary>A single agent + tools. Add a RAG tool if answers live in documents. Use LangGraph only for human approval, branching state or resume. Use multi-agent only for really independent sub-tasks you've measured.</details>
+  <details class="q"><summary>What makes a good Claude Code prompt?</summary>One small task, the files and signature named, what not to change, a test to add, and "run the tests". For bugs, paste the evidence: trace, case id, error.</details>
+  <details class="q"><summary>Why commit every 30 minutes?</summary>Each commit is a safe undo point. When a diff breaks things, you lose at most 30 minutes, and you always have a demo-able version.</details>
+  <details class="q"><summary>By when should you have the first end-to-end answer?</summary>Around 1:30. One tool, the starter loop, one case answered in the CLI. Everything after that improves something that already works.</details>
+  <details class="q"><summary>What do you do from 4:30 to 5:00?</summary>No new features. README (problem, architecture, how to run, eval table, limits), demo script, one rehearsal.</details>
+  <details class="q"><summary>What's the most important thing to do after the mock?</summary>Fix <code>starter/</code> with what was missing, not polish the mock project. Tomorrow the starter gets frozen.</details>
+</section>
+</main>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+  };
+  function copyText(text, msgEl) {
+    const done = () => { msgEl.textContent = "Copied ✓"; setTimeout(() => { msgEl.textContent = ""; }, 1800); };
+    const fallback = () => {
+      const ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { msgEl.textContent = "Copy failed: select and copy by hand"; }
+      ta.remove();
+    };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  }
+
+  // theme
+  const savedTheme = store.get("bc-theme");
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  $("themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("bc-theme", next);
+  });
+
+  // toc highlight
+  const links = [...document.querySelectorAll("nav.toc a")];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("main section").forEach((s) => io.observe(s));
+
+  // mission checklist
+  const boxes = [...document.querySelectorAll("#stations input")];
+  const KEY = "bc-day08-checks";
+  let saved = {};
+  try { saved = JSON.parse(store.get(KEY) || "{}"); } catch (e) {}
+  function renderMission() {
+    const done = boxes.filter((b) => b.checked).length;
+    $("progBar").style.width = (done / boxes.length * 100) + "%";
+    $("missionPct").textContent = `${done} of ${boxes.length} done`;
+    boxes.forEach((b) => b.parentElement.classList.toggle("done", b.checked));
+    document.querySelectorAll(".phase").forEach((ph) => {
+      ph.classList.toggle("done", [...ph.querySelectorAll("input")].every((b) => b.checked));
+    });
+  }
+  boxes.forEach((b) => {
+    b.checked = !!saved[b.id];
+    b.addEventListener("change", () => { saved[b.id] = b.checked; store.set(KEY, JSON.stringify(saved)); renderMission(); });
+  });
+  renderMission();
+
+  // timer: elapsed = accumulated + (running ? now - startedAt : 0)
+  const TKEY = "bc-day08-timer";
+  const TOTAL = 5 * 3600;
+  const PHASES = [
+    { end: 1800, name: "Read · clarify · spec", tip: "No code yet. Finish SPEC.md and 5 test cases." },
+    { end: 12600, name: "Build: tools → loop → UI", tip: "Commit at every :00 and :30. First end-to-end answer by 1:30." },
+    { end: 16200, name: "Evals + edge cases", tip: "make eval, fix the top 2 failures, re-run." },
+    { end: 18000, name: "README + demo", tip: "Feature freeze. README, demo script, one rehearsal." },
+  ];
+  let tState = { acc: 0, startedAt: null };
+  try { tState = Object.assign(tState, JSON.parse(store.get(TKEY) || "{}")); } catch (e) {}
+  const elapsed = () => Math.floor(tState.acc + (tState.startedAt ? (Date.now() - tState.startedAt) / 1000 : 0));
+  const fmt = (s) => { s = Math.max(0, s); return `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; };
+  function renderTimer() {
+    const e = elapsed();
+    const running = !!tState.startedAt;
+    $("clock").textContent = fmt(e);
+    $("tStart").textContent = running ? "Pause" : e > 0 ? "Resume" : "Start";
+    $("needle").style.left = Math.min(100, e / TOTAL * 100) + "%";
+    const pi = PHASES.findIndex((p) => e < p.end);
+    document.querySelectorAll(".phase").forEach((ph) => ph.classList.toggle("current", e > 0 && +ph.dataset.ph === (pi < 0 ? 4 : pi)));
+    const over = e >= TOTAL;
+    $("timer").classList.toggle("over", over);
+    if (e === 0 && !running) {
+      $("clockSub").textContent = "of 5:00:00 · not started";
+      $("nowTxt").innerHTML = "Press <b>Start</b> when you receive the problem.";
+      return;
+    }
+    $("clockSub").textContent = over ? `time's up · ${fmt(e - TOTAL)} over` : `of 5:00:00 · ${fmt(TOTAL - e)} left${running ? "" : " · paused"}`;
+    if (over) {
+      $("nowTxt").innerHTML = "<b>Time's up.</b> Stop building. Commit, then do the post-mortem.";
+      return;
+    }
+    const p = PHASES[pi];
+    const left = p.end - e;
+    // warn when the checklist for the phase before this one isn't finished
+    let warn = "";
+    if (pi > 0) {
+      const prev = document.querySelector(`.phase[data-ph="${pi - 1}"]`);
+      const unfinished = [...prev.querySelectorAll("input")].filter((b) => !b.checked).length;
+      if (unfinished) warn = ` <span style="color:var(--bad);font-weight:600">⚠ "${PHASES[pi - 1].name}" is over time with ${unfinished} task${unfinished > 1 ? "s" : ""} unticked. Cut scope and move on.</span>`;
+    }
+    const soon = left <= 300 ? ` <span style="color:var(--warn);font-weight:600">${Math.ceil(left / 60)} min left in this phase.</span>` : ` ${fmt(left)} left in this phase.`;
+    $("nowTxt").innerHTML = `Now: <b>${p.name}</b>.${soon}<br><span style="color:var(--muted);font-size:14px">${p.tip}</span>${warn}`;
+  }
+  function saveTimer() { store.set(TKEY, JSON.stringify(tState)); }
+  $("tStart").addEventListener("click", () => {
+    if (tState.startedAt) { tState.acc = elapsed(); tState.startedAt = null; }
+    else tState.startedAt = Date.now();
+    saveTimer(); renderTimer();
+  });
+  $("tReset").addEventListener("click", () => {
+    if (elapsed() > 0 && !confirm("Reset the timer to 0:00:00?")) return;
+    tState = { acc: 0, startedAt: null }; store.del(TKEY); renderTimer();
+  });
+  boxes.forEach((b) => b.addEventListener("change", renderTimer));
+  setInterval(renderTimer, 1000);
+  renderTimer();
+
+  // problem highlight toggle
+  $("hlToggle").addEventListener("change", (e) => $("samplePs").classList.toggle("off", !e.target.checked));
+
+  // SPEC builder
+  const SKEY = "bc-day08-spec";
+  const fields = ["sProblem", "sIn", "sOut", "sScore", "sArch", "sTools", "sCases", "sOutScope"];
+  let spec = {};
+  try { spec = JSON.parse(store.get(SKEY) || "{}"); } catch (e) {}
+  const v = (id) => ($(id).value.trim() || "TODO");
+  const bullets = (id) => {
+    const lines = $(id).value.split("\n").map((l) => l.trim()).filter(Boolean);
+    return lines.length ? lines.map((l) => "- " + l).join("\n") : "- TODO";
+  };
+  function renderSpec() {
+    $("specOut").textContent =
+`# SPEC
+
+## Problem
+${v("sProblem")}
+
+## Inputs
+${v("sIn")}
+
+## Output (exact format)
+${v("sOut")}
+
+## Scoring
+${v("sScore")}
+
+## Architecture
+${v("sArch")}
+Default loop: starter/agent/loop.py run_agent(max_steps=8)
+
+## Tools
+${bullets("sTools")}
+
+## Test cases (input -> expected)
+${bullets("sCases")}
+
+## Out of scope
+${v("sOutScope")}
+
+## Milestones
+- 0:40 starter copied, make test passes
+- 1:30 first end-to-end answer in CLI
+- 3:00 Streamlit demo
+- 4:30 make eval scorecard, feature freeze`;
+  }
+  fields.forEach((id) => {
+    if (spec[id]) $(id).value = spec[id];
+    $(id).addEventListener("input", () => { spec[id] = $(id).value; store.set(SKEY, JSON.stringify(spec)); renderSpec(); });
+  });
+  $("specCopy").addEventListener("click", () => copyText($("specOut").textContent, $("copiedMsg")));
+  $("specClear").addEventListener("click", () => { fields.forEach((id) => { $(id).value = ""; }); spec = {}; store.del(SKEY); renderSpec(); });
+  renderSpec();
+
+  // architecture picker: weights per answer "yes"
+  const answers = {};
+  const W = {
+    docs:     { single: 0, rag: 4, multi: 1, graph: 0 },
+    actions:  { single: 3, rag: 1, multi: 1, graph: 1 },
+    parallel: { single: 0, rag: 0, multi: 3, graph: 1 },
+    human:    { single: 0, rag: 0, multi: 0, graph: 4 },
+    fast:     { single: 2, rag: 1, multi: -3, graph: -1 },
+  };
+  const BASE = { single: 3, rag: 0, multi: -1, graph: -1 }; // simplicity bonus
+  const NAMES = { single: "single agent + tools", rag: "agent + RAG tool", multi: "multi-agent", graph: "LangGraph" };
+  function renderArch() {
+    const score = { ...BASE };
+    Object.entries(answers).forEach(([q, yes]) => { if (yes) Object.entries(W[q]).forEach(([a, w]) => { score[a] += w; }); });
+    const n = Object.keys(answers).length;
+    const best = Object.keys(score).reduce((a, b) => (score[b] > score[a] ? b : a));
+    document.querySelectorAll(".arch").forEach((el) => {
+      const a = el.dataset.a;
+      el.querySelector(".sc").textContent = n ? `score ${score[a]}` : "";
+      el.classList.toggle("best", n > 0 && a === best);
+      el.classList.toggle("meh", n > 0 && score[a] < score[best] - 3);
+    });
+    if (!n) { $("archMsg").textContent = "Answer the questions to see a recommendation."; return; }
+    let msg = `Recommended: <b>${NAMES[best]}</b>.`;
+    if (best !== "single") msg += " It still runs inside the same Day 2 loop. Start with that, and add this part once the simple version works.";
+    else msg += " Add a RAG tool or a reviewer step later only if evals show you need it.";
+    if (n < 5) msg += ` <span style="color:var(--muted)">(${5 - n} question${5 - n > 1 ? "s" : ""} left)</span>`;
+    $("archMsg").innerHTML = msg;
+    $("sArch").placeholder = "e.g. " + NAMES[best];
+  }
+  document.querySelectorAll(".q-row").forEach((row) => {
+    row.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+      row.querySelectorAll("button").forEach((x) => x.classList.toggle("sel", x === b));
+      answers[row.dataset.q] = b.dataset.v === "1";
+      renderArch();
+    }));
+  });
+  renderArch();
+
+  // commit cadence: minutes on a 0-300 axis; the red dot is when a diff breaks everything (2:40)
+  const pct = (t) => (t / 300 * 100) + "%";
+  function cadence(el, commits, lossLabel) {
+    let html = '<div class="line"></div>';
+    for (let h = 0; h <= 5; h++) html += `<span class="lbl" style="left:${pct(h * 60)}">${h}:00</span>`;
+    commits.forEach((t) => { html += `<span class="dot" style="left:${pct(t)}"></span>`; });
+    html += `<span class="dot bad" style="left:${pct(160)}"></span>`;
+    html += `<span class="lbl top" style="left:${pct(160)};color:var(--bad)">💥 2:40 ${esc(lossLabel)}</span>`;
+    el.innerHTML = html;
+  }
+  cadence($("cadGood"), [60, 90, 120, 150, 180, 210, 240, 270], "→ back to 2:30, lose 10 min");
+  cadence($("cadBad"), [290], "→ nothing to go back to");
+
+  // flow player: a good 5 hours
+  const HOURS = [
+    ["0:00", "Read twice, mark the 4 parts"],
+    ["0:15", "Ask questions, pick architecture"],
+    ["0:20", "SPEC.md + 5 test cases"],
+    ["0:30", "Copy starter/, make test"],
+    ["0:40", "First tool + its test"],
+    ["1:30", "First end-to-end answer"],
+    ["2:30", "More tools, better prompt"],
+    ["3:00", "Streamlit demo"],
+    ["3:30", "evals: 10 cases, scorecard"],
+    ["4:30", "Freeze: README + demo"],
+    ["5:00", "Post-mortem"],
+  ];
+  const PILLS = ["SPEC.md", "starter copied", "tests green", "1 tool", "CLI answer", "4 tools", "UI", "scorecard", "README", "demo script"];
+  const steps = [
+    { h: 0, have: [], term: '<d>$ cat PROBLEM.md</d>', t: "Read the statement twice. Highlight inputs, outputs, scoring and constraints like in section 2. Start the timer." },
+    { h: 1, have: [], term: '<d># questions for organizers:\n#  - exact output format?\n#  - are hidden tests like the examples?</d>', t: "Ask the open questions now. Use the picker in section 4: usually <b>single agent + tools</b>." },
+    { h: 2, have: ["SPEC.md"], term: '$ git init &amp;&amp; git add SPEC.md\n$ git commit -m "0:25 spec"', t: "Fill SPEC.md (section 3) and write 5 test cases. They become your first evals later." },
+    { h: 3, have: ["SPEC.md", "starter copied", "tests green"], term: '$ cp -r ../../starter/* . &amp;&amp; make setup\n$ make test\n<g>23 passed in 6.1s</g>', t: "Copy the starter and prove the setup works <em>before</em> writing new code. If this takes more than 10 minutes, note it for the post-mortem." },
+    { h: 4, have: ["SPEC.md", "starter copied", "tests green", "1 tool"], term: '<d># Claude Code: "Read SPEC.md. Add @tool read_email(...) + 2 tests. Don\'t change loop.py."</d>\n$ pytest -q tests/test_tools.py\n<g>2 passed</g>', t: "Give Claude Code one small task: one tool and its test. Review the diff, run tests, commit." },
+    { h: 5, have: ["SPEC.md", "starter copied", "tests green", "1 tool", "CLI answer"], term: '$ python agent.py "test case 1"\n[1] LLM   720ms ...\n[2] TOOL  ok read_email(...)\n<g>[3] FINAL ...</g>\n$ git commit -am "1:30 end-to-end works"', t: "<b>Milestone:</b> the first answer end to end through the real loop. From now on you always have a demo." },
+    { h: 6, have: ["SPEC.md", "starter copied", "tests green", "1 tool", "CLI answer", "4 tools"], term: '$ git log --oneline | head -3\n<d>2:30 add summarize tool\n2:00 prompt: cite email ids\n1:30 end-to-end works</d>', t: "Add tools and improve the prompt one change at a time, a commit at every :00 and :30. Use the 5 spec cases to check you're improving." },
+    { h: 7, have: ["SPEC.md", "starter copied", "tests green", "1 tool", "CLI answer", "4 tools", "UI"], term: '$ make app\n<d>  Local URL: http://localhost:8501</d>', t: "Streamlit from the starter, calling the same <code>run_agent</code>. Chat box + trace panel. Don't style it yet." },
+    { h: 8, have: ["SPEC.md", "starter copied", "tests green", "1 tool", "CLI answer", "4 tools", "UI", "scorecard"], term: '$ make eval\n<d>case  pass  steps  ms</d>\n<g>e01   ✓     3      1840</g>\n<e>e07   ✗     5      3920</e>\n...\n<g>pass 8/10 · avg 2.1s · 31k tokens</g>', t: "10 cases, a scorecard. Fix the top 2 failures using their traces, then run it again. Keep the before/after numbers for the README." },
+    { h: 9, have: ["SPEC.md", "starter copied", "tests green", "1 tool", "CLI answer", "4 tools", "UI", "scorecard", "README", "demo script"], term: '$ git commit -am "4:55 README, demo script"\n<d># feature freeze since 4:30</d>', t: "Freeze. README: problem → architecture → how to run → eval table → known limits. Rehearse the 3-minute demo once." },
+    { h: 10, have: PILLS, term: '<g>done.</g> <d>now fill section 10 →</d>', t: "Stop the timer. Do the post-mortem straight away, then spend the rest of the day fixing <code>starter/</code>, not the mock project." },
+  ];
+  $("hours").innerHTML = HOURS.map((h, i) => `<div class="hr" id="hr${i}"><span class="t">${h[0]}</span><span>${h[1]}</span></div>`).join("");
+  let idx = -1;
+  function renderFlow() {
+    HOURS.forEach((_, i) => $("hr" + i).classList.remove("on", "past"));
+    const s = idx >= 0 ? steps[idx] : null;
+    if (s) HOURS.forEach((_, i) => { if (i < s.h) $("hr" + i).classList.add("past"); if (i === s.h) $("hr" + i).classList.add("on"); });
+    const have = s ? s.have : [];
+    $("statePane").innerHTML = PILLS.map((p) => `<span class="pill${have.includes(p) ? " on" : ""}">${have.includes(p) ? "✓ " : ""}${p}</span>`).join("");
+    $("termPane").innerHTML = s ? s.term.replace(/<(e|g|d)>/g, '<span class="$1">').replace(/<\/(e|g|d)>/g, "</span>") : '<span class="d">$ _</span>';
+    $("narrStep").textContent = s ? `Step ${idx + 1} of ${steps.length}` : `Step 0 of ${steps.length}`;
+    $("narrText").innerHTML = s ? s.t : "Press <b>Next</b> to start the clock.";
+    $("flowPrev").disabled = idx < 0;
+    $("flowNext").disabled = idx >= steps.length - 1;
+  }
+  $("flowNext").addEventListener("click", () => { idx++; renderFlow(); });
+  $("flowPrev").addEventListener("click", () => { idx--; renderFlow(); });
+  $("flowReset").addEventListener("click", () => { idx = -1; renderFlow(); });
+  renderFlow();
+
+  // post-mortem
+  const PKEY = "bc-day08-postmortem";
+  const pmIds = ["pm1", "pm2", "pm3", "pm4", "pm5", "pm6"];
+  let pm = {};
+  try { pm = JSON.parse(store.get(PKEY) || "{}"); } catch (e) {}
+  pmIds.forEach((id) => {
+    if (pm[id]) $(id).value = pm[id];
+    $(id).addEventListener("input", () => { pm[id] = $(id).value; store.set(PKEY, JSON.stringify(pm)); });
+  });
+  $("pmCopy").addEventListener("click", () => {
+    const md = "## Post-mortem\n\n" + pmIds.map((id) => {
+      const q = document.querySelector(`label[for="${id}"]`).textContent;
+      return `**${q}**\n\n${$(id).value.trim() || "-"}\n`;
+    }).join("\n");
+    copyText(md, $("pmMsg"));
+  });
+})();
+</script>
+</body>
+</html>

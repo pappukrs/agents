@@ -92,3 +92,10 @@ def test_tokens_are_summed_across_steps():
     use([call("list_files")], "ok")
     r = run_agent("q", verbose=False)
     assert r.trace.totals()["input_tokens"] == 200
+
+
+def test_tool_outside_allow_list_is_refused():
+    use([call("read_file", path="notes.txt")], "ok")
+    r = run_agent("q", tools=["calculator"], verbose=False)
+    step = next(s for s in r.trace.steps if s.kind == "tool")
+    assert not step.ok and "Unknown tool 'read_file'" in step.result["error"]

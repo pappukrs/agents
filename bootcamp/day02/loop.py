@@ -73,7 +73,7 @@ def run_agent(
         responses = []
         for call in calls:
             n += 1
-            step = trace.add(_run_call(n, call))
+            step = trace.add(_run_call(n, call, tools))
             responses.append(types.Part.from_function_response(name=call.name, response=step.result))
             if call.id:
                 responses[-1].function_response.id = call.id
@@ -83,9 +83,9 @@ def run_agent(
     return AgentResult(f"Stopped: no answer within {max_steps} steps.", "max_steps", trace)
 
 
-def _run_call(n: int, call) -> Step:
+def _run_call(n: int, call, allowed: list[str] | None) -> Step:
     started = time.perf_counter()
     args = dict(call.args or {})
-    out = run_tool(call.name, args)
+    out = run_tool(call.name, args, allowed)
     return Step(n, "tool", tool=call.name, args=args, result=out, ok="error" not in out,
                 ms=round((time.perf_counter() - started) * 1000))

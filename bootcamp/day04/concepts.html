@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 4 Concepts</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --surface-2: #f0eee8; --text: #1d1d1f; --muted: #5f5e5a;
+  --border: #e2dfd6; --accent: #2f6fde; --accent-soft: #e5eefc; --good: #1f8a4c; --good-soft: #e3f4ea;
+  --warn: #b26a00; --warn-soft: #fbf0dc; --bad: #c0392b; --bad-soft: #fbe6e3;
+  --js: #b8860b; --py: #2f6fde; --code-bg: #f3f1ec;
+  --role-user: #2f6fde; --role-model: #7a4cc2; --role-tool: #1f8a4c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+    --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+    --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+    --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+    --role-user: #6ea0ff; --role-model: #b48cf2; --role-tool: #4cc783;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121214; --surface: #1b1b1e; --surface-2: #232327; --text: #ececec; --muted: #a3a29d;
+  --border: #2f2f34; --accent: #6ea0ff; --accent-soft: #1d2a44; --good: #4cc783; --good-soft: #15301f;
+  --warn: #f0b04f; --warn-soft: #3a2c12; --bad: #ff7b6b; --bad-soft: #3d1c18;
+  --js: #e2b84a; --py: #6ea0ff; --code-bg: #17171a;
+  --role-user: #6ea0ff; --role-model: #b48cf2; --role-tool: #4cc783;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+:not(pre) > code { background: var(--surface-2); padding: 1px 6px; border-radius: 5px; }
+a { color: var(--accent); }
+
+.layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); max-width: 1180px; margin: 0 auto; gap: 32px; padding: 0 24px; }
+nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 28px 0; }
+nav.toc .brand { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+nav.toc .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+nav.toc li a { display: flex; gap: 10px; padding: 6px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14px; }
+nav.toc li a::before { counter-increment: s; content: counter(s); font-variant-numeric: tabular-nums; min-width: 18px; color: var(--muted); opacity: .7; }
+nav.toc li a:hover { background: var(--surface-2); color: var(--text); }
+nav.toc li a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav.toc .part { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 10px 4px; }
+.theme-btn { margin-top: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+
+main { padding: 28px 0 120px; min-width: 0; }
+header.hero { padding: 24px 0 8px; }
+.eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+h1 { font-size: 34px; line-height: 1.15; margin: 6px 0 12px; }
+h2 { font-size: 24px; margin: 0 0 6px; }
+h3 { font-size: 17px; margin: 22px 0 8px; }
+.lead { font-size: 18px; color: var(--muted); max-width: 680px; }
+section { padding-top: 56px; scroll-margin-top: 12px; }
+.sec-num { color: var(--muted); font-size: 13px; font-weight: 600; }
+.why { color: var(--muted); margin: 0 0 18px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin: 16px 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+.callout.js { border-color: var(--js); background: var(--warn-soft); }
+.callout.warn { border-color: var(--warn); background: var(--warn-soft); }
+.callout.good { border-color: var(--good); background: var(--good-soft); }
+.callout b:first-child { display: block; margin-bottom: 2px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .05em; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; }
+.tag.js { background: var(--warn-soft); color: var(--js); }
+.tag.py { background: var(--accent-soft); color: var(--py); }
+
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 8px 0; line-height: 1.55; }
+pre .c { color: var(--muted); font-style: italic; }
+pre .k { color: var(--accent); font-weight: 600; }
+pre .s { color: var(--good); }
+
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.table-wrap { overflow-x: auto; }
+.grid2 > *, .grid3 > *, .sbs > *, .versus > *, .map-grid > *, .flow-wrap > *, .split > *, .seq > *, .seq-row > *, .cycle > * { min-width: 0; }
+.msg { overflow-wrap: anywhere; }
+
+button.btn { background: var(--accent); color: #fff; border: 0; padding: 8px 14px; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+button.btn.ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+button.btn:disabled { opacity: .45; cursor: default; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+input[type=text] { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font: inherit; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+
+/* ---------- mission map ---------- */
+.mission { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin-top: 18px; }
+.mission-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.mission-head h2 { font-size: 20px; margin: 0; }
+.mission-head .pct { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; }
+.progress { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin: 10px 0 16px; }
+.progress div { height: 100%; background: var(--good); width: 0; transition: width .3s; }
+.stations { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; position: relative; }
+.station { border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 8px; background: var(--surface-2); position: relative; }
+.station.done { border-color: var(--good); background: var(--good-soft); }
+.station .st-top { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.station .st-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 13px; flex: none; }
+.station.done .st-num { background: var(--good); }
+.station .st-name { font-weight: 700; }
+.station .st-time { color: var(--muted); font-size: 12.5px; margin-left: auto; white-space: nowrap; }
+.station .st-goal { color: var(--muted); font-size: 13px; margin: 0 0 6px; }
+.station:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 14px; color: var(--muted); font-size: 16px; z-index: 1; }
+.task { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 13.5px; line-height: 1.4; border-top: 1px dashed var(--border); }
+.task input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--good); flex: none; }
+.task.done label { color: var(--muted); text-decoration: line-through; }
+.task code { font-size: 12px; }
+.done-when { margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+.done-when .flag { font-size: 18px; line-height: 1.2; }
+
+/* ---------- diagrams ---------- */
+.versus { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.mini-flow { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.box { border: 2px solid var(--border); background: var(--surface); border-radius: 10px; padding: 8px 12px; font-size: 14px; text-align: center; }
+.box.model { border-color: var(--role-model); }
+.box.you { border-color: var(--role-user); }
+.box.toolc { border-color: var(--role-tool); }
+.arrow { text-align: center; color: var(--muted); font-size: 16px; line-height: 1.3; }
+.loopback { border: 2px dashed var(--accent); border-radius: 12px; padding: 10px; position: relative; }
+.loopback .lbl { position: absolute; top: -11px; right: 12px; background: var(--surface); padding: 0 6px; color: var(--accent); font-size: 12px; font-weight: 700; }
+
+.seq { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; position: relative; }
+.seq .lane { text-align: center; font-weight: 700; font-size: 14px; padding: 8px; border-bottom: 2px solid var(--border); }
+.seq .lane.you { color: var(--role-user); } .seq .lane.model { color: var(--role-model); } .seq .lane.toolc { color: var(--role-tool); }
+.seq-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); padding: 6px 0; }
+.msg { font-size: 13px; padding: 6px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); position: relative; }
+.msg.r { text-align: right; }
+.msg .dir { color: var(--muted); font-weight: 700; }
+.msg.hl { border-color: var(--accent); background: var(--accent-soft); }
+
+.cycle { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 8px; max-width: 560px; margin: 8px auto; align-items: center; }
+.cyc { border: 2px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; background: var(--surface); transition: all .25s; font-size: 14px; }
+.cyc b { display: block; }
+.cyc span { color: var(--muted); font-size: 12.5px; }
+.cyc.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+.cyc.stop.on { border-color: var(--good); background: var(--good-soft); box-shadow: 0 0 0 4px var(--good-soft); }
+.cyc.halt.on { border-color: var(--bad); background: var(--bad-soft); box-shadow: 0 0 0 4px var(--bad-soft); }
+.cyc-ar { text-align: center; color: var(--muted); font-size: 18px; }
+.counter { font-variant-numeric: tabular-nums; }
+
+/* schema mapping */
+.map-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.map-grid pre { margin: 0; font-size: 13px; }
+[data-k] { border-radius: 4px; transition: background .15s, outline-color .15s; outline: 2px solid transparent; cursor: default; }
+[data-k].hot { background: var(--warn-soft); outline-color: var(--warn); }
+
+/* path checker */
+.verdict { margin-top: 10px; padding: 10px 14px; border-radius: 10px; font-size: 14.5px; }
+.verdict.ok { background: var(--good-soft); color: var(--good); }
+.verdict.no { background: var(--bad-soft); color: var(--bad); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chip { border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 99px; padding: 3px 10px; font-size: 13px; cursor: pointer; font-family: ui-monospace, Menlo, monospace; }
+
+/* budgets */
+.budget-row { display: grid; grid-template-columns: 140px 1fr 70px; gap: 10px; align-items: center; margin: 8px 0; font-size: 14px; }
+.bar { height: 22px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
+.bar > div { height: 100%; background: var(--accent); border-radius: 6px; transition: width .25s ease; }
+.bar.over > div { background: var(--bad); }
+.budget-row .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+/* side-by-side */
+.sbs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0 18px; }
+.sbs-title { font-weight: 600; margin: 18px 0 4px; }
+.sbs-note { color: var(--muted); font-size: 14px; margin-top: -8px; }
+
+/* flow player */
+.node { border: 2px solid var(--border); background: var(--surface); border-radius: 12px; padding: 8px 12px; transition: all .25s; }
+.node .nm { font-weight: 700; font-size: 14px; }
+.node .fn { color: var(--muted); font-size: 12.5px; }
+.node.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+.node.ok { border-color: var(--good); background: var(--good-soft); }
+.node.err { border-color: var(--bad); background: var(--bad-soft); }
+.down { text-align: center; color: var(--muted); line-height: 1; padding: 3px 0; font-size: 16px; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.flow-wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 20px; }
+.narr { background: var(--surface-2); border-radius: 12px; padding: 14px 16px; min-height: 120px; }
+.narr .stepn { color: var(--muted); font-size: 13px; }
+.narr p { margin: 6px 0 0; }
+.scen { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.scen button { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 7px 12px; border-radius: 99px; cursor: pointer; font: inherit; font-size: 14px; }
+.scen button.sel { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pane-title { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 0 6px; font-weight: 700; }
+.contents { display: flex; flex-direction: column; gap: 5px; }
+.cmsg { border-left: 4px solid var(--border); background: var(--surface); border-radius: 0 8px 8px 0; padding: 5px 10px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; word-break: break-word; }
+.cmsg .role { font-weight: 700; font-family: system-ui, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-right: 6px; }
+.cmsg.user { border-color: var(--role-user); } .cmsg.user .role { color: var(--role-user); }
+.cmsg.model { border-color: var(--role-model); } .cmsg.model .role { color: var(--role-model); }
+.cmsg.tool { border-color: var(--role-tool); } .cmsg.tool .role { color: var(--role-tool); }
+.cmsg.err { border-color: var(--bad); }
+.cmsg.new { animation: pop .35s ease; }
+@keyframes pop { from { background: var(--warn-soft); } to { background: var(--surface); } }
+.term { background: #16161a; color: #d8d8d8; border-radius: 10px; padding: 10px 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; min-height: 60px; white-space: pre-wrap; word-break: break-word; }
+.term .e { color: #ff8a7a; } .term .g { color: #7ddc9c; } .term .d { color: #9a9a9a; }
+
+details.q { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
+details.q summary { cursor: pointer; font-weight: 600; }
+details.q[open] summary { margin-bottom: 8px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; padding: 0 16px; gap: 0; }
+  nav.toc { position: static; height: auto; padding: 16px 0 0; }
+  nav.toc ol { display: flex; flex-wrap: wrap; gap: 4px; }
+  nav.toc .part { display: none; }
+  .grid2, .grid3, .sbs, .flow-wrap, .versus, .map-grid, .stations { grid-template-columns: 1fr; }
+  .station:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -15px; }
+  .budget-row { grid-template-columns: 100px 1fr 56px; }
+  h1 { font-size: 28px; }
+}
+</style>
+<style>
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.tabs button { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 7px 12px; border-radius: 99px; cursor: pointer; font: inherit; font-size: 14px; }
+.tabs button.sel { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pat { display: none; }
+.pat.show { display: block; }
+.row-boxes { display: grid; gap: 8px; }
+.row-boxes.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.row-boxes.c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.box.rev { border-color: var(--warn); }
+.box small { display: block; color: var(--muted); font-size: 12px; }
+.pat-note { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+
+.gantt { margin-top: 10px; }
+.g-title { font-size: 13px; font-weight: 700; margin: 12px 0 4px; display: flex; justify-content: space-between; }
+.g-title span { color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.g-lane { position: relative; height: 22px; margin: 3px 0; background: var(--surface-2); border-radius: 6px; }
+.g-bar { position: absolute; top: 2px; bottom: 2px; border-radius: 5px; font-size: 11px; color: #fff; display: flex; align-items: center; padding-left: 6px; overflow: hidden; white-space: nowrap; transition: left .25s, width .25s; }
+.g-bar.plan { background: var(--role-model); }
+.g-bar.work { background: var(--role-tool); }
+.g-bar.write { background: var(--role-user); }
+.g-bar.wait { background: transparent; border: 1px dashed var(--warn); color: var(--warn); }
+.ctrl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.ctrl label { font-size: 14px; }
+
+.route-out { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.route-out .box { transition: all .2s; }
+.route-out .box.pick { border-color: var(--good); background: var(--good-soft); box-shadow: 0 0 0 4px var(--good-soft); }
+
+.calc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; }
+.calc label { font-size: 14px; }
+.vs-table td.win { color: var(--good); font-weight: 700; }
+.vs-table td.lose { color: var(--bad); }
+.verdict-big { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); font-size: 14.5px; }
+
+.state { display: flex; flex-direction: column; gap: 5px; }
+.state .cmsg b { font-family: system-ui, sans-serif; }
+.workers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.workers .node { padding: 6px 8px; }
+.workers .node .nm { font-size: 13px; }
+
+.task label { min-width: 0; overflow-wrap: anywhere; }
+.row-boxes > *, .ctrl > *, .route-out > *, .calc > *, .workers > * { min-width: 0; }
+@media (max-width: 900px) {
+  .row-boxes.c3, .row-boxes.c4, .ctrl, .route-out, .calc { grid-template-columns: 1fr; }
+  .workers { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <div class="brand">Day 4 · Multi-agent patterns</div>
+  <div class="sub">HackerRank AI Agents bootcamp · 18 Oct</div>
+  <ol>
+    <div class="part">Start here</div>
+    <li><a href="#mission">Today's mission</a></li>
+    <div class="part">Part A — Concepts</div>
+    <li><a href="#what">What "multi-agent" means</a></li>
+    <li><a href="#patterns">The 4 patterns</a></li>
+    <li><a href="#parallel">Sequential vs parallel</a></li>
+    <li><a href="#router">Router</a></li>
+    <li><a href="#reviewer">Reviewer, send back once</a></li>
+    <li><a href="#cost">When it wastes money</a></li>
+    <div class="part">Part B — Python for JS devs</div>
+    <li><a href="#async">async / await</a></li>
+    <li><a href="#gather">gather = Promise.all</a></li>
+    <li><a href="#tothread">Sync SDK + semaphores</a></li>
+    <div class="part">Part C — Your code (planned)</div>
+    <li><a href="#flow">Step through a run</a></li>
+    <li><a href="#quiz">Self-check</a></li>
+  </ol>
+  <button class="theme-btn" id="themeBtn" type="button">Toggle theme</button>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">Day 4 of 9 · Sun 18 Oct 2026</div>
+  <h1>Several agents working together, and when not to bother</h1>
+  <p class="lead">A multi-agent system is just several Day 2 loops, each with its own prompt and job, wired together by plain Python. Today you build one, then measure it against a single agent. The numbers decide which one you use on hackathon day.</p>
+</header>
+
+<!-- ============ MISSION ============ -->
+<section id="mission" style="padding-top:20px">
+  <div class="mission">
+    <div class="mission-head">
+      <h2>Today's mission</h2>
+      <span class="pct" id="missionPct">0 of 0 done</span>
+    </div>
+    <div class="progress"><div id="progBar"></div></div>
+    <div class="stations" id="stations">
+      <div class="station">
+        <div class="st-top"><span class="st-num">1</span><span class="st-name">Learn</span><span class="st-time">45 min</span></div>
+        <p class="st-goal">Know the patterns and their costs.</p>
+        <div class="task"><input type="checkbox" id="t1"><label for="t1">Read Part A; play with the timeline and cost calculator</label></div>
+        <div class="task"><input type="checkbox" id="t2"><label for="t2">Read Part B: <code>async</code>, <code>gather</code>, <code>to_thread</code></label></div>
+        <div class="task"><input type="checkbox" id="t3"><label for="t3">Step through all 4 scenarios in Part C</label></div>
+        <div class="task"><input type="checkbox" id="t4"><label for="t4">Answer the self-check out loud</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">2</span><span class="st-name">Build</span><span class="st-time">90 min</span></div>
+        <p class="st-goal">Planner → parallel workers → writer → reviewer.</p>
+        <div class="task"><input type="checkbox" id="t5"><label for="t5">Copy Day 2 <code>llm.py tools.py loop.py tracing.py builtin_tools.py</code> into <code>day04/</code></label></div>
+        <div class="task"><input type="checkbox" id="t6"><label for="t6"><code>patterns.py</code>: <code>plan()</code> returns a Pydantic <code>Plan</code> (≤ 4 sub-questions)</label></div>
+        <div class="task"><input type="checkbox" id="t7"><label for="t7"><code>run_workers()</code> with <code>asyncio.gather</code> + <code>Semaphore(3)</code></label></div>
+        <div class="task"><input type="checkbox" id="t8"><label for="t8"><code>write()</code> + <code>review()</code> with one send-back</label></div>
+        <div class="task"><input type="checkbox" id="t9"><label for="t9">Claude Code: spec + build <code>route()</code> (csv / docs / direct)</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">3</span><span class="st-name">Test</span><span class="st-time">30 min</span></div>
+        <p class="st-goal">Same 5 questions, two systems, real numbers.</p>
+        <div class="task"><input type="checkbox" id="t10"><label for="t10"><code>pytest -q</code> with a scripted fake model (no key)</label></div>
+        <div class="task"><input type="checkbox" id="t11"><label for="t11"><code>python compare.py</code>: quality, latency, tokens table</label></div>
+        <div class="task"><input type="checkbox" id="t12"><label for="t12">Write in notes: which wins, by how much, and why</label></div>
+      </div>
+      <div class="station">
+        <div class="st-top"><span class="st-num">4</span><span class="st-name">Harvest</span><span class="st-time">15 min</span></div>
+        <p class="st-goal">Keep the useful helpers.</p>
+        <div class="task"><input type="checkbox" id="t13"><label for="t13"><code>plan / run_workers / review</code> → <code>starter/agent/patterns.py</code></label></div>
+        <div class="task"><input type="checkbox" id="t14"><label for="t14">Write your multi-agent rule of thumb in notes, then commit</label></div>
+      </div>
+    </div>
+    <div class="done-when"><span class="flag">🏁</span><div><b>Done when:</b> you can explain, <em>with numbers</em> from <code>compare.py</code>, when you'd use multi-agent on hackathon day and when a single agent is enough.</div></div>
+  </div>
+
+  <div class="card mono" style="font-size:14px">
+    cd bootcamp/day04 &amp;&amp; source ../../.venv/bin/activate<br>
+    pytest -q<br>
+    python research.py "Compare refunds and revenue across regions in Q3"<br>
+    python compare.py questions.jsonl
+  </div>
+</section>
+
+<!-- ============ PART A ============ -->
+
+<section id="what">
+  <div class="sec-num">2 · What "multi-agent" means</div>
+  <h2>Several small agents instead of one big one</h2>
+  <p class="why">Each "agent" is the same <code>run_agent()</code> loop from Day 2 with a different system prompt, a different tool list, or both. Your Python code decides who runs when.</p>
+  <div class="versus">
+    <div class="card">
+      <span class="tag py">Single agent (Day 2)</span>
+      <div class="mini-flow" style="margin-top:10px">
+        <div class="box you">question</div>
+        <div class="arrow">↓</div>
+        <div class="loopback" style="margin-top:6px"><span class="lbl">one loop, all tools</span>
+          <div class="box model">run_agent(question)<small>reads, searches, calculates, answers</small></div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="box you">answer</div>
+      </div>
+      <p class="pat-note">Simple, cheap, one trace to debug. Struggles when the job has many independent parts or needs a second opinion.</p>
+    </div>
+    <div class="card">
+      <span class="tag py">Multi-agent (today)</span>
+      <div class="mini-flow" style="margin-top:10px">
+        <div class="box model">planner<small>splits the question</small></div>
+        <div class="arrow">↓</div>
+        <div class="row-boxes c3"><div class="box toolc">worker 1</div><div class="box toolc">worker 2</div><div class="box toolc">worker 3</div></div>
+        <div class="arrow">↓</div>
+        <div class="box model">writer<small>merges findings</small></div>
+        <div class="arrow">↓</div>
+        <div class="box rev">reviewer<small>checks against sources</small></div>
+      </div>
+      <p class="pat-note">Faster when the parts are independent (they run at the same time). Costs more calls and more tokens.</p>
+    </div>
+  </div>
+  <div class="callout"><b>One sentence to remember</b>Multi-agent is an <strong>architecture choice in your Python code</strong>, not a model feature. The model doesn't know other agents exist; it only sees the prompt you give it.</div>
+</section>
+
+<section id="patterns">
+  <div class="sec-num">3 · The 4 patterns</div>
+  <h2>Almost every multi-agent system is a mix of these</h2>
+  <p class="why">Click each pattern. Under each diagram: when it helps and what it costs.</p>
+  <div class="card">
+    <div class="tabs" role="group" aria-label="pattern">
+      <button type="button" data-p="pe" class="sel">Planner → executors</button>
+      <button type="button" data-p="seq">Sequential pipeline</button>
+      <button type="button" data-p="router">Router</button>
+      <button type="button" data-p="rev">Reviewer</button>
+    </div>
+    <div class="pat show" id="p-pe">
+      <div class="mini-flow">
+        <div class="box model">planner: "split into ≤ 4 independent sub-questions"</div>
+        <div class="arrow">↓ fan out</div>
+        <div class="row-boxes c4"><div class="box toolc">exec A</div><div class="box toolc">exec B</div><div class="box toolc">exec C</div><div class="box toolc">exec D</div></div>
+        <div class="arrow">↓ fan in</div>
+        <div class="box model">writer</div>
+      </div>
+      <p class="pat-note"><b>Use when</b> the question has parts that don't depend on each other ("revenue by region" + "what customers complained about"). <b>Cost:</b> 1 planner + N workers + 1 writer call. <b>Win:</b> wall-clock time ≈ the slowest worker, not the sum.</p>
+    </div>
+    <div class="pat" id="p-seq">
+      <div class="row-boxes c4"><div class="box model">extract</div><div class="box model">→ analyse</div><div class="box model">→ draft</div><div class="box model">→ format</div></div>
+      <p class="pat-note"><b>Use when</b> each step needs the previous step's output and the steps need very different prompts. <b>Cost:</b> latency is the sum of all steps. Often a single agent with good tools does the same job in fewer calls.</p>
+    </div>
+    <div class="pat" id="p-router">
+      <div class="mini-flow">
+        <div class="box model">router: one cheap structured call → <code>Literal["csv", "docs", "direct"]</code></div>
+        <div class="arrow">↓ picks exactly one</div>
+        <div class="row-boxes c3"><div class="box toolc">csv agent<small>analyze_csv, calculator</small></div><div class="box toolc">docs agent<small>search_files, read_file</small></div><div class="box toolc">direct answer<small>no tools</small></div></div>
+      </div>
+      <p class="pat-note"><b>Use when</b> requests are very different kinds and each specialist does better with fewer tools and a focused prompt. <b>Cost:</b> 1 extra small call. <b>Risk:</b> a wrong route gives a confident wrong answer, so always keep a fallback.</p>
+    </div>
+    <div class="pat" id="p-rev">
+      <div class="mini-flow">
+        <div class="box model">writer: draft answer</div>
+        <div class="arrow">↓</div>
+        <div class="box rev">reviewer: <code>Review{ok: bool, issues: list[str]}</code></div>
+        <div class="arrow">↓ ok=False → back to writer with the issues, <b>max once</b></div>
+        <div class="box you">final answer</div>
+      </div>
+      <p class="pat-note"><b>Use when</b> mistakes are expensive and checkable ("every number must appear in the sources"). <b>Cost:</b> +1 to +3 calls. <b>Rule:</b> cap the rounds, or writer and reviewer can argue forever.</p>
+    </div>
+  </div>
+</section>
+
+<section id="parallel">
+  <div class="sec-num">4 · Sequential vs parallel</div>
+  <h2>Parallel saves wall-clock time, not tokens</h2>
+  <p class="why">LLM calls spend most of their time <em>waiting on the network</em>, so they can overlap. Move the sliders: workers get different random durations, like real calls.</p>
+  <div class="card">
+    <div class="ctrl">
+      <label>Workers (sub-questions): <b id="nVal">4</b><input type="range" id="nSlider" min="1" max="8" value="4"></label>
+      <label>Avg worker time: <b id="wVal">6</b>s<input type="range" id="wSlider" min="2" max="15" value="6"></label>
+      <label>Concurrency limit (semaphore): <b id="lVal">3</b><input type="range" id="lSlider" min="1" max="8" value="3"></label>
+    </div>
+    <div class="gantt">
+      <div class="g-title">Sequential: <code>for q in subqs: run(q)</code><span id="seqT"></span></div>
+      <div id="seqLanes"></div>
+      <div class="g-title">Parallel: <code>await asyncio.gather(*tasks)</code><span id="parT"></span></div>
+      <div id="parLanes"></div>
+    </div>
+    <div class="legend" style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px">
+      <span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--role-model);margin-right:5px"></i>planner</span>
+      <span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--role-tool);margin-right:5px"></i>worker</span>
+      <span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--role-user);margin-right:5px"></i>writer</span>
+      <span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;border:1px dashed var(--warn);margin-right:5px"></i>waiting for a free slot</span>
+    </div>
+    <p id="parMsg" style="font-size:14px;margin:10px 0 0"></p>
+    <div class="btn-row"><button class="btn ghost" id="reroll" type="button">New random durations</button></div>
+  </div>
+  <div class="callout warn"><b>Tokens are the same either way</b>Running 4 workers in parallel bills exactly the same tokens as running them one after another. Parallel only buys time. And if you fire 8 at once on a free-tier key, you get 429s. That's what the concurrency limit is for.</div>
+</section>
+
+<section id="router">
+  <div class="sec-num">5 · Router</div>
+  <h2>One cheap call that picks the right specialist</h2>
+  <p class="why">Type a question. This demo routes with keywords; the real <code>route()</code> uses <code>generate_structured</code> with a Pydantic model whose <code>target</code> field is a <code>Literal</code>, so the model can only pick a valid route.</p>
+  <div class="card">
+    <input type="text" id="routeIn" value="What's the average revenue per region?" aria-label="question">
+    <div class="chips">
+      <button class="chip" type="button">Which file mentions refunds?</button>
+      <button class="chip" type="button">Sum of units for Widget</button>
+      <button class="chip" type="button">What is an agent?</button>
+      <button class="chip" type="button">How long is the warranty?</button>
+    </div>
+    <div class="route-out">
+      <div class="box toolc" id="r-csv"><b>csv</b><small>analyze_csv, calculator</small></div>
+      <div class="box toolc" id="r-docs"><b>docs</b><small>list/search/read files</small></div>
+      <div class="box toolc" id="r-direct"><b>direct</b><small>no tools, one call</small></div>
+    </div>
+    <p id="routeWhy" style="font-size:14px;margin:10px 0 0"></p>
+  </div>
+<pre><span class="c"># planned: patterns.py</span>
+<span class="k">class</span> Route(BaseModel):
+    target: Literal[<span class="s">"csv"</span>, <span class="s">"docs"</span>, <span class="s">"direct"</span>]
+    reason: str
+
+<span class="k">def</span> route(question: str) -&gt; Route:
+    r, _ = generate_structured(<span class="s">f"Pick the best handler for:\n{question}"</span>, Route,
+                               system=ROUTER_SYSTEM, thinking_budget=0)
+    <span class="k">return</span> r</pre>
+  <div class="callout js"><b>JS analogy</b>It's an Express router where the matching rule is an LLM call instead of a URL pattern. Same idea: one dispatcher, many small handlers.</div>
+</section>
+
+<section id="reviewer">
+  <div class="sec-num">6 · Reviewer, send back once</div>
+  <h2>A second opinion that can only say "fix these"</h2>
+  <p class="why">The reviewer gets the draft <b>and the raw findings</b>, and returns structured output. Press Next to see a round where the draft has a wrong number.</p>
+  <div class="card">
+    <div class="flow-wrap">
+      <div>
+        <div class="node" id="rv-write"><div class="nm">write(question, findings)</div><div class="fn">draft from worker findings only</div></div>
+        <div class="down">↓</div>
+        <div class="node" id="rv-review"><div class="nm">review(draft, findings)</div><div class="fn">→ Review{ok, issues}</div></div>
+        <div class="down">↓</div>
+        <div class="node" id="rv-out"><div class="nm">final answer</div><div class="fn">returned to the user</div></div>
+      </div>
+      <div class="narr"><div class="stepn" id="rvStep">Step 0</div><p id="rvText">Press <b>Next</b>.</p></div>
+    </div>
+    <div class="btn-row"><button class="btn" id="rvNext" type="button">Next →</button><button class="btn ghost" id="rvReset" type="button">Reset</button></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><b>Why structured output?</b><br><span style="font-size:14px;color:var(--muted)"><code>Review(ok=False, issues=[...])</code> is something your code can branch on. "Looks mostly fine, but…" isn't.</span></div>
+    <div class="card"><b>Why only once?</b><br><span style="font-size:14px;color:var(--muted)">Each round costs 2 calls, and the gains drop fast. If round 2 still fails, return the draft with the issues attached. Don't loop.</span></div>
+  </div>
+</section>
+
+<section id="cost">
+  <div class="sec-num">7 · When multi-agent wastes time and money</div>
+  <h2>Do the maths before you pick the architecture</h2>
+  <p class="why">A rough model of today's two systems. Every agent call re-sends its own context (Day 2), so more agents = more input tokens. Change the numbers to match your <code>compare.py</code> results.</p>
+  <div class="card">
+    <div class="calc">
+      <label>Sub-questions (workers): <b id="cN">3</b><input type="range" id="cNs" min="1" max="6" value="3"></label>
+      <label>Steps per worker loop: <b id="cS">3</b><input type="range" id="cSs" min="1" max="6" value="3"></label>
+      <label>Single agent steps for the whole question: <b id="cA">8</b><input type="range" id="cAs" min="2" max="14" value="8"></label>
+      <label>Seconds per LLM call: <b id="cL">1.5</b><input type="range" id="cLs" min="0.5" max="5" step="0.5" value="1.5"></label>
+      <label style="grid-column:1/-1;display:flex;gap:8px;align-items:center"><input type="checkbox" id="cRev" checked> include reviewer (+ assume 1 send-back in 30% of runs)</label>
+    </div>
+    <div class="table-wrap" style="margin-top:12px"><table class="vs-table">
+      <tr><th></th><th>Single agent</th><th>Multi-agent</th></tr>
+      <tr><td>LLM calls</td><td id="o1a"></td><td id="o1b"></td></tr>
+      <tr><td>Input tokens (approx)</td><td id="o2a"></td><td id="o2b"></td></tr>
+      <tr><td>Wall-clock</td><td id="o3a"></td><td id="o3b"></td></tr>
+    </table></div>
+    <div class="verdict-big" id="cVerdict"></div>
+  </div>
+  <div class="table-wrap"><table>
+    <tr><th>Situation</th><th>Pick</th><th>Why</th></tr>
+    <tr><td>One dataset, one question</td><td>Single agent</td><td>Nothing to split. Extra agents only add calls.</td></tr>
+    <tr><td>3+ independent sub-topics, slow tools</td><td>Planner → parallel workers</td><td>Wall-clock drops to the slowest worker.</td></tr>
+    <tr><td>Wrong answers are costly, facts checkable</td><td>+ Reviewer</td><td>Catches unsupported numbers before the user sees them.</td></tr>
+    <tr><td>Very different request types</td><td>Router</td><td>Smaller prompts and toolsets per specialist.</td></tr>
+    <tr><td>Hackathon, 1st hour</td><td>Single agent</td><td>Get a working demo first. Add a pattern only if the evals show a gap.</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ PART B ============ -->
+
+<section id="async">
+  <div class="sec-num">8 · async / await</div>
+  <h2>Same keywords as JS, one big difference: nothing runs until you start the loop</h2>
+  <p class="why">In JS, calling an async function starts it right away and gives you a Promise. In Python, calling an <code>async def</code> gives you a <b>coroutine</b> that does nothing until it's awaited or scheduled.</p>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre><span class="k">import</span> asyncio
+
+<span class="k">async def</span> work(q: str) -&gt; str:
+    <span class="k">await</span> asyncio.sleep(1)       <span class="c"># non-blocking</span>
+    <span class="k">return</span> <span class="s">f"done {q}"</span>
+
+coro = work(<span class="s">"a"</span>)   <span class="c"># NOT started yet!</span>
+
+<span class="k">async def</span> main():
+    print(<span class="k">await</span> work(<span class="s">"a"</span>))
+
+asyncio.run(main())  <span class="c"># starts the event loop</span></pre></div>
+    <div><span class="tag js">JS / TS</span><pre><span class="k">async function</span> work(q) {
+  <span class="k">await</span> sleep(1000);
+  <span class="k">return</span> <span class="s">`done ${q}`</span>;
+}
+
+<span class="k">const</span> p = work(<span class="s">"a"</span>);   <span class="c">// already running</span>
+
+<span class="c">// Node runs the event loop for you;</span>
+<span class="c">// top-level await works in ES modules</span>
+console.log(<span class="k">await</span> work(<span class="s">"a"</span>));</pre></div>
+  </div>
+  <div class="callout warn"><b>Two classic mistakes</b>1) Forgetting <code>await</code>: you get <code>&lt;coroutine object work&gt;</code> and a "was never awaited" warning. 2) Using <code>time.sleep()</code> inside <code>async def</code>: it blocks <em>every</em> task. Use <code>await asyncio.sleep()</code>.</div>
+</section>
+
+<section id="gather">
+  <div class="sec-num">9 · gather = Promise.all</div>
+  <h2>Run many coroutines at once, get results in order</h2>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre>results = <span class="k">await</span> asyncio.gather(
+    work(<span class="s">"a"</span>), work(<span class="s">"b"</span>), work(<span class="s">"c"</span>),
+)
+<span class="c"># ~1s total, results in input order</span>
+
+<span class="c"># from a list: unpack with *</span>
+results = <span class="k">await</span> asyncio.gather(*[work(q) <span class="k">for</span> q <span class="k">in</span> subqs])</pre></div>
+    <div><span class="tag js">JS / TS</span><pre><span class="k">const</span> results = <span class="k">await</span> Promise.all([
+  work(<span class="s">"a"</span>), work(<span class="s">"b"</span>), work(<span class="s">"c"</span>),
+]);
+
+
+<span class="k">const</span> results = <span class="k">await</span> Promise.all(subqs.map(work));</pre></div>
+  </div>
+  <div class="sbs-title">When one task fails</div>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre>results = <span class="k">await</span> asyncio.gather(*tasks, return_exceptions=<span class="k">True</span>)
+<span class="k">for</span> r <span class="k">in</span> results:
+    <span class="k">if</span> isinstance(r, Exception):
+        ...  <span class="c"># keep going with the others</span></pre></div>
+    <div><span class="tag js">JS / TS</span><pre><span class="k">const</span> results = <span class="k">await</span> Promise.allSettled(tasks);
+<span class="k">for</span> (<span class="k">const</span> r <span class="k">of</span> results) {
+  <span class="k">if</span> (r.status === <span class="s">"rejected"</span>) { ... }
+}</pre></div>
+  </div>
+  <p class="sbs-note">Without <code>return_exceptions=True</code>, gather behaves like <code>Promise.all</code>: the first exception is raised and you lose the other results. For workers, we want <code>allSettled</code> behaviour: one failed worker shouldn't kill the whole answer.</p>
+</section>
+
+<section id="tothread">
+  <div class="sec-num">10 · The sync SDK, and rate limits</div>
+  <h2>Our <code>run_agent()</code> is blocking. Two ways to run it in parallel.</h2>
+  <p class="why">Day 2's loop calls <code>client.models.generate_content</code>, which blocks. Calling it directly inside <code>async def</code> would freeze everything. Options:</p>
+  <div class="grid2">
+    <div class="card"><b>A · <code>asyncio.to_thread</code> (planned, least change)</b><pre><span class="k">await</span> asyncio.to_thread(run_agent, q, verbose=<span class="k">False</span>)</pre><span style="font-size:14px;color:var(--muted)">Runs the sync function in a worker thread and gives you something awaitable. Reuses Day 2 code untouched.</span></div>
+    <div class="card"><b>B · <code>client.aio</code> (native async)</b><pre><span class="k">await</span> client.aio.models.generate_content(
+    model=<span class="s">"gemini-2.5-flash"</span>, contents=..., config=...)</pre><span style="font-size:14px;color:var(--muted)">The google-genai SDK has an async twin of every call. Cleaner, but you'd need an async copy of <code>chat()</code> and <code>run_agent()</code>.</span></div>
+  </div>
+  <div class="sbs-title">Semaphore = "at most N at a time"</div>
+  <div class="sbs">
+    <div><span class="tag py">Python</span><pre>sem = asyncio.Semaphore(3)
+
+<span class="k">async def</span> worker(q):
+    <span class="k">async with</span> sem:          <span class="c"># waits if 3 already running</span>
+        <span class="k">return await</span> asyncio.to_thread(run_agent, q)
+
+<span class="k">await</span> asyncio.gather(*[worker(q) <span class="k">for</span> q <span class="k">in</span> subqs])</pre></div>
+    <div><span class="tag js">JS / TS</span><pre><span class="k">import</span> pLimit <span class="k">from</span> <span class="s">"p-limit"</span>;
+<span class="k">const</span> limit = pLimit(3);
+
+<span class="k">await</span> Promise.all(
+  subqs.map((q) =&gt; limit(() =&gt; runAgent(q)))
+);</pre></div>
+  </div>
+  <p class="sbs-note"><code>async with</code> is like a <code>try/finally</code> that acquires on entry and releases on exit, even if the worker raises. Day 1's retry loop still handles any 429 that slips through.</p>
+</section>
+
+<!-- ============ PART C ============ -->
+
+<section id="flow">
+  <div class="sec-num">11 · Your code (planned design)</div>
+  <h2>Step through a research run</h2>
+  <p class="why"><b>This is the planned design for <code>bootcamp/day04/</code></b>; the files don't exist yet. When we build it, this player gets updated to match the real code. Planned files:</p>
+  <div class="table-wrap"><table>
+    <tr><th>File</th><th>Planned purpose</th></tr>
+    <tr><td><code>llm.py tools.py loop.py tracing.py builtin_tools.py</code></td><td>Copied from Day 2: <code>chat()</code>, <code>@tool</code> + <code>run_tool</code>, <code>run_agent</code>, <code>Trace</code>, sandboxed tools over <code>data/</code></td></tr>
+    <tr><td><code>patterns.py</code></td><td><code>plan()</code>, <code>run_workers()</code>, <code>write()</code>, <code>review()</code>, <code>route()</code>. Pydantic models <code>Plan</code>, <code>Finding</code>, <code>Review</code>, <code>Route</code></td></tr>
+    <tr><td><code>research.py</code></td><td><code>research(question)</code>: plan → gather workers → write → review (max 1 send-back). CLI.</td></tr>
+    <tr><td><code>compare.py</code></td><td>Runs single <code>run_agent</code> vs <code>research</code> on <code>questions.jsonl</code> (5 questions): keyword quality, latency, tokens, calls</td></tr>
+    <tr><td><code>tests/test_patterns.py</code></td><td>Scripted fake model: plan parsing, worker failure tolerated, send-back capped at 1</td></tr>
+  </table></div>
+  <div class="card">
+    <div class="scen" role="group" aria-label="scenario">
+      <button type="button" data-s="happy" class="sel">Happy path</button>
+      <button type="button" data-s="sendback">Reviewer sends back</button>
+      <button type="button" data-s="fail">A worker fails</button>
+      <button type="button" data-s="limit">Semaphore at work</button>
+    </div>
+    <div class="flow-wrap">
+      <div>
+        <div class="node" id="n-research"><div class="nm">research(question)</div><div class="fn">research.py: the orchestrator, plain Python</div></div>
+        <div class="down">↓</div>
+        <div class="node" id="n-plan"><div class="nm">plan(question) → Plan</div><div class="fn">patterns.py: generate_structured, ≤ 4 sub-questions</div></div>
+        <div class="down">↓ asyncio.gather</div>
+        <div class="workers">
+          <div class="node" id="n-w1"><div class="nm">worker 1</div><div class="fn">run_agent</div></div>
+          <div class="node" id="n-w2"><div class="nm">worker 2</div><div class="fn">run_agent</div></div>
+          <div class="node" id="n-w3"><div class="nm">worker 3</div><div class="fn">run_agent</div></div>
+        </div>
+        <div class="down">↓ findings</div>
+        <div class="node" id="n-write"><div class="nm">write(question, findings)</div><div class="fn">patterns.py: one llm.generate call</div></div>
+        <div class="down">↓</div>
+        <div class="node" id="n-review"><div class="nm">review(draft, findings) → Review</div><div class="fn">patterns.py: ok / issues, max 1 send-back</div></div>
+        <div class="narr" aria-live="polite" style="margin-top:14px">
+          <div class="stepn" id="narrStep">Step 0</div>
+          <p id="narrText">Press <b>Next</b> to start.</p>
+        </div>
+      </div>
+      <div>
+        <div class="pane-title">state held by research() · <span id="ctxCount">0</span> items</div>
+        <div class="contents" id="ctxPane"></div>
+        <div class="pane-title">terminal</div>
+        <div class="term" id="termPane"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" id="flowPrev" type="button">← Back</button>
+      <button class="btn" id="flowNext" type="button">Next →</button>
+      <button class="btn ghost" id="flowReset" type="button">Reset</button>
+    </div>
+  </div>
+<pre><span class="c"># planned: research.py, stripped to the idea</span>
+<span class="k">async def</span> research(question: str) -&gt; str:
+    plan = patterns.plan(question)                          <span class="c"># 1 structured call</span>
+    findings = <span class="k">await</span> patterns.run_workers(plan.subquestions)  <span class="c"># gather + Semaphore(3)</span>
+    draft = patterns.write(question, findings)
+    review = patterns.review(draft, findings)
+    <span class="k">if not</span> review.ok:                                      <span class="c"># send back ONCE</span>
+        draft = patterns.write(question, findings, fix=review.issues)
+    <span class="k">return</span> draft</pre>
+</section>
+
+<section id="quiz">
+  <div class="sec-num">12 · Self-check</div>
+  <h2>Answer out loud before opening</h2>
+  <details class="q"><summary>Does the model know it's part of a multi-agent system?</summary>No. Each agent is a separate call with its own prompt. The "system" exists only in your Python orchestration code.</details>
+  <details class="q"><summary>4 workers run in parallel instead of in sequence. What changes: tokens, cost, or wall-clock?</summary>Only wall-clock. Tokens and cost are the same; time drops to roughly the slowest worker (plus planner and writer).</details>
+  <details class="q"><summary>Why does the planner return a Pydantic <code>Plan</code> and not free text?</summary>Your code has to loop over the sub-questions. A validated list (capped at 4) is something you can iterate safely; free text isn't.</details>
+  <details class="q"><summary>Why cap the reviewer at one send-back?</summary>Each round costs 2 more calls and gains drop fast. Writer and reviewer can disagree forever. Bound it like <code>max_steps</code>.</details>
+  <details class="q"><summary>What's the Python equivalent of <code>Promise.allSettled</code>?</summary><code>asyncio.gather(*tasks, return_exceptions=True)</code>: exceptions come back as values in the results list.</details>
+  <details class="q"><summary>Why <code>asyncio.to_thread(run_agent, q)</code> and not just <code>run_agent(q)</code> inside <code>async def</code>?</summary><code>run_agent</code> blocks on network calls. Called directly, it blocks the event loop and the workers run one after another. <code>to_thread</code> runs it in a thread so they overlap.</details>
+  <details class="q"><summary>What does <code>Semaphore(3)</code> protect you from?</summary>Firing too many calls at once and getting 429 rate-limit errors (especially on a free-tier key). At most 3 workers run; the rest wait their turn.</details>
+  <details class="q"><summary>Hackathon, hour one: single agent or multi-agent?</summary>Single agent. Get an end-to-end demo working, run evals, then add a pattern only where the numbers show it helps.</details>
+</section>
+</main>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  };
+
+  // theme
+  const savedTheme = store.get("bc-theme");
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  $("themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("bc-theme", next);
+  });
+
+  // toc highlight
+  const links = [...document.querySelectorAll("nav.toc a")];
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  document.querySelectorAll("main section").forEach((s) => io.observe(s));
+
+  // mission checklist
+  const boxes = [...document.querySelectorAll("#stations input")];
+  const KEY = "bc-day04-checks";
+  let saved = {};
+  try { saved = JSON.parse(store.get(KEY) || "{}"); } catch (e) {}
+  function renderMission() {
+    const done = boxes.filter((b) => b.checked).length;
+    $("progBar").style.width = (done / boxes.length * 100) + "%";
+    $("missionPct").textContent = `${done} of ${boxes.length} done`;
+    boxes.forEach((b) => b.parentElement.classList.toggle("done", b.checked));
+    document.querySelectorAll(".station").forEach((st) => {
+      st.classList.toggle("done", [...st.querySelectorAll("input")].every((b) => b.checked));
+    });
+  }
+  boxes.forEach((b) => {
+    b.checked = !!saved[b.id];
+    b.addEventListener("change", () => { saved[b.id] = b.checked; store.set(KEY, JSON.stringify(saved)); renderMission(); });
+  });
+  renderMission();
+
+  // pattern tabs
+  document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("sel", x === b));
+    document.querySelectorAll(".pat").forEach((p) => p.classList.toggle("show", p.id === "p-" + b.dataset.p));
+  }));
+
+  // timeline (gantt)
+  const PLAN = 1.5, WRITE = 2;
+  let jitter = [];
+  function reroll() { jitter = Array.from({ length: 8 }, () => 0.5 + Math.random()); }
+  reroll();
+  function bar(cls, start, dur, total, label) {
+    return `<div class="g-bar ${cls}" style="left:${start / total * 100}%;width:${Math.max(dur / total * 100, 0.6)}%">${label}</div>`;
+  }
+  function renderGantt() {
+    const n = +$("nSlider").value, w = +$("wSlider").value, lim = +$("lSlider").value;
+    $("nVal").textContent = n; $("wVal").textContent = w; $("lVal").textContent = lim;
+    const durs = jitter.slice(0, n).map((j) => +(w * j).toFixed(1));
+    const seqTotal = PLAN + durs.reduce((a, b) => a + b, 0) + WRITE;
+    // parallel with a semaphore: each worker takes the earliest free slot
+    const slots = Array(lim).fill(PLAN);
+    const sched = durs.map((d) => {
+      const i = slots.indexOf(Math.min(...slots));
+      const start = slots[i];
+      slots[i] = start + d;
+      return { start, d };
+    });
+    const workEnd = Math.max(...sched.map((s) => s.start + s.d));
+    const parTotal = workEnd + WRITE;
+    const scale = seqTotal;
+    let seqH = `<div class="g-lane">${bar("plan", 0, PLAN, scale, "plan")}</div>`;
+    let t = PLAN;
+    durs.forEach((d, i) => { seqH += `<div class="g-lane">${bar("work", t, d, scale, "w" + (i + 1) + " " + d + "s")}</div>`; t += d; });
+    seqH += `<div class="g-lane">${bar("write", t, WRITE, scale, "write")}</div>`;
+    let parH = `<div class="g-lane">${bar("plan", 0, PLAN, scale, "plan")}</div>`;
+    sched.forEach((s, i) => {
+      const wait = s.start - PLAN;
+      parH += `<div class="g-lane">${wait > 0 ? bar("wait", PLAN, wait, scale, "wait") : ""}${bar("work", s.start, s.d, scale, "w" + (i + 1) + " " + s.d + "s")}</div>`;
+    });
+    parH += `<div class="g-lane">${bar("write", workEnd, WRITE, scale, "write")}</div>`;
+    $("seqLanes").innerHTML = seqH; $("parLanes").innerHTML = parH;
+    $("seqT").textContent = seqTotal.toFixed(1) + "s";
+    $("parT").textContent = parTotal.toFixed(1) + "s";
+    const saving = (1 - parTotal / seqTotal) * 100;
+    $("parMsg").innerHTML = n === 1
+      ? "With 1 worker there's nothing to overlap: parallel = sequential."
+      : `Parallel is <b>${saving.toFixed(0)}% faster</b> (${parTotal.toFixed(1)}s vs ${seqTotal.toFixed(1)}s), with exactly the same tokens.` +
+        (lim < n ? ` With a limit of ${lim}, ${n - lim} worker(s) wait for a free slot.` : "");
+  }
+  ["nSlider", "wSlider", "lSlider"].forEach((id) => $(id).addEventListener("input", renderGantt));
+  $("reroll").addEventListener("click", () => { reroll(); renderGantt(); });
+  renderGantt();
+
+  // router demo
+  function renderRoute() {
+    const q = $("routeIn").value.toLowerCase();
+    let pick = "direct", why = "No data words: a general question, so answer directly with no tools (1 call).";
+    if (/revenue|units|average|sum|total|region|csv|sales|how many/.test(q)) { pick = "csv"; why = "Mentions numbers in the sales data → csv agent (analyze_csv, calculator)."; }
+    else if (/file|doc|mention|refund|warranty|policy|onboarding|discount|faq/.test(q)) { pick = "docs"; why = "Asks about what documents say → docs agent (search_files, read_file)."; }
+    ["csv", "docs", "direct"].forEach((r) => $("r-" + r).classList.toggle("pick", r === pick));
+    $("routeWhy").innerHTML = `→ <b>${pick}</b>. ${why}`;
+  }
+  $("routeIn").addEventListener("input", renderRoute);
+  document.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", () => { $("routeIn").value = c.textContent; renderRoute(); }));
+  renderRoute();
+
+  // reviewer mini-player
+  const RV = ["rv-write", "rv-review", "rv-out"];
+  const rvSteps = [
+    { on: "rv-write", t: "Writer drafts from the findings: \"West had the highest average revenue (1,547)…\"" },
+    { on: "rv-review", err: true, t: "Reviewer compares with the findings: worker 1 reported <b>1457</b>, not 1547. Returns <code>Review(ok=False, issues=[\"West average is 1457 in findings, draft says 1547\"])</code>." },
+    { on: "rv-write", t: "Send-back #1 (the only one allowed): writer is called again with the same findings <b>plus the issues list</b>." },
+    { on: "rv-review", ok: true, t: "Reviewer: <code>Review(ok=True, issues=[])</code>." },
+    { on: "rv-out", ok: true, t: "Final answer returned. If the second review had failed too, we'd return the draft with the issues attached instead of looping again." },
+  ];
+  let rvI = -1;
+  function renderRv() {
+    RV.forEach((id) => $(id).classList.remove("on", "ok", "err"));
+    if (rvI < 0) { $("rvStep").textContent = "Step 0 of " + rvSteps.length; $("rvText").innerHTML = "Press <b>Next</b>."; }
+    else {
+      const s = rvSteps[rvI];
+      $(s.on).classList.add(s.err ? "err" : s.ok ? "ok" : "on");
+      $("rvStep").textContent = `Step ${rvI + 1} of ${rvSteps.length}`;
+      $("rvText").innerHTML = s.t;
+    }
+    $("rvNext").disabled = rvI >= rvSteps.length - 1;
+  }
+  $("rvNext").addEventListener("click", () => { rvI++; renderRv(); });
+  $("rvReset").addEventListener("click", () => { rvI = -1; renderRv(); });
+  renderRv();
+
+  // cost calculator
+  function fmtK(n) { return n >= 1000 ? (n / 1000).toFixed(1) + "k" : String(Math.round(n)); }
+  function renderCost() {
+    const N = +$("cNs").value, S = +$("cSs").value, A = +$("cAs").value, L = +$("cLs").value, rev = $("cRev").checked;
+    $("cN").textContent = N; $("cS").textContent = S; $("cA").textContent = A; $("cL").textContent = L;
+    const SYS = 1000, GROW = 600; // context per call: system + tools, growing per step
+    const loopTokens = (steps) => { let t = 0; for (let i = 0; i < steps; i++) t += SYS + i * GROW; return t; };
+    const single = { calls: A, tokens: loopTokens(A), time: A * L };
+    const reviewCalls = rev ? 1 + 0.3 * 2 : 0;
+    const multiCalls = 1 + N * S + 1 + reviewCalls;
+    const findingsTok = N * 400;
+    const multiTokens = 800 + N * loopTokens(S) + (SYS + findingsTok) + (rev ? (SYS + findingsTok + 500) * (1 + 0.3 * 2) : 0);
+    const multiTime = L + S * L + L + (rev ? L * (1 + 0.3 * 2) : 0);
+    const multi = { calls: multiCalls, tokens: multiTokens, time: multiTime };
+    const cell = (a, b, lowerWins, f) => {
+      const aw = lowerWins ? a <= b : a >= b;
+      return [`<span>${f(a)}</span>`, `<span>${f(b)}</span>`, aw];
+    };
+    const rows = [["o1", single.calls, multi.calls, (x) => x.toFixed(x % 1 ? 1 : 0)], ["o2", single.tokens, multi.tokens, fmtK], ["o3", single.time, multi.time, (x) => x.toFixed(1) + "s"]];
+    rows.forEach(([id, a, b, f]) => {
+      const [ha, hb, aw] = cell(a, b, true, f);
+      $(id + "a").innerHTML = ha; $(id + "b").innerHTML = hb;
+      $(id + "a").className = aw ? "win" : "lose"; $(id + "b").className = aw ? "lose" : "win";
+    });
+    const tokRatio = multi.tokens / single.tokens, timeRatio = single.time / multi.time;
+    let v;
+    if (multi.time < single.time && tokRatio < 1.5) v = `<b style="color:var(--good)">Multi-agent looks worth it:</b> ${timeRatio.toFixed(1)}× faster for ${tokRatio.toFixed(1)}× the tokens.`;
+    else if (multi.time < single.time) v = `<b style="color:var(--warn)">Trade-off:</b> ${timeRatio.toFixed(1)}× faster but ${tokRatio.toFixed(1)}× the tokens. Worth it only if latency matters more than cost (e.g. a live demo).`;
+    else v = `<b style="color:var(--bad)">Single agent wins:</b> multi-agent is not faster here and costs ${tokRatio.toFixed(1)}× the tokens. Too few independent parts to split.`;
+    $("cVerdict").innerHTML = v + " <span style='color:var(--muted)'>(Rough model. Replace with your real compare.py numbers.)</span>";
+  }
+  ["cNs", "cSs", "cAs", "cLs"].forEach((id) => $(id).addEventListener("input", renderCost));
+  $("cRev").addEventListener("change", renderCost);
+  renderCost();
+
+  // flow player (planned design)
+  const NODES = ["n-research", "n-plan", "n-w1", "n-w2", "n-w3", "n-write", "n-review"];
+  const U = (t) => ({ r: "user", t });
+  const M = (t, err) => ({ r: "model", t, err });
+  const T = (t, err) => ({ r: "tool", t, err });
+  const Q = "Compare refunds and revenue across regions in Q3";
+  const PLAN_OUT = "Plan(subquestions=[\n 'average revenue per region in sales.csv',\n 'what do the docs say about refunds',\n 'which products had refund problems'])";
+  const scenarios = {
+    happy: [
+      { on: ["n-research"], add: [U("question: " + Q)], term: '$ python research.py "' + Q + '"', t: "<code>research()</code> is plain Python. It holds the state and decides the order. No LLM yet." },
+      { on: ["n-plan"], ok: true, add: [M(PLAN_OUT)], term: "[plan]   720ms  3 sub-questions", t: "<code>plan()</code> calls <code>generate_structured(prompt, Plan)</code>. Pydantic validates it: a list of at most 4 strings." },
+      { on: ["n-w1", "n-w2", "n-w3"], term: "[gather] starting 3 workers (limit 3)", t: "<code>run_workers()</code> wraps each sub-question in <code>asyncio.to_thread(run_agent, q)</code> and awaits them all with <code>asyncio.gather</code>. All three Day 2 loops run <b>at the same time</b>." },
+      { on: ["n-w1", "n-w2", "n-w3"], ok: true, add: [T("Finding(w1): East 1182, North 1217, South 1150, West 1457 [sales.csv]"), T("Finding(w2): refund requests rose 18% in August [docs/q3-review.md]"), T("Finding(w3): Gadget units with a faulty charger [docs/q3-review.md]")], term: "[w1] done 3.1s  2 tools\n[w2] done 2.4s  2 tools\n[w3] done 2.8s  3 tools\n[gather] all done in 3.1s (sequential would be 8.3s)", t: "Each worker returns a <code>Finding</code> with its sources. Total time ≈ the slowest worker (3.1s), not the sum (8.3s)." },
+      { on: ["n-write"], ok: true, add: [M("draft: West leads revenue (1457 avg); refunds rose 18% in August, mostly Gadget chargers…")], term: "[write]  1.2s", t: "<code>write()</code> gets the question and <b>only the findings</b>, not the workers' whole histories. Small context, cheap call." },
+      { on: ["n-review"], ok: true, add: [M("Review(ok=True, issues=[])")], term: "[review] 0.9s  ok\n<g>ANSWER: West leads revenue (1457 avg); refunds rose 18% in August…</g>\n<d>{'llm_calls': 10, 'wall_ms': 6100, 'input_tokens': 18450}</d>", t: "Reviewer checks every claim against the findings. OK, so the draft is returned. <code>compare.py</code> records calls, time and tokens next to the single-agent run." },
+    ],
+    sendback: [
+      { on: ["n-research"], add: [U("question: " + Q)], t: "Same start: plan, then 3 parallel workers." },
+      { on: ["n-plan", "n-w1", "n-w2", "n-w3"], ok: true, add: [M(PLAN_OUT), T("3 findings (with sources)")], term: "[plan] 3 sub-questions\n[gather] all done in 3.0s", t: "Planner and workers succeed." },
+      { on: ["n-write"], add: [M("draft v1: '…West averaged 1,547…'")], term: "[write]  1.1s", t: "The writer copies a number wrong: 1547 instead of 1457." },
+      { on: ["n-review"], err: true, add: [M("Review(ok=False, issues=['West avg is 1457 in findings, draft says 1547'])", true)], term: "<e>[review] 0.9s  NOT OK: West avg is 1457 in findings, draft says 1547</e>", t: "The reviewer catches it because it has the findings next to the draft. Structured output, so code can branch on <code>review.ok</code>." },
+      { on: ["n-write"], ok: true, add: [M("draft v2: '…West averaged 1457…'")], term: "[write]  1.0s  (send-back 1/1)", t: "Send-back #1: <code>write(question, findings, fix=review.issues)</code>." },
+      { on: ["n-review"], ok: true, add: [M("Review(ok=True, issues=[])")], term: "[review] 0.8s  ok\n<g>ANSWER: …West averaged 1457…</g>", t: "OK now. If it still failed, <code>research()</code> returns v2 with the issues attached. It does <b>not</b> loop a third time. <code>tests/test_patterns.py</code> checks that cap." },
+    ],
+    fail: [
+      { on: ["n-plan"], ok: true, add: [U("question: " + Q), M(PLAN_OUT)], t: "Plan with 3 sub-questions." },
+      { on: ["n-w1", "n-w2", "n-w3"], t: "Workers start in parallel." },
+      { on: ["n-w1", "n-w3"], ok: true, err2: "n-w2", add: [T("Finding(w1): East 1182, North 1217, …"), T("w2: LLMError: Gemini API error 503 (after 3 retries)", true), T("Finding(w3): Gadget units with a faulty charger")], term: "[w1] done 3.0s\n<e>[w2] FAILED LLMError 503 after 3 retries</e>\n[w3] done 2.7s", t: "Worker 2 fails even after Day 1's retries. Because we use <code>gather(..., return_exceptions=True)</code>, the exception comes back as a <b>value</b>, like <code>Promise.allSettled</code>." },
+      { on: ["n-write"], ok: true, add: [M("draft: '…(could not check refund docs: worker failed)…'")], term: "[write] 1.1s  2 of 3 findings", t: "<code>run_workers()</code> turns the exception into a <code>Finding(ok=False, error=…)</code>. The writer is told that part is missing and says so honestly instead of making it up." },
+      { on: ["n-review"], ok: true, add: [M("Review(ok=True, issues=[])")], term: "<g>ANSWER (partial): …</g>", t: "A partial, honest answer beats a crash. Without <code>return_exceptions=True</code> the whole run would have died on worker 2." },
+    ],
+    limit: [
+      { on: ["n-plan"], ok: true, add: [U("question: a broad 4-part question"), M("Plan(subquestions=[4 items])")], t: "This time the plan has 4 sub-questions, and <code>Semaphore(3)</code> allows 3 at a time." },
+      { on: ["n-w1", "n-w2", "n-w3"], add: [T("w4: waiting on semaphore…")], term: "[gather] 4 workers, limit 3\n[w1][w2][w3] running   [w4] waiting", t: "Inside each worker: <code>async with sem:</code>. The first 3 get in; the 4th waits at that line without blocking anything else." },
+      { on: ["n-w2"], ok: true, add: [T("Finding(w2) done → slot free")], term: "[w2] done 2.2s → w4 starts", t: "As soon as worker 2 finishes and leaves the <code>async with</code> block, the slot is released and worker 4 starts." },
+      { on: ["n-w1", "n-w3"], ok: true, add: [T("Findings w1, w3, w4 done")], term: "[gather] all done in 4.6s (sequential 10.4s, no-limit 3.1s)", t: "Slower than no limit, much faster than sequential, and no 429s from firing everything at once. Tune the limit to your key's rate limit." },
+      { on: ["n-write", "n-review"], ok: true, add: [M("draft → Review(ok=True)")], term: "<g>ANSWER: …</g>", t: "Write and review as usual." },
+    ],
+  };
+  let scen = "happy", idx = -1;
+  function renderFlow() {
+    const steps = scenarios[scen];
+    NODES.forEach((id) => $(id).classList.remove("on", "ok", "err"));
+    const msgs = [], lines = [];
+    for (let i = 0; i <= idx; i++) {
+      (steps[i].add || []).forEach((m) => msgs.push({ ...m, at: i }));
+      if (steps[i].term) lines.push(steps[i].term);
+    }
+    const label = { user: "input", model: "llm output", tool: "worker finding" };
+    $("ctxPane").innerHTML = msgs.length
+      ? msgs.map((m) => `<div class="cmsg ${m.r}${m.err ? " err" : ""}${m.at === idx ? " new" : ""}"><span class="role">${label[m.r]}</span>${esc(m.t).replace(/\n/g, "<br>")}</div>`).join("")
+      : `<div style="color:var(--muted);font-size:14px">empty</div>`;
+    $("ctxCount").textContent = msgs.length;
+    $("termPane").innerHTML = lines.length
+      ? lines.map((l) => esc(l).replace(/&lt;(\/?)(e|g|d)&gt;/g, "<$1$2>").replace(/<(e|g|d)>/g, '<span class="$1">').replace(/<\/(e|g|d)>/g, "</span>")).join("\n")
+      : '<span class="d">$ python research.py "…"</span>';
+    if (idx < 0) {
+      $("narrStep").textContent = "Step 0 of " + steps.length;
+      $("narrText").innerHTML = "Press <b>Next</b> to start.";
+    } else {
+      const s = steps[idx];
+      s.on.forEach((id) => $(id).classList.add(s.err ? "err" : s.ok ? "ok" : "on"));
+      if (s.err2) $(s.err2).classList.add("err");
+      $("narrStep").textContent = `Step ${idx + 1} of ${steps.length}`;
+      $("narrText").innerHTML = s.t;
+    }
+    $("flowPrev").disabled = idx < 0;
+    $("flowNext").disabled = idx >= steps.length - 1;
+  }
+  document.querySelectorAll(".scen button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".scen button").forEach((x) => x.classList.toggle("sel", x === b));
+    scen = b.dataset.s; idx = -1; renderFlow();
+  }));
+  $("flowNext").addEventListener("click", () => { idx++; renderFlow(); });
+  $("flowPrev").addEventListener("click", () => { idx--; renderFlow(); });
+  $("flowReset").addEventListener("click", () => { idx = -1; renderFlow(); });
+  renderFlow();
+})();
+</script>
+</body>
+</html>
