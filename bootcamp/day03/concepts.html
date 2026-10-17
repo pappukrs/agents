@@ -270,6 +270,34 @@ svg.emb .link { stroke: var(--accent); stroke-width: 0.008; stroke-dasharray: 0.
   .slider-row { grid-template-columns: 110px minmax(0, 1fr) 50px; }
   .score-row { grid-template-columns: 120px minmax(0, 1fr) 44px; }
 }
+/* daynav:start */
+.daynav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 12px; margin: 0 0 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; }
+.daynav a { text-decoration: none; }
+.daynav .dn-step { padding: 4px 10px; border-radius: 8px; color: var(--accent); font-weight: 600; white-space: nowrap; }
+.daynav .dn-step:hover { background: var(--accent-soft); }
+.daynav .dn-step.off { color: var(--muted); opacity: .5; font-weight: 400; }
+.daynav .dn-all { color: var(--muted); padding: 4px 8px; border-radius: 8px; white-space: nowrap; }
+.daynav .dn-all:hover { background: var(--surface-2); color: var(--text); }
+.daynav .dn-pills { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 auto; }
+.daynav .dn-pills a { min-width: 28px; height: 28px; display: inline-grid; place-items: center; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.daynav .dn-pills a:hover { border-color: var(--accent); color: var(--accent); }
+.daynav .dn-pills a[aria-current="page"] { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 700; }
+.daynav .dn-next { margin-left: auto; }
+.daynav-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 56px; }
+.daynav-cards a, .daynav-cards .dn-empty { display: block; padding: 16px 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-decoration: none; }
+.daynav-cards a:hover { border-color: var(--accent); background: var(--accent-soft); }
+.daynav-cards .dn-k { display: block; color: var(--muted); font-size: 13px; }
+.daynav-cards .dn-t { display: block; color: var(--accent); font-weight: 600; font-size: 17px; }
+.daynav-cards .dn-next-card { text-align: right; grid-column: 2; }
+.daynav-cards .dn-empty { border-style: dashed; background: transparent; color: var(--muted); }
+.daynav-hint { grid-column: 1 / -1; text-align: center; color: var(--muted); font-size: 12px; }
+@media (max-width: 600px) {
+  .daynav { padding: 8px; gap: 6px; }
+  .daynav .dn-pills { order: 3; width: 100%; justify-content: center; margin: 0; }
+  .daynav-cards { grid-template-columns: 1fr; }
+  .daynav-cards .dn-next-card { grid-column: 1; }
+}
+/* daynav:end */
 </style>
 </head>
 <body>
@@ -300,6 +328,14 @@ svg.emb .link { stroke: var(--accent); stroke-width: 0.008; stroke-dasharray: 0.
 </nav>
 
 <main>
+<!-- daynav:top:start -->
+<nav class="daynav" aria-label="Bootcamp days" data-prev="../day02/concepts.html" data-next="../day04/concepts.html">
+  <a class="dn-step dn-prev" href="../day02/concepts.html" title="Day 2 · Tools + Agent Loop" rel="prev">&larr; Day 2</a>
+  <a class="dn-all" href="../index.html">All days</a>
+  <span class="dn-pills"><a href="../day01/concepts.html" title="Day 1 · LLM Fundamentals">1</a><a href="../day02/concepts.html" title="Day 2 · Tools + Agent Loop">2</a><a href="../day03/concepts.html" title="Day 3 · RAG over documents" aria-current="page">3</a><a href="../day04/concepts.html" title="Day 4 · Multi-agent patterns">4</a><a href="../day05/concepts.html" title="Day 5 · LangGraph + State">5</a><a href="../day06/concepts.html" title="Day 6 · Evals + Security">6</a><a href="../day07/concepts.html" title="Day 7 · Model Choice + Demo">7</a><a href="../day08/concepts.html" title="Day 8 · Full Mock Challenge">8</a><a href="../day09/concepts.html" title="Day 9 · Rehearsal + Freeze">9</a></span>
+  <a class="dn-step dn-next" href="../day04/concepts.html" title="Day 4 · Multi-agent patterns" rel="next">Day 4 &rarr;</a>
+</nav>
+<!-- daynav:top:end -->
 <header class="hero">
   <div class="eyebrow">Day 3 of 9 · Sat 17 Oct 2026</div>
   <h1>Let the agent answer from <em>your</em> documents, and say "I don't know" when they don't cover it</h1>
@@ -711,6 +747,13 @@ vecs = [e.values <span class="k">for</span> e <span class="k">in</span> res.embe
   <details class="q"><summary>What is reranking, and when would you skip it?</summary>A second, slower pass that scores each (question, chunk) pair for real relevance, usually with an LLM, on the top ~10 cosine hits. Skip it until the eval shows the right chunk is retrieved but ranked too low.</details>
   <details class="q"><summary>The model cites <code>pricing.md#3</code> but search never returned it. Which layer catches that?</summary>Code: <code>check_citations()</code> compares every cited id against the ids the tools actually returned in this run, and fails the answer if any are made up.</details>
 </section>
+<!-- daynav:bottom:start -->
+<div class="daynav-cards">
+  <a class="dn-prev-card" href="../day02/concepts.html" rel="prev"><span class="dn-k">&larr; Previous</span><span class="dn-t">Day 2 · Tools + Agent Loop</span></a>
+  <a class="dn-next-card" href="../day04/concepts.html" rel="next"><span class="dn-k">Next &rarr;</span><span class="dn-t">Day 4 · Multi-agent patterns</span></a>
+  <div class="daynav-hint">Tip: <kbd>[</kbd> / <kbd>]</kbd> or Alt + &larr; / &rarr; to switch days</div>
+</div>
+<!-- daynav:bottom:end -->
 </main>
 </div>
 
@@ -1001,5 +1044,25 @@ vecs = [e.values <span class="k">for</span> e <span class="k">in</span> res.embe
   renderFlow();
 })();
 </script>
+<!-- daynav:js:start -->
+<script>
+(() => {
+  const nav = document.querySelector(".daynav");
+  if (!nav) return;
+  const prev = nav.dataset.prev, next = nav.dataset.next;
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.defaultPrevented) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    let go = null;
+    if (e.altKey && e.key === "ArrowLeft") go = prev;
+    else if (e.altKey && e.key === "ArrowRight") go = next;
+    else if (!e.altKey && e.key === "[") go = prev;
+    else if (!e.altKey && e.key === "]") go = next;
+    if (go) { e.preventDefault(); location.href = go; }
+  });
+})();
+</script>
+<!-- daynav:js:end -->
 </body>
 </html>
