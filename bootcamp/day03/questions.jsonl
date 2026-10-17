@@ -1,0 +1,10 @@
+{"id": "q1", "question": "How many days do I have to return an item?", "answerable": true, "expect": ["30"], "source": "returns-policy.md"}
+{"id": "q2", "question": "Does the warranty cover water damage?", "answerable": true, "expect": ["water"], "source": "warranty.md"}
+{"id": "q3", "question": "After my return is approved, how long until the refund reaches me?", "answerable": true, "expect": ["5 business days"], "source": "refunds.md"}
+{"id": "q4", "question": "How much does express delivery cost?", "answerable": true, "expect": ["149"], "source": "shipping.md"}
+{"id": "q5", "question": "My parcel arrived damaged. How soon do I have to report it?", "answerable": true, "expect": ["48 hours"], "source": "shipping.md"}
+{"id": "q6", "question": "How long is a password reset link valid?", "answerable": true, "expect": ["30 minutes"], "source": "security.md"}
+{"id": "q7", "question": "If I decline a repair quote, what do I pay?", "answerable": true, "expect": ["499"], "source": "repairs.md"}
+{"id": "q8", "question": "What is the CEO's salary?", "answerable": false}
+{"id": "q9", "question": "What are the opening hours of your London store?", "answerable": false}
+{"id": "q10", "question": "Who founded Nimbus Electronics, and in what year?", "answerable": false}

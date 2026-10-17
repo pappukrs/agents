@@ -13,3 +13,4 @@ venv/
 coverage/
 
 bootcamp/*/traces/*.json
+bootcamp/*/data/*.npz
