@@ -663,7 +663,7 @@ input[type=text]:focus { border-color: var(--accent); }
   <h2>"How much do two arrows point the same way?"</h2>
   <p class="why">Cosine = dot product divided by both lengths. 1 = same direction, 0 = unrelated, −1 = opposite. If you normalise every vector to length 1 once, at ingest time, cosine becomes just a dot product.</p>
   <div class="sbs">
-    <div><span class="tag py">Python + numpy (planned rag.py)</span><pre><span class="k">import</span> numpy <span class="k">as</span> np
+    <div><span class="tag py">Python + numpy (rag.py)</span><pre><span class="k">import</span> numpy <span class="k">as</span> np
 
 <span class="k">def</span> normalize(m: np.ndarray) -&gt; np.ndarray:
     <span class="k">return</span> m / np.linalg.norm(m, axis=-1, keepdims=<span class="k">True</span>)
@@ -691,7 +691,7 @@ scores = vectors @ q     <span class="c"># ALL cosines in one line</span></pre><
     <div style="font-size:14px;color:var(--muted)" id="chStats"></div>
     <div class="chunks" id="chOut"></div>
   </div>
-<pre><span class="c"># planned rag.py: the same logic as this demo</span>
+<pre><span class="c"># rag.py: the same logic as this demo</span>
 <span class="k">def</span> chunk_text(text: str, size: int = 800, overlap: int = 150) -&gt; list[str]:
     step = size - overlap
     chunks = []
@@ -789,7 +789,7 @@ vectors.map((v) =&gt; v[0])              <span class="c">// first column</span><
 
   <div class="sbs-title">Score everything, take the top k</div>
   <div class="sbs">
-    <div><span class="tag py">Python (planned rag.search)</span><pre>scores = vectors @ q                 <span class="c"># (23,)</span>
+    <div><span class="tag py">Python (rag.search)</span><pre>scores = vectors @ q                 <span class="c"># (23,)</span>
 top = np.argsort(scores)[::-1][:k]   <span class="c"># indexes, best first</span>
 hits = [(ids[i], float(scores[i])) <span class="k">for</span> i <span class="k">in</span> top
         <span class="k">if</span> scores[i] &gt;= min_score]</pre></div>
@@ -859,7 +859,7 @@ idx[<span class="s">"vectors"</span>].shape   <span class="c"># (23, 768)</span>
 
   <div class="sbs-title">Calling the Gemini embedding API</div>
   <div class="sbs">
-    <div><span class="tag py">Python (planned llm.embed)</span><pre>res = get_client().models.embed_content(
+    <div><span class="tag py">Python (inside llm.embed)</span><pre>res = get_client().models.embed_content(
     model=<span class="s">"gemini-embedding-001"</span>,
     contents=batch,                         <span class="c"># list[str]</span>
     config=types.EmbedContentConfig(
@@ -882,8 +882,8 @@ vecs = [e.values <span class="k">for</span> e <span class="k">in</span> res.embe
 
 <section id="flow">
   <div class="sec-num">11 · Step through a run</div>
-  <h2>How a question becomes a cited answer <span class="preview-badge">PLANNED DESIGN</span></h2>
-  <p class="why">This is the design we'll build today in <code>bootcamp/day03/</code>: <code>rag.py</code> (chunk, ingest, search, <code>search_docs</code> tool), <code>llm.py</code> + <code>embed()</code>, <code>ask.py</code> (CLI + citation check), plus Day 2's <code>tools.py</code>, <code>loop.py</code> and <code>tracing.py</code> unchanged. Names and numbers may shift a little once the code exists; this page gets updated to match.</p>
+  <h2>How a question becomes a cited answer </h2>
+  <p class="why">This is the code in <code>bootcamp/day03/</code>: <code>rag.py</code> (chunk, ingest, search, <code>search_docs</code> tool), <code>llm.py</code> + <code>embed()</code>, <code>ask.py</code> (CLI + citation check), plus Day 2's <code>tools.py</code>, <code>loop.py</code> and <code>tracing.py</code> unchanged. Scores in the scenarios are examples: run <code>python rag.py scores questions.jsonl</code> to see yours.</p>
   <div class="card">
     <div class="scen" id="flowScen" role="group" aria-label="scenario">
       <button type="button" data-s="ingest" class="sel">Ingest the docs</button>
@@ -922,7 +922,7 @@ vecs = [e.values <span class="k">for</span> e <span class="k">in</span> res.embe
       <button class="btn ghost" id="flowReset" type="button">Reset</button>
     </div>
   </div>
-<pre><span class="c"># planned rag.py: the tool the model sees</span>
+<pre><span class="c"># rag.py: the tool the model sees</span>
 <span class="k">@tool</span>
 <span class="k">def</span> search_docs(query: str, k: int = 4) -&gt; dict:
     <span class="s">"""Search the provided documents. Returns the most relevant passages with ids to cite.
@@ -932,11 +932,13 @@ vecs = [e.values <span class="k">for</span> e <span class="k">in</span> res.embe
         query: what to look for, in your own words. Rephrase and search again if results are weak.
         k: how many passages to return (1-8).
     """</span>
-    hits = search(query, k=min(k, 8), min_score=MIN_SCORE)
+    hits = search(query, k=max(1, min(k, 8)))   <span class="c"># search() applies MIN_SCORE</span>
     <span class="k">if not</span> hits:
         <span class="k">return</span> {<span class="s">"hits"</span>: [], <span class="s">"note"</span>: <span class="s">f"No passage scored above {MIN_SCORE}."</span>}
-    <span class="k">return</span> {<span class="s">"hits"</span>: [{<span class="s">"id"</span>: h.id, <span class="s">"score"</span>: round(h.score, 2), <span class="s">"text"</span>: h.text} <span class="k">for</span> h <span class="k">in</span> hits]}</pre>
-  <div class="callout js"><b>Testing without a key</b><code>tests/test_rag.py</code> will swap <code>llm.embed</code> for a fake that turns text into a vector of word counts. Chunking, top-k, the threshold and citation checks all get tested offline, the same way <code>ScriptedClient</code> tested the loop on Day 2.</div>
+    <span class="c"># Trim passages so the JSON stays under run_tool's cap and is never cut mid-way.</span>
+    room = (MAX_RESULT_CHARS - 600) // len(hits)
+    <span class="k">return</span> {<span class="s">"hits"</span>: [{<span class="s">"id"</span>: h.id, <span class="s">"score"</span>: round(h.score, 2), <span class="s">"text"</span>: h.text[:room]} <span class="k">for</span> h <span class="k">in</span> hits]}</pre>
+  <div class="callout js"><b>Testing without a key</b><code>tests/conftest.py</code> swaps <code>llm.embed</code> for a fake that turns text into a vector of word counts. Chunking, top-k, the threshold, citation checks and grading are tested offline in <code>test_rag.py</code> and <code>test_ask.py</code> (20 tests), the same way <code>ScriptedClient</code> tested the loop on Day 2.</div>
 </section>
 
 <section id="quiz">
@@ -1171,25 +1173,25 @@ vecs = [e.values <span class="k">for</span> e <span class="k">in</span> res.embe
   $("rrReset").addEventListener("click", () => { reranked = false; renderRR(); });
   renderRR();
 
-  // ---------- flow player (planned design) ----------
+  // ---------- flow player ----------
   const NODES = ["n-run", "n-chat", "n-tool", "n-rag", "n-emb", "n-idx"];
   const U = (t) => ({ r: "user", t });
   const M = (t) => ({ r: "model", t });
   const T = (t, err) => ({ r: "tool", t, err });
   const scenarios = {
     ingest: [
-      { on: "n-rag", term: "$ python rag.py ingest", t: "<code>ingest()</code> globs <code>docs/**/*.md</code>: 6 files (returns-policy, refunds, warranty, shipping, payments, security). No LLM chat in this phase." },
-      { on: "n-rag", ok: true, term: "<d>read 6 files, 9,840 chars → 17 chunks (size=800, overlap=150)</d>", t: "<code>chunk_text()</code> cuts each file; ids look like <code>warranty.md#1</code> so answers can cite them later." },
-      { on: "n-emb", t: "<code>llm.embed(texts, task_type=\"RETRIEVAL_DOCUMENT\")</code> sends the 17 chunks as one batch to <code>gemini-embedding-001</code> with <code>output_dimensionality=768</code>. Day 1's retry loop covers 429s." },
-      { on: "n-emb", ok: true, term: "<d>embedded 17 chunks in 1 batch · 1.2s</d>", t: "Back come 17 lists of 768 floats → <code>np.array(..., dtype=np.float32)</code>, shape <code>(17, 768)</code>, then <code>normalize()</code> so cosine = dot later." },
-      { on: "n-idx", ok: true, term: "<g>saved data/index.npz  vectors=(17, 768) ids=17 texts=17</g>", t: "<code>np.savez</code> writes vectors, ids and texts together. Questions now never re-embed the docs, only themselves." },
+      { on: "n-rag", term: "$ python rag.py ingest", t: "<code>ingest()</code> globs <code>docs/**/*.md</code>: 8 files (returns-policy, refunds, warranty, repairs, shipping, payments, security, pricing). No LLM chat in this phase." },
+      { on: "n-rag", ok: true, term: "<d>read 8 files, 6,797 chars → 12 chunks (size=800, overlap=150)</d>", t: "<code>chunk_text()</code> cuts each file; ids look like <code>warranty.md#1</code> so answers can cite them later." },
+      { on: "n-emb", t: "<code>llm.embed(texts, task_type=\"RETRIEVAL_DOCUMENT\")</code> sends the 12 chunks as one batch to <code>gemini-embedding-001</code> with <code>output_dimensionality=768</code>. Day 1's retry loop covers 429s." },
+      { on: "n-emb", ok: true, term: "<d>embedded 12 chunks in 1 batch · 1.2s</d>", t: "Back come 12 lists of 768 floats → <code>np.array(..., dtype=np.float32)</code>, shape <code>(12, 768)</code>, then <code>normalize()</code> so cosine = dot later." },
+      { on: "n-idx", ok: true, term: "<g>saved data/index.npz  vectors=(12, 768)  ids=12</g>", t: "<code>np.savez</code> writes vectors, ids and texts together. Questions now never re-embed the docs, only themselves." },
     ],
     answer: [
       { on: "n-run", add: [U("How many days do I have to return an item?")], t: "<code>ask.py</code> calls Day 2's <code>run_agent(question, tools=[\"search_docs\"], system=RAG_SYSTEM)</code>. The system prompt says: search first, answer only from hits, cite ids." },
       { on: "n-chat", ok: true, add: [M("function_call search_docs(query='return window days to return an item', k=4)")], term: "[1] LLM     640ms  in=820 out=24", t: "Gemini doesn't answer from memory; it calls the tool, rewording the query a bit. That's allowed and often helps." },
       { on: "n-tool", t: "Day 2's <code>run_tool</code> validates args and calls <code>search_docs</code>, which calls <code>rag.search(query, k=4, min_score=0.6)</code>." },
       { on: "n-emb", ok: true, t: "The query is embedded with <code>task_type=\"RETRIEVAL_QUERY\"</code> and normalised. One small API call." },
-      { on: "n-idx", ok: true, t: "<code>scores = vectors @ q</code> scores all 17 chunks at once. <code>argsort</code> → top 4: 0.81, 0.74, 0.66, 0.58. The threshold drops 0.58 → <b>3 hits</b>." },
+      { on: "n-idx", ok: true, t: "<code>scores = vectors @ q</code> scores all 12 chunks at once. <code>argsort</code> → top 4: 0.81, 0.74, 0.66, 0.58. The threshold drops 0.58 → <b>3 hits</b>." },
       { on: "n-tool", ok: true, add: [T("function_response search_docs → {hits: [{id: 'returns-policy.md#0', score: 0.81, text: 'Items can be returned within 30 days…'}, {id: 'refunds.md#1', score: 0.74, …}, {id: 'returns-policy.md#1', score: 0.66, …}]}")], term: "[2] TOOL    310ms  ok  search_docs({\"query\": \"return window…\"}) -> {\"result\": {\"hits\": [{\"id\": \"returns-policy.md#0\", …", t: "Hits go back as the function response: id + score + text. The text is now in the model's context." },
       { on: "n-chat", ok: true, add: [M("You can return an item within 30 days of delivery, in its original packaging [returns-policy.md#0]. Refunds arrive within 5 business days [refunds.md#1].")], term: "[3] LLM     720ms  in=1460 out=48\n<g>[3] FINAL You can return an item within 30 days … [returns-policy.md#0] …</g>", t: "No more function calls → final answer, with an id after each claim." },
       { on: "n-run", ok: true, term: "<g>citations ok: returns-policy.md#0, refunds.md#1 (both retrieved)</g>", t: "<code>check_citations()</code> in <code>ask.py</code> pulls every <code>[id]</code> out of the answer and checks it was in a <code>search_docs</code> result in this trace. Both were → pass." },
